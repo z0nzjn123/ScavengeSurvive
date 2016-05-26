@@ -422,6 +422,7 @@ new stock
 #include "sss/core/ui/hold-action.pwn"
 #include "sss/core/item/liquid.pwn"
 #include "sss/core/world/tree.pwn"
+#include "sss/core/world/explosive.pwn"
 
 /*
 	MODULE INITIALISATION CALLS
