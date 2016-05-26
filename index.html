@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Scavenge and Survive : A PvP SA:MP server script built upon the SIF framework, the aim of the game is to find supplies to help you survive, either alone or in a group. The overall objective is to build a stable community and defend it from hostile players.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Scavenge and Survive</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/Southclaw/ScavengeSurvive">View on GitHub</a>
+
+          <h1 id="project_title">Scavenge and Survive</h1>
+          <h2 id="project_tagline">A PvP SA:MP server script built upon the SIF framework, the aim of the game is to find supplies to help you survive, either alone or in a group. The overall objective is to build a stable community and defend it from hostile players.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/Southclaw/ScavengeSurvive/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/Southclaw/ScavengeSurvive/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="scavenge-and-survive-gamemode-script-for-samp" class="anchor" href="#scavenge-and-survive-gamemode-script-for-samp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scavenge and Survive gamemode script for SA:MP</h1>
+
+<p><a href="http://www.gnu.org/copyleft/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL-V3"></a><a href="https://gitter.im/Southclaw/ScavengeSurvive?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter"></a><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=M7WJU7YN8PKGQ"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif" alt="Donate"></a></p>
+
+<p>Support the development of this mod by donating. I can put more time into adding new features!</p>
+
+<h2>
+<a id="a-pvp-samp-server-script-built-upon-the-sif-framework" class="anchor" href="#a-pvp-samp-server-script-built-upon-the-sif-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A PvP SA:MP server script built upon the SIF framework.</h2>
+
+<p>The aim of the game is to find supplies such as tools or weapons to help you
+survive, either alone or in a group.</p>
+
+<p>The overall objective is to build a stable community and defend it from players
+with more hostile intentions.</p>
+
+<p>Items spawn around the map in various places categorised by type, rarity and
+location. Vehicles are rare and spawn with damaged engines or tires and will
+usually spawn with loot inside the trunk.</p>
+
+<p>No gameplay mechanics require the use of commands. All gameplay has been built
+with an intuitive <em>interaction model</em> in mind with only 5 major keys required
+to access the gamemode-specific features.</p>
+
+<h2>
+<a id="development" class="anchor" href="#development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development</h2>
+
+<p>The gamemode is written in a modular fashion, borrowing a lot of concepts from
+object-oriented programming. The "World" scripts are separated and can be
+completely replaced for a new map.</p>
+
+<p>I encourage people to play around with this code, create a new map and put loot
+spawns in it or completely mod it into a new gamemode, I would love to see what
+creations are made! Please publish all bug fixes in order to benefit everyone.</p>
+
+<h2>
+<a id="setup" class="anchor" href="#setup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setup</h2>
+
+<ol>
+<li>
+<p><strong>Dependencies</strong></p>
+
+<p>Ensure you have ALL the dependencies listed in the master script (the one you
+compile from!) each #include line has a link to the release page.</p>
+</li>
+<li>
+<p><strong>"/scriptfiles/" directory</strong></p>
+
+<p>Rename "scriptfiles-folder" to just "scriptfiles".
+The reason this folder has this name is because I don't want my actual
+scriptfiles folder on the repo as it contains various things I don't wish to
+share (such as user accounts and data for the test server) this may change.</p>
+
+<p>(However, the server will cleverly automatically create any missing
+files/folders when started so this repository folder isn't even required any
+more!)</p>
+</li>
+<li>
+<p><strong>Compile!</strong></p>
+
+<p>If you set up all the dependencies correctly, there should be <em>no</em>
+errors at all. If you have a problem compiling DON'T SUBMIT AN ISSUE HERE!
+that place is reserved for actual bugs.</p>
+</li>
+<li>
+<p><strong>Set up plugins and filterscripts in your <em>"./server.cfg"</em> file.</strong></p>
+
+<p>Note: The repo contains <em>many</em> filterscripts, most of these are just testing
+tools and utilities, there are only <em>2</em> filterscripts you need to run on a
+public server:</p>
+
+<pre><code>  filterscripts object-loader rcon
+  plugins streamer sscanf CTime Whirlpool FileManager irc
+</code></pre>
+</li>
+<li>
+<p><strong>Set up gamemode settings in your <em>"./scriptfiles/SSS/settings.ini"</em> file</strong></p>
+
+<p>This is an INI file with game settings that will self-create if absent.
+Not all settings must be present, here is an example:</p>
+
+<pre><code>player/max-tab-out-time=600000
+player/combat-log-window=30
+player/interior-entry=0
+autosave/autosave-toggle=1
+autosave/autosave-interval=60000
+vehicle-spawn/spawn-chance=5.0
+</code></pre>
+</li>
+<li>
+<p><strong>Enjoy!</strong></p>
+
+<p><del>Do whatever you want with it, but keep my name on it :)</del></p>
+
+<p>My lax approach to licensing doesn't apply any more! I use GPL now so read the LICENSE file for usage rights etc. :)</p>
+</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Scavenge and Survive maintained by <a href="https://github.com/Southclaw">Southclaw</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
