@@ -32,102 +32,123 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a id="scavenge-and-survive-gamemode-script-for-samp" class="anchor" href="#scavenge-and-survive-gamemode-script-for-samp" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scavenge and Survive gamemode script for SA:MP</h1>
+<a id="scavenge-and-survive" class="anchor" href="#scavenge-and-survive" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Scavenge and Survive</h1>
 
-<p><a href="http://www.gnu.org/copyleft/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL-V3"></a><a href="https://gitter.im/Southclaw/ScavengeSurvive?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter"></a><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=M7WJU7YN8PKGQ"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_SM.gif" alt="Donate"></a></p>
+<p><a href="http://www.gnu.org/copyleft/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png" alt="GPL-V3"></a><a href="https://gitter.im/Southclaw/ScavengeSurvive?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter"></a></p>
 
 <p>Support the development of this mod by donating. I can put more time into adding new features!</p>
 
+<p><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=P7H2FNNWLMFW4"><img src="https://www.paypalobjects.com/webstatic/mktg/Logo/pp-logo-200px.png" alt="Donate"></a></p>
+
 <h2>
-<a id="a-pvp-samp-server-script-built-upon-the-sif-framework" class="anchor" href="#a-pvp-samp-server-script-built-upon-the-sif-framework" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A PvP SA:MP server script built upon the SIF framework.</h2>
+<a id="a-pvp-samp-server-script" class="anchor" href="#a-pvp-samp-server-script" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>A PvP SA:MP server script</h2>
 
-<p>The aim of the game is to find supplies such as tools or weapons to help you
-survive, either alone or in a group.</p>
+<p>The aim of the game is to find supplies such as tools or weapons to help you survive, either alone or in a group.</p>
 
-<p>The overall objective is to build a stable community and defend it from players
-with more hostile intentions.</p>
+<p>The overall objective is to build a stable community and defend it from players with more hostile intentions.</p>
 
-<p>Items spawn around the map in various places categorised by type, rarity and
-location. Vehicles are rare and spawn with damaged engines or tires and will
-usually spawn with loot inside the trunk.</p>
+<p>Items spawn around the map in various places categorised by type, rarity and location. Vehicles are rare and spawn with damaged engines or tires and will usually spawn with loot inside the trunk.</p>
 
-<p>No gameplay mechanics require the use of commands. All gameplay has been built
-with an intuitive <em>interaction model</em> in mind with only 5 major keys required
-to access the gamemode-specific features.</p>
+<p>No gameplay mechanics require the use of commands. All gameplay has been built with an intuitive <em>interaction model</em> in mind with only 5 major keys required to access the gamemode-specific features.</p>
 
 <h2>
 <a id="development" class="anchor" href="#development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development</h2>
 
-<p>The gamemode is written in a modular fashion, borrowing a lot of concepts from
-object-oriented programming. The "World" scripts are separated and can be
-completely replaced for a new map.</p>
+<p>The gamemode is written in a modular fashion, borrowing a lot of concepts from object-oriented programming. The "World" scripts are separated and can be completely replaced for a new map.</p>
 
-<p>I encourage people to play around with this code, create a new map and put loot
-spawns in it or completely mod it into a new gamemode, I would love to see what
-creations are made! Please publish all bug fixes in order to benefit everyone.</p>
+<p>I encourage people to play around with this code, create a new map and put loot spawns in it or completely mod it into a new gamemode, I would love to see what creations are made! Please publish all bug fixes in order to benefit everyone.</p>
+
+<h3>
+<a id="dont-be-selfish" class="anchor" href="#dont-be-selfish" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Don't Be Selfish</h3>
+
+<p>When you fix something, don't keep it to yourself. This is an open source project. An important part of open source is sharing, that's why this code is free of charge and available to all.</p>
+
+<p>Please respect this. Feel free to keep your unique features private, just submit <em>all</em> fixes to the base code as pull requests or just email them to me.</p>
+
+<h3>
+<a id="builds" class="anchor" href="#builds" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Builds</h3>
+
+<p>Each time I compile a version of the gamemode, the build number (stored in BUILD_NUMBER) is incremented. This is also shown in-game at the top-right of the screen and will allow players and developers to know which version is in use which can help track issues and fix bugs.</p>
+
+<p>IMPORTANT: DO NOT USE THE BUILD SCRIPT YOURSELF! The reason for this is that you'll change the build number which is meant to reflect which BASE version of the gamemode you are using, NOT your own builds. This will greatly improve my ability to fix issues on your server.</p>
 
 <h2>
 <a id="setup" class="anchor" href="#setup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Setup</h2>
 
-<ol>
-<li>
-<p><strong>Dependencies</strong></p>
+<p><strong>What version do I use?</strong></p>
 
-<p>Ensure you have ALL the dependencies listed in the master script (the one you
-compile from!) each #include line has a link to the release page.</p>
-</li>
-<li>
-<p><strong>"/scriptfiles/" directory</strong></p>
+<p>If you're running a <em>public server</em> use the latest <a href="https://github.com/Southclaw/ScavengeSurvive/releases">release</a>. It <em>should</em> be stable but remember, this is a constantly evolving project and bugs always slip through!</p>
 
-<p>Rename "scriptfiles-folder" to just "scriptfiles".
-The reason this folder has this name is because I don't want my actual
-scriptfiles folder on the repo as it contains various things I don't wish to
-share (such as user accounts and data for the test server) this may change.</p>
+<p>If you want to hack on the code and contribute, pull the latest commit.</p>
 
-<p>(However, the server will cleverly automatically create any missing
-files/folders when started so this repository folder isn't even required any
-more!)</p>
-</li>
-<li>
-<p><strong>Compile!</strong></p>
+<h3>
+<a id="1-dependencies" class="anchor" href="#1-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>1. Dependencies</h3>
 
-<p>If you set up all the dependencies correctly, there should be <em>no</em>
-errors at all. If you have a problem compiling DON'T SUBMIT AN ISSUE HERE!
-that place is reserved for actual bugs.</p>
-</li>
-<li>
-<p><strong>Set up plugins and filterscripts in your <em>"./server.cfg"</em> file.</strong></p>
+<p>Ensure you have ALL the dependencies listed in the master script (the one you compile from!) each #include line has a link to the release page.</p>
 
-<p>Note: The repo contains <em>many</em> filterscripts, most of these are just testing
-tools and utilities, there are only <em>2</em> filterscripts you need to run on a
-public server:</p>
+<h3>
+<a id="2-scriptfiles-directory" class="anchor" href="#2-scriptfiles-directory" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>2. <code>scriptfiles/</code> directory</h3>
 
-<pre><code>  filterscripts object-loader rcon
-  plugins streamer sscanf CTime Whirlpool FileManager irc
+<p>The server will automatically create any required directories such as <code>scriptfiles/data/</code>.</p>
+
+<p>If you want to use the maps provided in the repository, extract <code>scriptfiles/Maps.zip</code> to <code>scriptfiles/</code></p>
+
+<h3>
+<a id="3-compile" class="anchor" href="#3-compile" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>3. Compile!</h3>
+
+<p>If you have a problem compiling <strong>DON'T SUBMIT AN ISSUE HERE!</strong> this is reserved for actual bugs.</p>
+
+<p>If you set up all the dependencies correctly, there should be <em>no</em> errors or warnings at all unless mentioned in the commit message.</p>
+
+<h3>
+<a id="4-set-up-plugins-and-filterscripts-in-your-servercfg-file" class="anchor" href="#4-set-up-plugins-and-filterscripts-in-your-servercfg-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>4. Set up plugins and filterscripts in your <code>server.cfg</code> file.</h3>
+
+<p>Note: The repo contains <em>many</em> filterscripts, most of these are just testing tools and utilities, there are only <em>2</em> filterscripts you need to run on a public server:</p>
+
+<pre><code>filterscripts object-loader rcon
+plugins streamer sscanf CTime Whirlpool FileManager irc
 </code></pre>
-</li>
-<li>
-<p><strong>Set up gamemode settings in your <em>"./scriptfiles/SSS/settings.ini"</em> file</strong></p>
 
-<p>This is an INI file with game settings that will self-create if absent.
-Not all settings must be present, here is an example:</p>
+<h3>
+<a id="5-set-up-gamemode-settings-in-your-scriptfilesssssettingsini-file" class="anchor" href="#5-set-up-gamemode-settings-in-your-scriptfilesssssettingsini-file" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>5. Set up gamemode settings in your <code>scriptfiles/SSS/settings.ini</code> file</h3>
 
-<pre><code>player/max-tab-out-time=600000
-player/combat-log-window=30
-player/interior-entry=0
-autosave/autosave-toggle=1
-autosave/autosave-interval=60000
-vehicle-spawn/spawn-chance=5.0
+<p>This is an INI file with game settings that will self-create if absent.</p>
+
+<p>Most of the settings should be self-explanitory. If the purpose isn't clear, look up the setting in the source code for more information.</p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>LICENSE</h2>
+
+<p>I don't expect you to read the entire license.</p>
+
+<p>Just ensure you understand this:</p>
+
+<p><strong>You may copy, distribute and modify the software as long as you track changes/dates in source files.</strong></p>
+
+<p><strong>Any modifications to or software including (via compiler) GPL-licensed code must also be made available under the GPL along with build &amp; install instructions.</strong></p>
+
+<p>And leave all credits intact.</p>
+
+<h3>
+<a id="source-file-extract" class="anchor" href="#source-file-extract" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Source file extract</h3>
+
+<p>This block is shown at the top of every source file to indicate it's under GPL:</p>
+
+<pre><code>Copyright (C) 2016 Barnaby "Southclaw" Keene
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 </code></pre>
-</li>
-<li>
-<p><strong>Enjoy!</strong></p>
-
-<p><del>Do whatever you want with it, but keep my name on it :)</del></p>
-
-<p>My lax approach to licensing doesn't apply any more! I use GPL now so read the LICENSE file for usage rights etc. :)</p>
-</li>
-</ol>
       </section>
     </div>
 
