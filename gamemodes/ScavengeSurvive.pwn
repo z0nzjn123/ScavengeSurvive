@@ -838,5 +838,7 @@ DirectoryCheck(directory[])
 
 public Streamer_OnPluginError(const error[])
 {
-	// err(error);
+	new tmp[256];
+	strcat(tmp, error, 256);
+	err(tmp);
 }
