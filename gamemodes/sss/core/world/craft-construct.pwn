@@ -124,7 +124,7 @@ hook OnPlayerUseItem(playerid, itemid)
 
 	size = GetPlayerNearbyItems(playerid, list);
 
-	if(size > 1)
+	if(size > 1 && size < MAX_CONSTRUCT_SET_ITEMS)
 	{
 		dbg("gamemodes/sss/core/world/craft-construct.pwn", 1, "[OnPlayerUseItem] Button list size %d, comparing with craft lists", size);
 
