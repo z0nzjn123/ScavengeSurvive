@@ -8,18 +8,6 @@ stock GetItemAbsolutePos(itemid, &Float:x, &Float:y, &Float:z, &parent = -1, par
 	if(IsValidContainer(containerid))
 	{
 		/*
-			First, check if the container is a world-container with a button.
-		*/
-		new buttonid = GetContainerButton(containerid);
-
-		if(IsValidButton(buttonid))
-		{
-			parent = containerid;
-			parenttype = "containerid";
-			return GetButtonPos(buttonid, x, y, z);
-		}
-
-		/*
 			No? Maybe it's a vehicle trunk container
 		*/
 		new vehicleid = GetContainerTrunkVehicleID(containerid);

@@ -311,7 +311,9 @@ SupplyCrateLand()
 		}		
 	}
 
-	containerid = CreateContainer("Supply Crate", 32, CreateButton(sup_DropX + 1.5, sup_DropY, sup_DropZ + 1.0, "Supply Crate", .label = 1, .labeltext = "Supply Crate"));
+	// todo: link button to container inventory
+	new buttonid = CreateButton(sup_DropX + 1.5, sup_DropY, sup_DropZ + 1.0, "Supply Crate", .label = 1, .labeltext = "Supply Crate");
+	containerid = CreateContainer("Supply Crate", 32);
 
 	lootindex = GetLootIndexFromName(sup_TypeData[sup_CurrentType][supt_loot]);
 	FillContainerWithLoot(containerid, 4 + random(16), lootindex);
