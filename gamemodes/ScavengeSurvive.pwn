@@ -179,13 +179,13 @@ public OnGameModeInit()
 
 // By Southclaw, v1.6.2: https://github.com/Southclaws/SIF
 #include <SIF>
-#include <SIF\extensions\ItemArrayData.pwn>
-#include <SIF\extensions\ItemSerializer.pwn>
-#include <SIF\extensions\InventoryDialog.pwn>
-#include <SIF\extensions\InventoryKeys.pwn>
-#include <SIF\extensions\ContainerDialog.pwn>
-#include <SIF\extensions\Craft.pwn>
-#include <SIF\extensions\DebugLabels.pwn>
+#include <SIF\extensions\item-array-data>
+#include <SIF\extensions\item-serializer>
+#include <SIF\extensions\dialog-inventory>
+#include <SIF\extensions\keys-inventory>
+#include <SIF\extensions\dialog-container>
+#include <SIF\extensions\craft>
+#include <SIF\extensions\debug-labels>
 
 // By Southclaw: https://github.com/Southclaws/AdvancedWeaponData
 #include <WeaponData>
