@@ -82,7 +82,10 @@ hook OnGameModeInit()
 
 	ch_doorstate = false;
 
-	AddItemToContainer(CreateContainer("Generator", 6, CreateButton(-2318.9067, -1636.5662, 483.7031, "Generator")), CreateItem(item_Medkit));
+	// todo: link button to container inventory
+	new buttonid = CreateButton(-2318.9067, -1636.5662, 483.7031, "Generator");
+	new containerid = CreateContainer("Generator", 6);
+	AddItemToContainer(containerid, CreateItem(item_Medkit));
 
 	// Building
 
