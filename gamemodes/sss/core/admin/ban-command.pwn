@@ -58,7 +58,7 @@ FormatBanReasonDialog(playerid)
 	Dialog_Show(playerid, BanReason, DIALOG_STYLE_INPUT, "Please enter ban reason", "Enter the ban reason below. The character limit is 128. After this screen you can choose the ban duration.", "Continue", "Cancel");
 }
 
-Dialog:BanReason(playerid, dialogid, response, listitem, inputtext[])
+Dialog:BanReason(playerid, response, listitem, inputtext[])
 {
 		if(response)
 		{
@@ -80,7 +80,7 @@ FormatBanDurationDialog(playerid)
 	return 1;
 }
 
-Dialog:BanDuration(playerid, dialogid, response, listitem, inputtext[])
+Dialog:BanDuration(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{
