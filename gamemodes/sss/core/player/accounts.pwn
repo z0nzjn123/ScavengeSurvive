@@ -274,24 +274,27 @@ Login(playerid)
 	new
 		name[MAX_PLAYER_NAME],
 		hash[MAX_GPCI_LEN],
-		ipv4[16];
+		ipv4[16],
+		adminLevel;
 
 	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
 	gpci(playerid, hash, MAX_GPCI_LEN);
 	GetPlayerIp(playerid, ipv4, 16);
+	GetAccountAdminLevel(name, adminLevel);
 
 	log("[LOGIN] %p logged in, alive: %d", playerid, IsPlayerAlive(playerid));
 
 	SetAccountIP(name, ipv4);
 	SetAccountGPCI(name, hash);
 	SetAccountLastLogin(name, gettime());
+	SetPlayerAdminLevel(playerid, adminLevel);
 
-	if(GetPlayerAdminLevel(playerid) > 0)
+	if(adminLevel > 0)
 	{
 		new
 			reports = GetUnreadReports();
 
-		ChatMsg(playerid, BLUE, " >  Your admin level: %d", GetPlayerAdminLevel(playerid));
+		ChatMsg(playerid, BLUE, " >  Your admin level: %d", adminLevel);
 
 		if(reports > 0)
 			ChatMsg(playerid, YELLOW, " >  %d unread reports, type "C_BLUE"/reports "C_YELLOW"to view.", reports);
