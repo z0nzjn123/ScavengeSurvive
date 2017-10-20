@@ -119,6 +119,8 @@ stock DefineItemTypeWeapon(ItemType:itemtype, baseweapon, calibre, Float:muzzvel
 
 	itmw_ItemTypeWeapon[itemtype] = itmw_Total;
 
+	debug_set_level("weapon.core", DEEP); // TODO: DELETE THIS, IT DOESN'T EVEN BELONG HERE
+
 	return itmw_Total++;
 }
 
