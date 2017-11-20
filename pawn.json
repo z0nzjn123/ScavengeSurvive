@@ -1,0 +1,28 @@
+{
+    "entry": "gamemodes/ScavengeSurvive.pwn",
+    "output": "gamemodes/ScavengeSurvive.amx",
+    "dependencies": [
+        "Southclaws/samp-stdlib:0.3.7-R2-2-1",
+        "Zeex/samp-plugin-crashdetect/include",
+        "maddinat0r/sscanf",
+        "Zeex/amx_assembly",
+        "Misiur/YSI-Includes",
+        "Southclaws/samp-redis",
+        "samp-incognito/samp-streamer-plugin",
+        "Southclaws/formatex",
+        "oscar-broman/strlib",
+        "Southclaws/SAMP-geoip",
+        "Southclaws/samp-ctime",
+        "Awsomedude/easyDialog",
+        "Southclaws/progress2",
+        "Southclaws/SA-MP-FileManager",
+        "Southclaws/samp-plugin-mapandreas",
+        "Southclaws/SimpleINI",
+        "Southclaws/modio",
+        "Southclaws/SIF",
+        "Southclaws/AdvancedWeaponData",
+        "Southclaws/Line",
+        "Southclaws/Zipline",
+        "Southclaws/Ladder"
+    ]
+}
