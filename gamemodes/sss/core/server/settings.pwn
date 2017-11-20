@@ -41,7 +41,6 @@ LoadSettings()
 	GetSettingInt("server/max-uptime", 18000, gServerMaxUptime);
 	GetSettingInt("player/allow-pause-map", 0, gPauseMap);
 	GetSettingInt("player/interior-entry", 0, gInteriorEntry);
-	GetSettingInt("player/player-animations", 1, gPlayerAnimations);
 	GetSettingInt("player/vehicle-surfing", 0, gVehicleSurfing);
 	GetSettingFloat("player/nametag-distance", 3.0, gNameTagDistance);
 	GetSettingInt("player/combat-log-window", 30, gCombatLogWindow);

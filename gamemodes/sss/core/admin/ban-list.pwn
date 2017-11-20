@@ -60,7 +60,7 @@ public OnBanListShow(playerid, totalbans, listitems, index, list[])
 	return 1;
 }
 
-Dialog:ListOfBans(playerid, dialogid, response, listitem, inputtext[])
+Dialog:ListOfBans(playerid, response, listitem, inputtext[])
 {
 	if(response)
 	{

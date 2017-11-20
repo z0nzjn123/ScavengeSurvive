@@ -116,6 +116,9 @@ _debug_get_handler_index(handler[])
 {
 	for(new i; i < log_Total; ++i)
 	{
+		if(isnull(log_Table[i][log_name]))
+			continue;
+
 		if(!strcmp(handler, log_Table[i][log_name]))
 			return i;
 	}

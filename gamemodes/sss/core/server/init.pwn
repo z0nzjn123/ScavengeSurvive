@@ -557,22 +557,6 @@ new MiniMapOverlay;
 
 public OnScriptInit()
 {
-	// SETTINGS
-	if(!gPauseMap)
-		MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
-
-	if(!gInteriorEntry)
-		DisableInteriorEnterExits();
-
-	if(gPlayerAnimations)
-		UsePlayerPedAnims();
-
-	SetNameTagDrawDistance(gNameTagDistance);
-
-	EnableStuntBonusForAll(false);
-	ManualVehicleEngineAndLights();
-	AllowInteriorWeapons(true);
-
 // ITEM TYPE DEFINITIONS
 // 00
 	item_NULL			= DefineItemType("NULL",				"NULL",				0,		1, .maxhitpoints = 0);

@@ -359,7 +359,6 @@ new
 		// server
 bool:	gPauseMap,
 bool:	gInteriorEntry,
-bool:	gPlayerAnimations,
 bool:	gVehicleSurfing,
 Float:	gNameTagDistance,
 		gCombatLogWindow,
@@ -698,6 +697,7 @@ OnGameModeInit_Setup()
 
 	Streamer_ToggleErrorCallback(true);
 	MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
+	UsePlayerPedAnims();
 
 	if(dir_exists(DIRECTORY_SCRIPTFILES"SSS/"))
 	{
@@ -725,6 +725,19 @@ OnGameModeInit_Setup()
 	GetSettingString("server/redis-host", "localhost", redis_host);
 	GetSettingInt("server/redis-port", 6379, redis_port);
 	GetSettingString("server/redis-pass", "", redis_pass);
+
+	// SETTINGS
+	if(!gPauseMap)
+		MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
+
+	if(!gInteriorEntry)
+		DisableInteriorEnterExits();
+
+	SetNameTagDrawDistance(gNameTagDistance);
+
+	EnableStuntBonusForAll(false);
+	ManualVehicleEngineAndLights();
+	AllowInteriorWeapons(true);
 
 	gRedis = Redis_Connect(redis_host, redis_port, redis_pass);
 	if(_:gRedis < 0)
