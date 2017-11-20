@@ -25,6 +25,7 @@ gamemodes/ScavengeSurvive.tar.gz
 *.lnk
 pyss/data/*.jpg
 build-config.json
+dependencies/
 gamemodes/vendor/
 gamemodes/include/
 
