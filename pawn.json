@@ -1,4 +1,6 @@
 {
+    "user": "Southclaws",
+    "repo": "ScavengeSurvive",
     "entry": "gamemodes/ScavengeSurvive.pwn",
     "output": "gamemodes/ScavengeSurvive.amx",
     "dependencies": [
@@ -24,5 +26,18 @@
         "Southclaws/Line",
         "Southclaws/Zipline",
         "Southclaws/Ladder"
+    ],
+    "builds": [
+        {
+            "name": "dev",
+            "args": ["-d3"],
+            "constants": { "BUILD_MINIMAL": "" },
+            "version": "3.10.4"
+        },
+        {
+            "name": "prod",
+            "args": ["-O2"],
+            "version": "3.10.3"
+        }
     ]
 }
