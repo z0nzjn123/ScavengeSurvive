@@ -2,17 +2,17 @@ BUILD_NUMBER := $(shell cat BUILD_NUMBER)
 
 
 dependencies:
-	sampctl project ensure
+	sampctl package ensure
 
 
 dev:
-	sampctl project build --build dev
+	sampctl package build --build dev
 	$(eval BUILD_NUMBER=$(shell echo $$(($(BUILD_NUMBER)+1))))
 	echo -n $(BUILD_NUMBER) > BUILD_NUMBER
 
 
 prod:
-	sampctl project build --build prod
+	sampctl package build --build prod
 	$(eval BUILD_NUMBER=$(shell echo $$(($(BUILD_NUMBER)+1))))
 	echo -n $(BUILD_NUMBER) > BUILD_NUMBER
 
