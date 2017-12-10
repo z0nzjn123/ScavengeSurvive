@@ -1,13 +1,11 @@
 language: cpp
 install:
 - curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-bin.sh | sh
-- pwd
-- ls -la
 jobs:
   include:
     - stage: ensure
-      script: sampctl package ensure
+      script: ./sampctl package ensure
     - stage: build
       script:
-        - sampctl package build
+        - ./sampctl package build
         - ls -la /home/travis/.samp
