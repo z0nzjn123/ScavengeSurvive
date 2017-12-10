@@ -1,0 +1,6 @@
+language: cpp
+sudo: enabled
+install:
+- curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-deb.sh | sh
+script:
+- sampctl package build --forceEnsure
