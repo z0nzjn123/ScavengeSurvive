@@ -1,4 +1,5 @@
 language: cpp
+sudo: enabled
 install:
 - curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-deb.sh | sh
 jobs:
