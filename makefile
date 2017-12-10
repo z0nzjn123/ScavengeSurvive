@@ -38,3 +38,9 @@ filterscripts:
 # Runs a Redis container for testing
 redis:
 	docker run --name redis redis
+
+travis:
+	docker run \
+		--name travis-debug \
+		-dit \
+		travisci/ci-garnet:packer-1490989530 /sbin/init

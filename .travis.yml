@@ -1,5 +1,4 @@
 language: cpp
-sudo: enabled
 install:
 - curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-deb.sh | sh
 jobs:
@@ -8,5 +7,5 @@ jobs:
       script: sampctl package ensure
     - stage: build
       script:
-        - ls -la /home/travis/.samp
         - sampctl package build
+        - ls -la /home/travis/.samp
