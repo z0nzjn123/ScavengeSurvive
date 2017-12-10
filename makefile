@@ -40,7 +40,10 @@ redis:
 	docker run --name redis redis
 
 travis:
+	-docker kill travis-debug
+	-docker rm travis-debug
 	docker run \
 		--name travis-debug \
 		-dit \
-		travisci/ci-garnet:packer-1490989530 /sbin/init
+		-v $(shell pwd):/root \
+		travisci/ci-garnet:packer-1503972846 /sbin/init
