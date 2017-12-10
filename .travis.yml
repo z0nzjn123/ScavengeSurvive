@@ -1,6 +1,7 @@
 language: cpp
 install:
 - curl https://raw.githubusercontent.com/Southclaws/sampctl/master/install-bin.sh | sh
+- chmod +x sampctl
 jobs:
   include:
     - stage: ensure
