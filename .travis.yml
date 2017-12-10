@@ -9,4 +9,6 @@ jobs:
     - stage: ensure
       script: sampctl package ensure
     - stage: build
-      script: sampctl package build
+      script:
+        - sampctl package build
+        - ls -la dependencies
