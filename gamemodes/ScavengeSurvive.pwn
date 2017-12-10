@@ -171,8 +171,11 @@ public OnGameModeInit()
 // By Kalcor: https://github.com/Southclaws/samp-plugin-mapandreas
 #include <mapandreas>
 
-// By Southclaws: https://github.com/Southclaws/SimpleINI
-#include <SimpleINI>
+// By Southclaws: https://github.com/Southclaws/samp-logger
+#include <logger>
+
+// By Southclaws: https://github.com/Southclaws/samp-ini
+#include <ini>
 
 // By Southclaws: https://github.com/Southclaws/modio
 #include <modio>
@@ -388,7 +391,6 @@ new stock
 #tryinclude "sss/extensions/ext_pre.pwn"
 
 // UTILITIES
-#include "sss/utils/logging.pwn"
 #include "sss/utils/math.pwn"
 #include "sss/utils/misc.pwn"
 #include "sss/utils/time.pwn"
@@ -690,10 +692,12 @@ OnGameModeInit_Setup()
 
 	if(gBuildNumber < 1000)
 	{
-		fatal("UNKNOWN ERROR: gBuildNumber is below 1000: %d this should never happen! Ensure you've cloned the repository correctly.", gBuildNumber);
+		fatal("build number < 1000",
+			_i("build", gBuildNumber));
 	}
 
-	log("Initialising Scavenge and Survive build %d", gBuildNumber);
+	log("Initialising Scavenge and Survive",
+		_i("build", gBuildNumber));
 
 	Streamer_ToggleErrorCallback(true);
 	MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
