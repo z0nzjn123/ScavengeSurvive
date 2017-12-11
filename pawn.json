@@ -26,18 +26,27 @@
         "Southclaws/AdvancedWeaponData",
         "Southclaws/Line",
         "Southclaws/Zipline",
-        "Southclaws/Ladder"
+        "Southclaws/Ladder",
+        "ScavengeSurvive/tick-difference",
+        "ScavengeSurvive/velocity",
+        "ScavengeSurvive/actions"
     ],
     "builds": [
         {
             "name": "dev",
-            "args": ["-d3"],
-            "constants": { "BUILD_MINIMAL": "" },
+            "args": [
+                "-d3"
+            ],
+            "constants": {
+                "BUILD_MINIMAL": ""
+            },
             "version": "3.10.4"
         },
         {
             "name": "prod",
-            "args": ["-O2"],
+            "args": [
+                "-O2"
+            ],
             "version": "3.10.3"
         }
     ]
