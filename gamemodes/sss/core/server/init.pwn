@@ -1690,5 +1690,35 @@ public OnScriptInit()
 	SetVehicleTypeTrailerHitch(veht_Blista,		VEHICLE_SIZE_SMALL);
 	SetVehicleTypeTrailerHitch(veht_Linerunner, VEHICLE_SIZE_LARGE);
 
+	// SETTING LANGUAGE REPLACEMENT STRINGS
+	DirectoryCheck(DIRECTORY_SCRIPTFILES DIRECTORY_LANGUAGES);
+	DefineLanguageReplacement("C_YELLOW",					"{FFFF00}");
+	DefineLanguageReplacement("C_RED",						"{E85454}");
+	DefineLanguageReplacement("C_GREEN",					"{33AA33}");
+	DefineLanguageReplacement("C_BLUE",						"{33CCFF}");
+	DefineLanguageReplacement("C_ORANGE",					"{FFAA00}");
+	DefineLanguageReplacement("C_GREY",						"{AFAFAF}");
+	DefineLanguageReplacement("C_PINK",						"{FFC0CB}");
+	DefineLanguageReplacement("C_NAVY",						"{000080}");
+	DefineLanguageReplacement("C_GOLD",						"{B8860B}");
+	DefineLanguageReplacement("C_LGREEN",					"{00FD4D}");
+	DefineLanguageReplacement("C_TEAL",						"{008080}");
+	DefineLanguageReplacement("C_BROWN",					"{A52A2A}");
+	DefineLanguageReplacement("C_AQUA",						"{F0F8FF}");
+	DefineLanguageReplacement("C_BLACK",					"{000000}");
+	DefineLanguageReplacement("C_WHITE",					"{FFFFFF}");
+	DefineLanguageReplacement("C_SPECIAL",					"{0025AA}");
+	DefineLanguageReplacement("KEYTEXT_INTERACT",			"~k~~VEHICLE_ENTER_EXIT~");
+	DefineLanguageReplacement("KEYTEXT_RELOAD",				"~k~~PED_ANSWER_PHONE~");
+	DefineLanguageReplacement("KEYTEXT_PUT_AWAY",			"~k~~CONVERSATION_YES~");
+	DefineLanguageReplacement("KEYTEXT_DROP_ITEM",			"~k~~CONVERSATION_NO~");
+	DefineLanguageReplacement("KEYTEXT_INVENTORY",			"~k~~GROUP_CONTROL_BWD~");
+	DefineLanguageReplacement("KEYTEXT_ENGINE",				"~k~~CONVERSATION_YES~");
+	DefineLanguageReplacement("KEYTEXT_LIGHTS",				"~k~~CONVERSATION_NO~");
+	DefineLanguageReplacement("KEYTEXT_DOORS",				"~k~~TOGGLE_SUBMISSIONS~");
+	DefineLanguageReplacement("KEYTEXT_RADIO",				"R");
+
+	LoadAllLanguages();
+
 	return 1;
 }

@@ -226,3 +226,99 @@ CMD:aimshout(playerid, params[]) {
 
 	return 1;
 }
+
+// Chat commands
+
+CMD:g(playerid, params[])
+{
+	if(IsPlayerMuted(playerid))
+	{
+		if(GetPlayerMuteRemainder(playerid) == -1)
+			ChatMsgLang(playerid, RED, "MUTEDPERMAN");
+
+		else
+			ChatMsgLang(playerid, RED, "MUTEDTIMERM", MsToString(GetPlayerMuteRemainder(playerid) * 1000, "%1h:%1m:%1s"));
+
+		return 7;
+	}
+
+	if(isnull(params))
+	{
+		SetPlayerChatMode(playerid, CHAT_MODE_GLOBAL);
+		ChatMsgLang(playerid, WHITE, "RADIOGLOBAL");
+	}
+	else
+	{
+		PlayerSendChat(playerid, params, 1.0);
+	}
+
+	return 7;
+}
+
+CMD:l(playerid, params[])
+{
+	if(isnull(params))
+	{
+		SetPlayerChatMode(playerid, CHAT_MODE_LOCAL);
+		ChatMsgLang(playerid, WHITE, "RADIOLOCAL");
+	}
+	else
+	{
+		PlayerSendChat(playerid, params, 0.0);
+	}
+
+	return 7;
+}
+
+CMD:me(playerid, params[])
+{
+	PlayerSendChat(playerid, params, 2.0);
+
+	return 1;
+}
+
+CMD:r(playerid, params[])
+{
+	if(isnull(params))
+	{
+		SetPlayerChatMode(playerid, CHAT_MODE_RADIO);
+		ChatMsgLang(playerid, WHITE, "RADIOFREQUN", chat_Freq[playerid]);
+	}
+	else
+	{
+		PlayerSendChat(playerid, params, chat_Freq[playerid]);
+	}
+
+	return 7;
+}
+
+CMD:quiet(playerid, params[])
+{
+	if(chat_Quiet[playerid])
+	{
+		chat_Quiet[playerid] = false;
+		ChatMsgLang(playerid, WHITE, "RADIOQUIET0");
+	}
+	else
+	{
+		chat_Quiet[playerid] = true;
+		ChatMsgLang(playerid, WHITE, "RADIOQUIET1");
+	}
+
+	return 1;
+}
+
+ACMD:a[1](playerid, params[])
+{
+	if(isnull(params))
+	{
+		SetPlayerChatMode(playerid, CHAT_MODE_ADMIN);
+		ChatMsgLang(playerid, WHITE, "RADIOADMINC");
+	}
+	else
+	{
+		PlayerSendChat(playerid, params, 3.0);
+	}
+
+	return 7;
+}

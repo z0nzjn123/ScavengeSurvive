@@ -26,8 +26,6 @@ static
 	lang_PlayerLanguage[MAX_PLAYERS];
 
 
-#define ls(%0,%1) GetLanguageString(GetPlayerLanguage(%0), %1)
-
 hook OnPlayerConnect(playerid)
 {
 	lang_PlayerLanguage[playerid] = 0;

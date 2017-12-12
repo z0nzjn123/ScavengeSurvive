@@ -23,6 +23,7 @@
 
 
 #include <YSI\y_hooks>
+#include <YSI\y_va>
 
 
 #define MAX_ADMIN_LEVELS			(7)
@@ -151,7 +152,15 @@ timer KickPlayerDelay[1000](playerid)
 	admin_PlayerKicked[playerid] = false;
 }
 
-ChatMsgAdminsFlat(level, colour, string[])
+stock ChatMsgAdmins(level, colour, fmat[], {Float,_}:...) {
+	new buffer[244];
+	format(formatBuffer, sizeof(formatBuffer), fmat, ___(3));
+	ChatMsgAdminsFlat(level, colour, formatBuffer);
+
+	return 1;
+}
+
+stock ChatMsgAdminsFlat(level, colour, string[])
 {
 	if(level == 0)
 	{
