@@ -213,3 +213,16 @@ CMD:pos(playerid, params[])
 	return 1;
 }
 
+CMD:aimshout(playerid, params[]) {
+	new string[128];
+
+	if(sscanf(params, "s[128]", string)) {
+		ChatMsgLang(playerid, YELLOW, "AIMSHOUTHLP");
+		return 1;
+	}
+
+	SetPlayerAimShoutText(playerid, string);
+	ChatMsgLang(playerid, YELLOW, "AIMSHOUTSET", string);
+
+	return 1;
+}
