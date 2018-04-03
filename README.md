@@ -19,6 +19,12 @@ Items spawn around the map in various places categorised by type, rarity and loc
 No gameplay mechanics require the use of commands. All gameplay has been built with an intuitive _interaction model_ in mind with only 5 major keys required to access the gamemode-specific features.
 
 
+## Unmaintained
+
+This repository is currently not maintained. For updates, see this thread: https://forum.southcla.ws/t/the-plan-so-far/71/3
+
+The gamemode is undergoing a significant refactor and as a result, the master tip will not compile. ***Please do not message me asking for help to compile - use build 1192 as that is the last known stable version.***
+
 ## Development
 
 Development of this project requires [`sampctl`](https://github.com/Southclaws/sampctl), a package management and project build tool for SA:MP. It's easy to install and easy to use. To compile the gamemode, run:
