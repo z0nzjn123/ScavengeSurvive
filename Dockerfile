@@ -1,7 +1,7 @@
-FROM southclaws/sampctl:1.3.0-RC5
+FROM southclaws/sampctl
 
 RUN \
     git clone https://github.com/Southclaws/ScavengeSurvive && \
     sampctl project build
 
-ENTRYPOINT [ "sampctl", "run" ]
+ENTRYPOINT [ "sampctl", "server", "run" ]

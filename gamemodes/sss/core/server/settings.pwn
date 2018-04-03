@@ -31,22 +31,22 @@ LoadSettings()
 		fclose(fopen(SETTINGS_FILE, io_write));
 	}
 
-	GetSettingString("server/motd", "Please update the 'server/motd' string in "SETTINGS_FILE"", gMessageOfTheDay);
-	GetSettingString("server/website", "southclawjk.wordpress.com", gWebsiteURL);
-	GetSettingInt("server/crash-on-exit", true, gCrashOnExit);
+	GetSettingString(SETTINGS_FILE, "server/motd", "Please update the 'server/motd' string in "SETTINGS_FILE"", gMessageOfTheDay);
+	GetSettingString(SETTINGS_FILE, "server/website", "southclawjk.wordpress.com", gWebsiteURL);
+	GetSettingInt(SETTINGS_FILE, "server/crash-on-exit", true, gCrashOnExit);
 
-	GetSettingStringArray("server/rules", "Please update the 'server/rules' array in '"SETTINGS_FILE"'.", MAX_RULE, gRuleList, gTotalRules, MAX_RULE_LEN);
-	GetSettingStringArray("server/staff", "StaffName", MAX_STAFF, gStaffList, gTotalStaff, MAX_STAFF_LEN);
+	GetSettingStringArray(SETTINGS_FILE, "server/rules", "Please update the 'server/rules' array in '"SETTINGS_FILE"'.", gRuleList, gTotalRules, 128, MAX_RULE, MAX_RULE_LEN);
+	GetSettingStringArray(SETTINGS_FILE, "server/staff", "StaffName", gStaffList, gTotalStaff, 32, MAX_STAFF, MAX_STAFF_LEN);
 
-	GetSettingInt("server/max-uptime", 18000, gServerMaxUptime);
-	GetSettingInt("player/allow-pause-map", 0, gPauseMap);
-	GetSettingInt("player/interior-entry", 0, gInteriorEntry);
-	GetSettingInt("player/vehicle-surfing", 0, gVehicleSurfing);
-	GetSettingFloat("player/nametag-distance", 3.0, gNameTagDistance);
-	GetSettingInt("player/combat-log-window", 30, gCombatLogWindow);
-	GetSettingInt("player/login-freeze-time", 8, gLoginFreezeTime);
-	GetSettingInt("player/max-tab-out-time", 60, gMaxTaboutTime);
-	GetSettingInt("player/ping-limit", 400, gPingLimit);
+	GetSettingInt(SETTINGS_FILE, "server/max-uptime", 18000, gServerMaxUptime);
+	GetSettingInt(SETTINGS_FILE, "player/allow-pause-map", 0, gPauseMap);
+	GetSettingInt(SETTINGS_FILE, "player/interior-entry", 0, gInteriorEntry);
+	GetSettingInt(SETTINGS_FILE, "player/vehicle-surfing", 0, gVehicleSurfing);
+	GetSettingFloat(SETTINGS_FILE, "player/nametag-distance", 3.0, gNameTagDistance);
+	GetSettingInt(SETTINGS_FILE, "player/combat-log-window", 30, gCombatLogWindow);
+	GetSettingInt(SETTINGS_FILE, "player/login-freeze-time", 8, gLoginFreezeTime);
+	GetSettingInt(SETTINGS_FILE, "player/max-tab-out-time", 60, gMaxTaboutTime);
+	GetSettingInt(SETTINGS_FILE, "player/ping-limit", 400, gPingLimit);
 
 	// I'd appreciate if you left my credit and the proper gamemode name intact!
 	// Failure to do this will result in being blacklisted from the server list.
@@ -58,211 +58,3 @@ LoadSettings()
 	SetGameModeText("Scavenge Survive by Southclaw");
 }
 
-
-stock GetSettingInt(path[], defaultvalue, &output, printsetting = true, openfile = true)
-{
-	if(openfile)
-		file_Open(SETTINGS_FILE);
-
-	if(!file_IsKey(path))
-	{
-		file_SetVal(path, defaultvalue);
-		output = defaultvalue;
-		file_Save(SETTINGS_FILE);
-
-		if(printsetting)
-			log("[DEFAULT] %s: %d", path, output);
-	}
-	else
-	{
-		output = file_GetVal(path);
-
-		if(printsetting)
-			log("[SETTING] %s: %d", path, output);
-	}
-
-	if(openfile)
-		file_Close();
-}
-
-stock GetSettingFloat(path[], Float:defaultvalue, &Float:output, printsetting = true, openfile = true)
-{
-	if(openfile)
-		file_Open(SETTINGS_FILE);
-
-	if(!file_IsKey(path))
-	{
-		file_SetFloat(path, defaultvalue);
-		output = defaultvalue;
-		file_Save(SETTINGS_FILE);
-
-		if(printsetting)
-			log("[DEFAULT] %s: %f", path, output);
-	}
-	else
-	{
-		output = file_GetFloat(path);
-
-		if(printsetting)
-			log("[SETTING] %s: %f", path, output);
-	}
-
-	if(openfile)
-		file_Close();
-}
-
-stock GetSettingString(path[], defaultvalue[], output[], maxsize = sizeof(output), printsetting = true, openfile = true)
-{
-	if(openfile)
-		file_Open(SETTINGS_FILE);
-
-	if(!file_IsKey(path))
-	{
-		file_SetStr(path, defaultvalue);
-		output[0] = EOS;
-		strcat(output, defaultvalue, maxsize);
-		file_Save(SETTINGS_FILE);
-
-		if(printsetting)
-			log("[DEFAULT] %s: %s", path, output);
-	}
-	else
-	{
-		file_GetStr(path, output, maxsize);
-
-		if(printsetting)
-			log("[SETTING] %s: %s", path, output);
-	}
-
-	if(openfile)
-		file_Close();
-}
-
-
-/*
-	Arrays
-*/
-
-stock GetSettingIntArray(path[], defaultvalue, max, output[], &outputtotal, printsetting = true)
-{
-	file_Open(SETTINGS_FILE);
-
-	new tmpkey[MAX_KEY_LENGTH];
-
-	while(outputtotal < max)
-	{
-		format(tmpkey, sizeof(tmpkey), "%s/%d", path, outputtotal);
-
-		if(!file_IsKey(tmpkey))
-		{
-			if(outputtotal == 0)
-			{
-				file_SetInt(tmpkey, defaultvalue);
-				file_Save(SETTINGS_FILE);
-				output[0] = defaultvalue;
-
-				if(printsetting)
-					log("[DEFAULT] %s: %d", tmpkey, output[0]);
-			}
-
-			break;
-		}
-
-		GetSettingInt(tmpkey, defaultvalue, output[outputtotal], printsetting, false);
-
-		outputtotal++;
-	}
-
-	file_Close();
-}
-
-stock GetSettingFloatArray(path[], Float:defaultvalue, max, Float:output[], &outputtotal, printsetting = true)
-{
-	file_Open(SETTINGS_FILE);
-
-	new tmpkey[MAX_KEY_LENGTH];
-
-	while(outputtotal < max)
-	{
-		format(tmpkey, sizeof(tmpkey), "%s/%d", path, outputtotal);
-
-		if(!file_IsKey(tmpkey))
-		{
-			if(outputtotal == 0)
-			{
-				file_SetFloat(tmpkey, defaultvalue);
-				file_Save(SETTINGS_FILE);
-				output[0] = defaultvalue;
-
-				if(printsetting)
-					log("[DEFAULT] %s: %f", tmpkey, output[0]);
-			}
-
-			break;
-		}
-
-		GetSettingFloat(tmpkey, defaultvalue, output[outputtotal], printsetting, false);
-
-		outputtotal++;
-	}
-
-	file_Close();
-}
-
-stock GetSettingStringArray(path[], defaultvalue[], max, output[][], &outputtotal, outputmaxsize, printsetting = true)
-{
-	file_Open(SETTINGS_FILE);
-
-	new tmpkey[MAX_KEY_LENGTH];
-
-	while(outputtotal < max)
-	{
-		format(tmpkey, sizeof(tmpkey), "%s/%d", path, outputtotal);
-
-		if(!file_IsKey(tmpkey))
-		{
-			if(outputtotal == 0)
-			{
-				file_SetStr(tmpkey, defaultvalue);
-				file_Save(SETTINGS_FILE);
-				output[0][0] = EOS;
-				strcat(output[0], defaultvalue, outputmaxsize);
-
-				if(printsetting)
-					log("[DEFAULT] %s: %s", tmpkey, output[0]);
-			}
-
-			break;
-		}
-
-		GetSettingString(tmpkey, defaultvalue, output[outputtotal], outputmaxsize, printsetting, false);
-
-		outputtotal++;
-	}
-
-	file_Close();
-}
-
-stock UpdateSettingInt(path[], value)
-{
-	file_Open(SETTINGS_FILE);
-	file_SetVal(path, value);
-	file_Save(SETTINGS_FILE);
-	file_Close();
-}
-
-stock UpdateSettingFloat(path[], Float:value)
-{
-	file_Open(SETTINGS_FILE);
-	file_SetFloat(path, value);
-	file_Save(SETTINGS_FILE);
-	file_Close();
-}
-
-stock UpdateSettingString(path[], value[])
-{
-	file_Open(SETTINGS_FILE);
-	file_SetStr(path, value);
-	file_Save(SETTINGS_FILE);
-	file_Close();
-}

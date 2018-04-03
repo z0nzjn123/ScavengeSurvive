@@ -79,6 +79,11 @@ native gpci(playerid, serial[], len);
 
 	Guaranteed first call
 
+	Note: This is not tested in YSI 4.x or 5.x branches! As a result, the below
+	claim may not be true any more!
+
+	-
+
 	OnGameModeInit_Setup is called before ANYTHING else, the purpose of this is
 	to prepare various internal and external systems that may need to be ready
 	for other modules to use their functionality. This function isn't hooked.
@@ -180,27 +185,12 @@ public OnGameModeInit()
 // By Southclaws: https://github.com/Southclaws/modio
 #include <modio>
 
-// By Southclaws, v1.6.2: https://github.com/Southclaws/SIF
-#include <SIF>
-#include <SIF/extensions/item-array-data>
-#include <SIF/extensions/item-serializer>
-#include <SIF/extensions/dialog-inventory>
-#include <SIF/extensions/keys-inventory>
-#include <SIF/extensions/dialog-container>
-#include <SIF/extensions/craft>
-#include <SIF/extensions/debug-labels>
+#include <weapon-data>
+#include <linegen>
+#include <zipline>
+#include <ladders>
 
-// By Southclaws: https://github.com/Southclaws/AdvancedWeaponData
-#include <WeaponData>
-
-// By Southclaws: https://github.com/Southclaws/Line
-#include <Line>
-
-// By Southclaws: https://github.com/Southclaws/Zipline
-#include <Zipline>
-
-// By Southclaws: https://github.com/Southclaws/Ladder
-#include <Ladder>
+#include <settings>
 
 
 // By Y_Less:				https://github.com/Southclaws/samp-whirlpool
@@ -291,26 +281,19 @@ native WP_Hash(buffer[], len, const str[]);
 #define C_SPECIAL					"{0025AA}"
 
 
-// Body parts
-#define BODY_PART_TORSO				(3)
-#define BODY_PART_GROIN				(4)
-#define BODY_PART_LEFT_ARM			(5)
-#define BODY_PART_RIGHT_ARM			(6)
-#define BODY_PART_LEFT_LEG			(7)
-#define BODY_PART_RIGHT_LEG			(8)
-#define BODY_PART_HEAD				(9)
-
-
 // Genders
 #define GENDER_MALE					(0)
 #define GENDER_FEMALE				(1)
 
 
 // Key text
-#define KEYTEXT_INTERACT			"~k~~VEHICLE_ENTER_EXIT~"
+
+// Game text symbol for adding to inventory
+#if !defined ITEM_GAMETEXT_PUT_AWAY
+	#define ITEM_GAMETEXT_PUT_AWAY "~k~~CONVERSATION_YES~"
+#endif
+
 #define KEYTEXT_RELOAD				"~k~~PED_ANSWER_PHONE~"
-#define KEYTEXT_PUT_AWAY			"~k~~CONVERSATION_YES~"
-#define KEYTEXT_DROP_ITEM			"~k~~CONVERSATION_NO~"
 #define KEYTEXT_INVENTORY			"~k~~GROUP_CONTROL_BWD~"
 #define KEYTEXT_ENGINE				"~k~~CONVERSATION_YES~"
 #define KEYTEXT_LIGHTS				"~k~~CONVERSATION_NO~"
@@ -393,16 +376,13 @@ new stock
 // UTILITIES
 #include "sss/utils/math.pwn"
 #include "sss/utils/misc.pwn"
-#include "sss/utils/time.pwn"
 #include "sss/utils/camera.pwn"
-#include "sss/utils/message.pwn"
 #include "sss/utils/vehicle.pwn"
 #include "sss/utils/vehicle-data.pwn"
 #include "sss/utils/vehicle-parts.pwn"
 #include "sss/utils/zones.pwn"
 #include "sss/utils/player.pwn"
 #include "sss/utils/object.pwn"
-#include "sss/utils/tickcountfix.pwn"
 #include "sss/utils/string.pwn"
 #include "sss/utils/dialog-pages.pwn"
 #include "sss/utils/item.pwn"
@@ -414,7 +394,6 @@ new stock
 #include "sss/core/server/weather.pwn"
 #include "sss/core/server/save-block.pwn"
 #include "sss/core/server/info-message.pwn"
-#include "sss/core/server/language.pwn"
 #include "sss/core/player/language.pwn"
 
 /*
@@ -426,12 +405,8 @@ new stock
 #include "sss/core/vehicle/lock.pwn"
 #include "sss/core/vehicle/core.pwn"
 #include "sss/core/player/core.pwn"
-#include "sss/core/player/chat.pwn"
 #include "sss/core/player/save-load.pwn"
 #include "sss/core/admin/core.pwn"
-#include "sss/core/weapon/ammunition.pwn"
-#include "sss/core/weapon/core.pwn"
-#include "sss/core/weapon/damage-core.pwn"
 #include "sss/core/ui/hold-action.pwn"
 #include "sss/core/item/liquid.pwn"
 #include "sss/core/item/liquid-container.pwn"
@@ -486,19 +461,6 @@ new stock
 #include "sss/core/player/country.pwn"
 #include "sss/core/player/recipes.pwn"
 
-// WEAPON
-#include "sss/core/weapon/loot.pwn"
-#include "sss/core/weapon/interact.pwn"
-#include "sss/core/weapon/damage-firearm.pwn"
-#include "sss/core/weapon/damage-melee.pwn"
-#include "sss/core/weapon/damage-vehicle.pwn"
-#include "sss/core/weapon/damage-explosive.pwn"
-#include "sss/core/weapon/damage-world.pwn"
-#include "sss/core/weapon/animset.pwn"
-#include "sss/core/weapon/misc.pwn"
-#include "sss/core/weapon/anti-combat-log.pwn"
-#include "sss/core/weapon/tracer.pwn"
-
 // UI
 #include "sss/core/ui/radio.pwn"
 #include "sss/core/ui/tool-tip.pwn"
@@ -552,7 +514,6 @@ new stock
 // #include "sss/core/admin/detfield-io.pwn"
 // #include "sss/core/admin/detfield-cmds.pwn"
 // #include "sss/core/admin/detfield-draw.pwn"
-#include "sss/core/admin/mute.pwn"
 #include "sss/core/admin/rcon.pwn"
 #include "sss/core/admin/freeze.pwn"
 #include "sss/core/admin/name-tags.pwn"
