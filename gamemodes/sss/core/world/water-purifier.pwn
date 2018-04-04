@@ -62,14 +62,14 @@ static		wm_CurrentWaterMachine[MAX_PLAYERS] = {INVALID_ITEM_ID, ...},
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/world/water-purifier.pwn");
+
 
 	wm_CurrentWaterMachine[playerid] = -1;
 }
 
 hook OnItemCreateInWorld(itemid)
 {
-	dbg("global", CORE, "[OnItemCreateInWorld] in /gamemodes/sss/core/world/water-purifier.pwn");
+
 
 	if(GetItemType(itemid) == item_WaterMachine)
 	{
@@ -93,7 +93,7 @@ hook OnItemCreateInWorld(itemid)
 
 hook OnPlayerUseMachine(playerid, itemid, interactiontype)
 {
-	dbg("global", CORE, "[OnPlayerUseMachine] in /gamemodes/sss/core/world/water-purifier.pwn");
+
 
 	if(GetItemType(itemid) == item_WaterMachine)
 	{
@@ -106,7 +106,7 @@ hook OnPlayerUseMachine(playerid, itemid, interactiontype)
 
 hook OnPlayerPickUpItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerPickUpItem] in /gamemodes/sss/core/world/water-purifier.pwn");
+
 
 	if(wm_ItemWaterPurifier[itemid] != -1)
 	{
@@ -237,7 +237,7 @@ _wm_RemoveSelectedItem(itemid)
 
 hook OnHoldActionUpdate(playerid, progress)
 {
-	dbg("global", CORE, "[OnHoldActionUpdate] in /gamemodes/sss/core/world/water-purifier.pwn");
+
 
 	if(wm_CurrentWaterMachine[playerid] != -1)
 	{

@@ -31,7 +31,7 @@ new
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/item/parachute.pwn");
+
 
 	if(newkeys & KEY_YES)
 	{
@@ -61,7 +61,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 hook OnPlayerDropItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerDropItem] in /gamemodes/sss/core/item/parachute.pwn");
+
 
 	if(GetItemType(itemid) == item_Parachute)
 	{

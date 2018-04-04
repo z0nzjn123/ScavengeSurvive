@@ -113,7 +113,7 @@ UpdateRadioUI(playerid)
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid)
 {
-	dbg("global", CORE, "[OnPlayerClickPlayerTD] in /gamemodes/sss/core/ui/radio.pwn");
+
 
 	if(playertextid == RadioUI_KnobL[playerid])
 	{
@@ -209,7 +209,7 @@ Dialog:Frequency(playerid, response, listitem, inputtext[])
 
 hook OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
-	dbg("global", CORE, "[OnPlayerClickTextDraw] in /gamemodes/sss/core/ui/radio.pwn");
+
 
 	if(clickedid == Text:65535)
 	{
@@ -223,7 +223,7 @@ hook OnPlayerClickTextDraw(playerid, Text:clickedid)
 
 hook OnPlayerOpenInventory(playerid)
 {
-	dbg("global", CORE, "[OnPlayerOpenInventory] in /gamemodes/sss/core/ui/radio.pwn");
+
 
 	rad_InventoryItem[playerid] = AddInventoryListItem(playerid, "Radio");
 
@@ -232,7 +232,7 @@ hook OnPlayerOpenInventory(playerid)
 
 hook OnPlayerSelectExtraItem(playerid, item)
 {
-	dbg("global", CORE, "[OnPlayerSelectExtraItem] in /gamemodes/sss/core/ui/radio.pwn");
+
 
 	if(item == rad_InventoryItem[playerid])
 	{
@@ -245,7 +245,7 @@ hook OnPlayerSelectExtraItem(playerid, item)
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/ui/radio.pwn");
+
 
 	RadioUI_Main[playerid]					= CreatePlayerTextDraw(playerid, 320.000000, 200.000000, "RADIO~n~ ~n~ ~n~ ~n~ ~n~ ");
 	PlayerTextDrawAlignment			(playerid, RadioUI_Main[playerid], 2);

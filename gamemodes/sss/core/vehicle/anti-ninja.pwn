@@ -36,7 +36,7 @@ static
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/vehicle/anti-ninja.pwn");
+
 
 	anj_CurrentlyEntering[playerid] = INVALID_VEHICLE_ID;
 
@@ -45,7 +45,7 @@ hook OnPlayerConnect(playerid)
 
 hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
-	dbg("global", CORE, "[OnPlayerEnterVehicle] in /gamemodes/sss/core/vehicle/anti-ninja.pwn");
+
 
 	if(!ispassenger)
 	{
@@ -64,7 +64,7 @@ timer CurrentlyEnteringCheck[3000](playerid)
 
 hook OnPlayerStateChange(playerid, newstate, oldstate)
 {
-	dbg("global", CORE, "[OnPlayerStateChange] in /gamemodes/sss/core/vehicle/anti-ninja.pwn");
+
 
 	if(oldstate == PLAYER_STATE_ONFOOT && newstate == PLAYER_STATE_DRIVER)
 	{
@@ -75,7 +75,7 @@ hook OnPlayerStateChange(playerid, newstate, oldstate)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/vehicle/anti-ninja.pwn");
+
 
 	if(newkeys & 8 || newkeys & 32)
 	{

@@ -27,7 +27,7 @@
 
 hook OnPlayerInteractVehicle(playerid, vehicleid, Float:angle)
 {
-	dbg("global", CORE, "[OnPlayerInteractVehicle] in /gamemodes/sss/core/item/wheel.pwn");
+
 
 	new itemid = GetPlayerItem(playerid);
 

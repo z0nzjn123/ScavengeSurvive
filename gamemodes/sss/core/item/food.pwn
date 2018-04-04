@@ -59,7 +59,7 @@ forward OnPlayerEaten(playerid, itemid);
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/item/food.pwn");
+
 
 	food_CurrentItem[playerid] = -1;
 }
@@ -98,7 +98,7 @@ DefineFoodItem(ItemType:itemtype, maxbites, Float:bitevalue, cancook, canrawinfe
 
 hook OnItemCreate(itemid)
 {
-	dbg("global", CORE, "[OnItemCreate] in /gamemodes/sss/core/item/food.pwn");
+
 
 	if(GetItemLootIndex(itemid) != -1)
 	{
@@ -114,7 +114,7 @@ hook OnItemCreate(itemid)
 
 hook OnPlayerUseItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItem] in /gamemodes/sss/core/item/food.pwn");
+
 
 	if(GetItemTypeFoodType(GetItemType(itemid)) != -1)
 		_StartEating(playerid, itemid);
@@ -124,7 +124,7 @@ hook OnPlayerUseItem(playerid, itemid)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/item/food.pwn");
+
 
 	if(oldkeys & 16 && food_CurrentItem[playerid] != -1)
 	{
@@ -217,7 +217,7 @@ _EatItem(playerid, itemid)
 
 hook OnHoldActionFinish(playerid)
 {
-	dbg("global", CORE, "[OnHoldActionFinish] in /gamemodes/sss/core/item/food.pwn");
+
 
 	if(food_CurrentItem[playerid] != -1)
 	{
@@ -230,7 +230,7 @@ hook OnHoldActionFinish(playerid)
 
 hook OnItemNameRender(itemid, ItemType:itemtype)
 {
-	dbg("global", CORE, "[OnItemNameRender] in /gamemodes/sss/core/item/food.pwn");
+
 
 	new foodtype = GetItemTypeFoodType(itemtype);
 

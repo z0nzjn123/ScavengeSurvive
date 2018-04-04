@@ -149,7 +149,7 @@ hook OnItemNameRender(itemid, ItemType:itemtype)
 
 hook OnPlayerUseItemWithBtn(playerid, buttonid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItemWithBtn] in /gamemodes/sss/core/item/liquid-container.pwn");
+
 
 	if(liq_ItemTypeLiquidContainer[GetItemType(itemid)] != INVALID_LIQUID_CONTAINER)
 	{
@@ -163,7 +163,7 @@ hook OnPlayerUseItemWithBtn(playerid, buttonid, itemid)
 
 hook OnPlayerUseItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItem] in /gamemodes/sss/core/item/liquid-container.pwn");
+
 
 	if(liq_ItemTypeLiquidContainer[GetItemType(itemid)] != INVALID_LIQUID_CONTAINER)
 	{
@@ -245,7 +245,7 @@ _DrinkItem(playerid, itemid)
 
 hook OnHoldActionFinish(playerid)
 {
-	dbg("global", CORE, "[OnHoldActionFinish] in /gamemodes/sss/core/item/liquid-container.pwn");
+
 
 	if(liq_CurrentItem[playerid] != -1)
 	{
@@ -268,7 +268,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 hook OnPlayerCrafted(playerid, craftset, result)
 {
-	dbg("global", CORE, "[OnPlayerCrafted] in /gamemodes/sss/core/item/liquid-container.pwn");
+
 
 	/*
 		Todo:

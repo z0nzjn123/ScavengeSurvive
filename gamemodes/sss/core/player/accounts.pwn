@@ -47,7 +47,7 @@ hook OnGameModeInit()
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/player/accounts.pwn");
+
 
 	acc_LoginAttempts[playerid] = 0;
 	acc_IsNewPlayer[playerid] = false;

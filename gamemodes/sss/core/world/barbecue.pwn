@@ -57,7 +57,7 @@ hook OnItemTypeDefined(uname[])
 
 hook OnItemCreate(itemid)
 {
-	dbg("global", CORE, "[OnItemCreate] in /gamemodes/sss/core/world/barbecue.pwn");
+
 
 	dbg("gamemodes/sss/core/world/barbecue.pwn", 1, "[OnItemCreate] itemid: %d type: %d", itemid, _:GetItemType(itemid));
 	if(GetItemType(itemid) == item_Barbecue)
@@ -92,7 +92,7 @@ hook OnItemCreate(itemid)
 
 hook OnPlayerUseItemWithItem(playerid, itemid, withitemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItemWithItem] in /gamemodes/sss/core/world/barbecue.pwn");
+
 
 	dbg("gamemodes/sss/core/world/barbecue.pwn", 1, "[OnPlayerUseItemWithItem HOOK] %d %d %d", playerid, itemid, withitemid);
 
@@ -284,7 +284,7 @@ timer bbq_FinishCooking[30000](itemid)
 
 hook OnPlayerPickUpItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerPickUpItem] in /gamemodes/sss/core/world/barbecue.pwn");
+
 
 	dbg("gamemodes/sss/core/world/barbecue.pwn", 1, "[OnPlayerPickUpItem] playerid: %d itemid: %d", playerid, itemid);
 	if(GetItemType(itemid) == item_Barbecue)

@@ -51,7 +51,7 @@ forward OnLookupResponse(sessionid, response, data[]);
 
 hook OnPlayerLogin(playerid)
 {
-	dbg("global", CORE, "[OnPlayerLogin] in /gamemodes/sss/core/player/country.pwn");
+
 
 	_cntr_HandleLogin(playerid);
 

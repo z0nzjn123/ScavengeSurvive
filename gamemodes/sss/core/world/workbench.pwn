@@ -207,7 +207,7 @@ _wb_CreateResult(itemid, craftset)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/world/workbench.pwn");
+
 
 	if(RELEASED(16))
 	{
@@ -223,7 +223,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 hook OnHoldActionFinish(playerid)
 {
-	dbg("global", CORE, "[OnHoldActionFinish] in /gamemodes/sss/core/world/workbench.pwn");
+
 
 	if(wb_CurrentWorkbench[playerid] != -1)
 	{
@@ -247,7 +247,7 @@ hook OnHoldActionFinish(playerid)
 
 hook OnPlayerConstruct(playerid, consset)
 {
-	dbg("global", CORE, "[OnPlayerConstruct] in /gamemodes/sss/core/world/workbench.pwn");
+
 
 	if(!IsValidConstructionSet(consset))
 		return Y_HOOKS_CONTINUE_RETURN_0;

@@ -29,17 +29,15 @@
 
 #include <a_samp>
 
-/*==============================================================================
-
-	Library Predefinitions
-
-==============================================================================*/
-
+// Redefines MAX_PLAYERS constant before usage
 #undef MAX_PLAYERS
 #define MAX_PLAYERS	(32)
 
-native IsValidVehicle(vehicleid);
-native gpci(playerid, serial[], len);
+#include <logger>
+
+native IsValidVehicle(vehicleid); // undefined native
+native gpci(playerid, serial[], len); // undefined native
+native WP_Hash(buffer[], len, const str[]); // Southclaws/samp-whirlpool
 
 #define _DEBUG							0 // YSI
 #define ITER_NONE						(cellmin) // Temporary fix for https://github.com/Misiur/YSI-Includes/issues/109
@@ -124,77 +122,35 @@ public OnGameModeInit()
 	forward main_OnGameModeInit();
 #endif
 
-/*==============================================================================
+#include "sss\core\server\hooks.pwn" // preload library for hooking functions before they are used in external libraries.
 
-	Libraries and respective links to their release pages
-
-==============================================================================*/
-
-// By Zeex: https://github.com/Zeex/samp-plugin-crashdetect
-#include <crashdetect>
-
-// By Y_Less: https://github.com/maddinat0r/sscanf
-#include <sscanf2>
-
-// By Y_Less: https://github.com/Misiur/YSI-Includes
-#include <YSI\y_va>
-#include <YSI\y_timers>
-#include <YSI\y_hooks>
-#include <YSI\y_iterate>
-#include <YSI\y_ini>
-
-// preload library for hooking functions before they are used in external libraries.
-#include "sss\core\server\hooks.pwn"
-
-// By Southclaws, v0.1.0: https://github.com/Southclaws/samp-redis/releases/tag/v0.1.0
-#include <redis>
-
-// By Incognito, v2.8.2: https://github.com/samp-incognito/samp-streamer-plugin/releases/tag/v2.8.2
-#include <streamer>
-
-// By Slice: https://github.com/Southclaws/formatex
-#include <formatex>
-
-// By Slice: https://github.com/oscar-broman/strlib
-#include <strlib>
-
-// By Whitetiger: https://github.com/Whitetigerswt/SAMP-geoip
-#include <geolocation>
-
-// By RyDeR`: https://github.com/Southclaws/samp-ctime
-#include <ctime>
-
-// By Emmet_: https://github.com/Awsomedude/easyDialog
-#include <easyDialog>
-
-// By Toribio/Southclaws: https://github.com/Southclaws/progress2
-#include <progress2>
-
-// By JaTochNietDan, 1.5: https://github.com/Southclaws/SA-MP-FileManager
-#include <filemanager>
-
-// By Kalcor: https://github.com/Southclaws/samp-plugin-mapandreas
-#include <mapandreas>
-
-// By Southclaws: https://github.com/Southclaws/samp-logger
-#include <logger>
-
-// By Southclaws: https://github.com/Southclaws/samp-ini
-#include <ini>
-
-// By Southclaws: https://github.com/Southclaws/modio
-#include <modio>
-
-#include <weapon-data>
-#include <linegen>
-#include <zipline>
-#include <ladders>
-
-#include <settings>
-
-
-// By Y_Less:				https://github.com/Southclaws/samp-whirlpool
-native WP_Hash(buffer[], len, const str[]);
+#include <crashdetect> // Zeex/samp-plugin-crashdetect
+#include <sscanf2> // maddinat0r/sscanf
+#include <YSI\y_va> // pawn-lang/YSI-Includes
+#include <YSI\y_timers> // pawn-lang/YSI-Includes
+#include <YSI\y_hooks> // pawn-lang/YSI-Includes
+#include <YSI\y_iterate> // pawn-lang/YSI-Includes
+#include <YSI\y_ini> // pawn-lang/YSI-Includes
+#include <redis> // Southclaws/samp-redis
+#include <streamer> // samp-incognito/samp-streamer-plugin
+#include <formatex> // Southclaws/formatex
+#include <strlib> // oscar-broman/strlib
+#include <geolocation> // Whitetigerswt/SAMP-geoip
+#include <ctime> // Southclaws/samp-ctime
+#include <easyDialog> // Awsomedude/easyDialog
+#include <progress2> // Southclaws/progress2
+#include <filemanager> // Southclaws/SA-MP-FileManager
+#include <mapandreas> // Southclaws/samp-plugin-mapandreas
+#include <logger> // Southclaws/samp-logger
+#include <ini> // Southclaws/samp-ini
+#include <modio> // Southclaws/modio
+#include <chat> // ScavengeSurvive/chat
+#include <settings> // ScavengeSurvive/settings
+#include <weapon-data> // Southclaws/samp-weapon-data
+#include <linegen> // Southclaws/samp-linegen
+#include <zipline> // Southclaws/samp-zipline
+#include <ladders> // Southclaws/samp-ladders
+#include <language> // ScavengeSurvive/language
 
 
 /*==============================================================================
@@ -389,8 +345,6 @@ new stock
 #include "sss/utils/headoffsets.pwn"
 
 // SERVER CORE
-#include "sss/core/server/settings.pwn"
-#include "sss/core/server/text-tags.pwn"
 #include "sss/core/server/weather.pwn"
 #include "sss/core/server/save-block.pwn"
 #include "sss/core/server/info-message.pwn"
@@ -448,13 +402,11 @@ new stock
 #include "sss/core/player/brightness.pwn"
 #include "sss/core/player/spawn.pwn"
 #include "sss/core/player/clothes.pwn"
-#include "sss/core/player/damage.pwn"
 #include "sss/core/player/death.pwn"
 #include "sss/core/player/tutorial.pwn"
 #include "sss/core/player/welcome-message.pwn"
 #include "sss/core/player/cmd-process.pwn"
 #include "sss/core/player/commands.pwn"
-#include "sss/core/player/afk-check.pwn"
 #include "sss/core/player/alt-tab-check.pwn"
 #include "sss/core/player/disallow-actions.pwn"
 #include "sss/core/player/whitelist.pwn"
@@ -666,10 +618,42 @@ OnGameModeInit_Setup()
 		redis_port,
 		redis_pass[128];
 
-	LoadSettings();
+	if(!fexist(SETTINGS_FILE))
+	{
+		err("Settings file '"SETTINGS_FILE"' not found. Creating and using default values.");
+
+		fclose(fopen(SETTINGS_FILE, io_write));
+	}
+
 	GetSettingString("server/redis-host", "localhost", redis_host);
 	GetSettingInt("server/redis-port", 6379, redis_port);
 	GetSettingString("server/redis-pass", "", redis_pass);
+
+	GetSettingString(SETTINGS_FILE, "server/motd", "Please update the 'server/motd' string in "SETTINGS_FILE"", gMessageOfTheDay);
+	GetSettingString(SETTINGS_FILE, "server/website", "southclawjk.wordpress.com", gWebsiteURL);
+	GetSettingInt(SETTINGS_FILE, "server/crash-on-exit", true, gCrashOnExit);
+
+	GetSettingStringArray(SETTINGS_FILE, "server/rules", "Please update the 'server/rules' array in '"SETTINGS_FILE"'.", gRuleList, gTotalRules, 128, MAX_RULE, MAX_RULE_LEN);
+	GetSettingStringArray(SETTINGS_FILE, "server/staff", "StaffName", gStaffList, gTotalStaff, 32, MAX_STAFF, MAX_STAFF_LEN);
+
+	GetSettingInt(SETTINGS_FILE, "server/max-uptime", 18000, gServerMaxUptime);
+	GetSettingInt(SETTINGS_FILE, "player/allow-pause-map", 0, gPauseMap);
+	GetSettingInt(SETTINGS_FILE, "player/interior-entry", 0, gInteriorEntry);
+	GetSettingInt(SETTINGS_FILE, "player/vehicle-surfing", 0, gVehicleSurfing);
+	GetSettingFloat(SETTINGS_FILE, "player/nametag-distance", 3.0, gNameTagDistance);
+	GetSettingInt(SETTINGS_FILE, "player/combat-log-window", 30, gCombatLogWindow);
+	GetSettingInt(SETTINGS_FILE, "player/login-freeze-time", 8, gLoginFreezeTime);
+	GetSettingInt(SETTINGS_FILE, "player/max-tab-out-time", 60, gMaxTaboutTime);
+	GetSettingInt(SETTINGS_FILE, "player/ping-limit", 400, gPingLimit);
+
+	// I'd appreciate if you left my credit and the proper gamemode name intact!
+	// Failure to do this will result in being blacklisted from the server list.
+	// And I'll be less inclined to help you with issues.
+	// Unless you have a decent reason to change the gamemode name (heavy mod)
+	// I'd still like to be credited for my work. Many servers have claimed
+	// they are the sole creator of the mode and this makes me sad and very
+	// hesitant to release my work completely free of charge.
+	SetGameModeText("Scavenge Survive by Southclaw");
 
 	// SETTINGS
 	if(!gPauseMap)

@@ -82,7 +82,7 @@ hook OnGameModeInit()
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	new name[MAX_PLAYER_NAME];
 
@@ -109,7 +109,7 @@ hook OnPlayerConnect(playerid)
 
 hook OnPlayerDisconnect(playerid, reason)
 {
-	dbg("global", CORE, "[OnPlayerDisconnect] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	if(IsValidVehicle(pveh_PlayerVehicle[playerid]))
 	{
@@ -632,7 +632,7 @@ _SaveVehicle(vehicleid)
 
 hook OnPlayerStateChange(playerid, newstate, oldstate)
 {
-	dbg("global", CORE, "[OnPlayerStateChange] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	if(newstate == PLAYER_STATE_DRIVER)
 	{
@@ -697,7 +697,7 @@ _PlayerUpdateVehicle(playerid, vehicleid)
 
 hook OnVehicleDestroyed(vehicleid)
 {
-	dbg("global", CORE, "[OnVehicleDestroyed] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	_SaveVehicle(vehicleid);
 
@@ -834,7 +834,7 @@ _UpdatePlayerVehicle(playerid, vehicleid)
 
 hook OnPlayerSave(playerid, filename[])
 {
-	dbg("global", CORE, "[OnPlayerSave] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	new data[1];
 	data[0] = pveh_SaveAnyVehicle[playerid];
@@ -844,7 +844,7 @@ hook OnPlayerSave(playerid, filename[])
 
 hook OnPlayerLoad(playerid, filename[])
 {
-	dbg("global", CORE, "[OnPlayerLoad] in /gamemodes/sss/core/vehicle/player-vehicle.pwn");
+
 
 	new data[1];
 

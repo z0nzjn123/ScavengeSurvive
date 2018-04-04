@@ -332,7 +332,7 @@ SupplyCrateLand()
 
 hook OnDynamicObjectMoved(objectid)
 {
-	dbg("global", CORE, "[OnDynamicObjectMoved] in /gamemodes/sss/core/world/supply-crate.pwn");
+
 
 	if(objectid == sup_ObjPara)
 		SupplyCrateLand();

@@ -72,7 +72,7 @@ forward OnPlayerDeconstructed(playerid, itemid);
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/world/craft-construct.pwn");
+
 
 	for(new i; i < MAX_CONSTRUCT_SET_ITEMS; i++)
 	{
@@ -116,7 +116,7 @@ stock SetCraftSetConstructible(buildtime, ItemType:tool, craftset, ItemType:remo
 
 hook OnPlayerUseItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItem] in /gamemodes/sss/core/world/craft-construct.pwn");
+
 
 	new
 		list[BTN_MAX_INRANGE] = {INVALID_BUTTON_ID, ...},
@@ -215,7 +215,7 @@ StopRemovingConstructedItem(playerid)
 
 hook OnHoldActionFinish(playerid)
 {
-	dbg("global", CORE, "[OnHoldActionFinish] in /gamemodes/sss/core/world/craft-construct.pwn");
+
 
 	if(cons_Constructing[playerid] != -1)
 	{
@@ -308,7 +308,7 @@ hook OnHoldActionFinish(playerid)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/world/craft-construct.pwn");
+
 
 	if(RELEASED(16))
 	{
@@ -330,7 +330,7 @@ hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 hook OnPlayerCraft(playerid, craftset)
 {
-	dbg("global", CORE, "[OnPlayerCraft] in /gamemodes/sss/core/world/craft-construct.pwn");
+
 
 	if(cons_CraftsetConstructSet[craftset] != -1)
 		return Y_HOOKS_BREAK_RETURN_1;

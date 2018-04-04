@@ -68,7 +68,7 @@ Float:	dfm_MaxZ			[MAX_PLAYERS],
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/admin/detfield-cmds.pwn");
+
 
 	for(new i; i < MAX_DETFIELD_PAGESIZE; i++)
 		dfm_FieldList[playerid][i] = -1;
@@ -731,7 +731,7 @@ Dialog:DetfieldName(playerid, response, listitem, inputtext[])
 
 hook OnPlayerDialogPage(playerid, direction)
 {
-	dbg("global", CORE, "[OnPlayerDialogPage] in /gamemodes/sss/core/admin/detfield-cmds.pwn");
+
 
 	if(dfm_CurrentMenu[playerid] == DFM_MENU_DFLIST)
 	{
@@ -770,7 +770,7 @@ hook OnPlayerDialogPage(playerid, direction)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/admin/detfield-cmds.pwn");
+
 
 	if(dfm_Editing[playerid])
 	{

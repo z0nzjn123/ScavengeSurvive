@@ -58,7 +58,7 @@ forward OnPlayerUseMachine(playerid, itemid, interactiontype);
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/world/machine.pwn");
+
 
 	mach_CurrentMachine[playerid] = INVALID_ITEM_ID;
 }
@@ -154,7 +154,7 @@ _mach_PlayerUseMachine(playerid, itemid)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/world/machine.pwn");
+
 
 	if(RELEASED(16))
 	{

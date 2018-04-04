@@ -47,7 +47,7 @@ hook OnGameModeInit()
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/player/ipv4-log.pwn");
+
 
 	new
 		name[MAX_PLAYER_NAME],

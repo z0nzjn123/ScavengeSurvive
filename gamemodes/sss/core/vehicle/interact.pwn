@@ -97,7 +97,7 @@ stock CreateVehicleArea(vehicleid)
 
 hook OnVehicleCreated(vehicleid)
 {
-	dbg("global", CORE, "[OnVehicleCreated] in /gamemodes/sss/core/vehicle/interact.pwn");
+
 
 	CreateVehicleArea(vehicleid);
 
@@ -106,14 +106,14 @@ hook OnVehicleCreated(vehicleid)
 
 hook OnPlayerEnterDynArea(playerid, areaid)
 {
-	dbg("global", CORE, "[OnPlayerEnterDynArea] in /gamemodes/sss/core/vehicle/interact.pwn");
+
 
 	_vint_EnterArea(playerid, areaid);
 }
 
 hook OnPlayerLeaveDynArea(playerid, areaid)
 {
-	dbg("global", CORE, "[OnPlayerLeaveDynArea] in /gamemodes/sss/core/vehicle/interact.pwn");
+
 
 	_vint_LeaveArea(playerid, areaid);
 
@@ -246,7 +246,7 @@ _vint_LeaveArea(playerid, areaid)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/vehicle/interact.pwn");
+
 
 	if(newkeys == 16)
 		_varea_Interact(playerid);

@@ -117,7 +117,7 @@ CreateLockup(keypadbutton, extButton, intButton)
 
 hook OnButtonPress(playerid, buttonid)
 {
-	dbg("global", CORE, "[OnButtonPress] in /gamemodes/sss/world/puzzles/codehunt.pwn");
+
 
 	for(new i; i < lck_Total; i++)
 	{
@@ -143,7 +143,7 @@ hook OnButtonPress(playerid, buttonid)
 
 hook OnPlayerKeypadEnter(playerid, keypadid, code, match)
 {
-	dbg("global", CORE, "[OnPlayerKeypadEnter] in /gamemodes/sss/world/puzzles/codehunt.pwn");
+
 
 	if(keypadid == k_Lockup)
 	{

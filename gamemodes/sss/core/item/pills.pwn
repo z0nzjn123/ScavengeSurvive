@@ -42,14 +42,14 @@ hook OnItemTypeDefined(uname[])
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	pill_CurrentlyTaking[playerid] = -1;
 }
 
 hook OnItemCreate(itemid)
 {
-	dbg("global", CORE, "[OnItemCreate] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	if(GetItemLootIndex(itemid) != -1)
 	{
@@ -62,7 +62,7 @@ hook OnItemCreate(itemid)
 
 hook OnItemNameRender(itemid, ItemType:itemtype)
 {
-	dbg("global", CORE, "[OnItemNameRender] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	if(itemtype == item_Pills)
 	{
@@ -78,7 +78,7 @@ hook OnItemNameRender(itemid, ItemType:itemtype)
 
 hook OnPlayerUseItem(playerid, itemid)
 {
-	dbg("global", CORE, "[OnPlayerUseItem] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	if(GetItemType(itemid) == item_Pills)
 	{
@@ -90,7 +90,7 @@ hook OnPlayerUseItem(playerid, itemid)
 
 hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	dbg("global", CORE, "[OnPlayerKeyStateChange] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	if(oldkeys & 16 && pill_CurrentlyTaking[playerid] != -1)
 	{
@@ -165,7 +165,7 @@ hook OnHoldActionFinish(playerid)
 
 hook OnPlayerDrugWearOff(playerid, drugtype)
 {
-	dbg("global", CORE, "[OnPlayerDrugWearOff] in /gamemodes/sss/core/item/pills.pwn");
+
 
 	if(drugtype == drug_Lsd)
 	{

@@ -33,7 +33,7 @@ static
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/admin/ban-command.pwn");
+
 
 	ResetBanVariables(playerid);
 }

@@ -234,7 +234,7 @@ timer kp_PrtDestroy[2000](playerid)
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid)
 {
-	dbg("global", CORE, "[OnPlayerClickPlayerTD] in /gamemodes/sss/core/ui/keypad.pwn");
+
 
 	if(playertextid == kp_KeyEnter[playerid])
 		KeypadEnter(playerid);
@@ -277,7 +277,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid)
 
 hook OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
-	dbg("global", CORE, "[OnPlayerClickTextDraw] in /gamemodes/sss/core/ui/keypad.pwn");
+
 
 	if(kp_CurrentID[playerid] != -1)
 	{
@@ -325,7 +325,7 @@ KeypadUpdateDisplay(playerid)
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/ui/keypad.pwn");
+
 
 	kp_LoadUI(playerid);
 }

@@ -22,6 +22,9 @@
 ==============================================================================*/
 
 
+#include <YSI\y_timers>
+
+
 Hook_HackDetect_SetPlayerPos(playerid, Float:x, Float:y, Float:z)
 {
 	HackDetect_SetPlayerPos(playerid, x, y, z);

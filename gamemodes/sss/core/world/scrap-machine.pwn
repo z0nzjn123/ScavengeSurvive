@@ -62,7 +62,7 @@ static
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/world/scrap-machine.pwn");
+
 
 	sm_CurrentScrapMachine[playerid] = -1;
 }
@@ -98,7 +98,7 @@ stock SetItemTypeScrapValue(ItemType:itemtype, value)
 
 hook OnPlayerUseMachine(playerid, itemid, interactiontype)
 {
-	dbg("global", CORE, "[OnPlayerUseMachine] in /gamemodes/sss/core/world/scrap-machine.pwn");
+
 
 	if(GetItemType(itemid) == item_ScrapMachine)
 	{
@@ -175,7 +175,7 @@ Dialog:ScrapMachine(playerid, response, listitem, inputtext[])
 
 hook OnHoldActionUpdate(playerid, progress)
 {
-	dbg("global", CORE, "[OnHoldActionUpdate] in /gamemodes/sss/core/world/scrap-machine.pwn");
+
 
 	if(sm_CurrentScrapMachine[playerid] != -1)
 	{

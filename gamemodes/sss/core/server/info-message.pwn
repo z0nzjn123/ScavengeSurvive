@@ -39,14 +39,15 @@ static
 hook OnScriptInit()
 {
 	GetSettingStringArray(
+		SETTINGS_FILE,
 		"infomessage/messages",
 		"Please update the 'server/infomsgs' array in '"SETTINGS_FILE"'.",
-		MAX_INFO_MESSAGE,
 		ifm_Messages,
 		ifm_Total,
+		MAX_INFO_MESSAGE,
 		MAX_INFO_MESSAGE_LEN);
 
-	GetSettingInt("infomessage/interval", 5, ifm_Interval);
+	GetSettingInt(SETTINGS_FILE, "infomessage/interval", 5, ifm_Interval);
 
 	defer InfoMessage();
 }

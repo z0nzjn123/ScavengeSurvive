@@ -29,7 +29,9 @@
 		"ScavengeSurvive/tick-difference",
 		"ScavengeSurvive/velocity",
 		"ScavengeSurvive/actions",
-		"ScavengeSurvive/settings"
+		"ScavengeSurvive/settings",
+		"ScavengeSurvive/language",
+		"ScavengeSurvive/chat"
 	],
 	"builds": [
 		{

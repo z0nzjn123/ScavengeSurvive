@@ -60,7 +60,7 @@ static		rm_CurrentRefineMachine[MAX_PLAYERS] = {INVALID_ITEM_ID, ...};
 
 hook OnPlayerConnect(playerid)
 {
-	dbg("global", CORE, "[OnPlayerConnect] in /gamemodes/sss/core/world/refine-machine.pwn");
+
 
 	rm_CurrentRefineMachine[playerid] = -1;
 }
@@ -75,7 +75,7 @@ hook OnPlayerConnect(playerid)
 
 hook OnPlayerUseMachine(playerid, itemid, interactiontype)
 {
-	dbg("global", CORE, "[OnPlayerUseMachine] in /gamemodes/sss/core/world/refine-machine.pwn");
+
 
 	if(GetItemType(itemid) == item_RefineMachine)
 	{
@@ -152,7 +152,7 @@ Dialog:RefineMachine(playerid, response, listitem, inputtext[])
 
 hook OnItemAddToContainer(containerid, itemid, playerid)
 {
-	dbg("global", CORE, "[OnItemAddToContainer] in /gamemodes/sss/core/world/refine-machine.pwn");
+
 
 	if(playerid != INVALID_PLAYER_ID)
 	{
@@ -170,7 +170,7 @@ hook OnItemAddToContainer(containerid, itemid, playerid)
 
 hook OnHoldActionUpdate(playerid, progress)
 {
-	dbg("global", CORE, "[OnHoldActionUpdate] in /gamemodes/sss/core/world/refine-machine.pwn");
+
 
 	if(rm_CurrentRefineMachine[playerid] != -1)
 	{
