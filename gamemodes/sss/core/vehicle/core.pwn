@@ -22,6 +22,7 @@
 ==============================================================================*/
 
 
+#include <uuid>
 #include <YSI\y_hooks>
 
 
@@ -41,47 +42,45 @@
 #define VEHICLE_UI_ACTIVE					0x808000FF
 
 
-enum
-{
+enum {
 	VEHICLE_STATE_ALIVE,
 	VEHICLE_STATE_DYING,
 	VEHICLE_STATE_DEAD
 }
 
-enum E_VEHICLE_DATA
-{
-		veh_type,
-Float:	veh_health,
-Float:	veh_Fuel,
-		veh_key,
-		veh_engine,
-		veh_panels,
-		veh_doors,
-		veh_lights,
-		veh_tires,
-		veh_armour,
-		veh_colour1,
-		veh_colour2,
-Float:	veh_spawnX,
-Float:	veh_spawnY,
-Float:	veh_spawnZ,
-Float:	veh_spawnR,
+enum E_VEHICLE_DATA {
+	veh_type,
+	Float:veh_health,
+	Float:veh_Fuel,
+	veh_key,
+	veh_engine,
+	veh_panels,
+	veh_doors,
+	veh_lights,
+	veh_tires,
+	veh_armour,
+	veh_colour1,
+	veh_colour2,
+	Float:veh_spawnX,
+	Float:veh_spawnY,
+	Float:veh_spawnZ,
+	Float:veh_spawnR,
 
-		veh_lastUsed,
-		veh_used,
-		veh_occupied,
-		veh_state,
+	veh_lastUsed,
+	veh_used,
+	veh_occupied,
+	veh_state,
 
-		veh_geid[GEID_LEN]
+	veh_geid[UUID_LEN]
 }
 
 
 static
-			veh_Data				[MAX_VEHICLES][E_VEHICLE_DATA],
-			veh_TypeCount			[MAX_VEHICLE_TYPE];
+	veh_Data[MAX_VEHICLES][E_VEHICLE_DATA],
+	veh_TypeCount[MAX_VEHICLE_TYPE];
 
 new
-   Iterator:veh_Index<MAX_VEHICLES>;
+	Iterator:veh_Index<MAX_VEHICLES>;
 
 static
 PlayerText:	veh_FuelUI				[MAX_PLAYERS] = {PlayerText:INVALID_TEXT_DRAW, ...},
@@ -176,11 +175,12 @@ SetPlayerVehicleSpeedUI(playerid, str[])
 ==============================================================================*/
 
 
-stock CreateWorldVehicle(type, Float:x, Float:y, Float:z, Float:r, colour1, colour2, world = 0, geid[GEID_LEN] = "")
+stock CreateWorldVehicle(type, Float:x, Float:y, Float:z, Float:r, colour1, colour2, world = 0, uuid[UUID_LEN] = "")
 {
 	if(!(0 <= type < veh_TypeTotal))
 	{
-		err("Tried to create invalid vehicle type (%d).", type);
+		err("tried to create invalid vehicle type",
+			_i("type", type));
 		return 0;
 	}
 
@@ -243,7 +243,7 @@ stock ResetVehicle(vehicleid)
 	new
 		type = GetVehicleType(vehicleid),
 		tmp[E_VEHICLE_DATA],
-		geid[GEID_LEN],
+		uuid[UUID_LEN],
 		newid;
 
 	tmp = veh_Data[vehicleid];
@@ -286,7 +286,7 @@ stock RespawnVehicle(vehicleid)
 ==============================================================================*/
 
 
-_veh_create(type, Float:x, Float:y, Float:z, Float:r, colour1, colour2, world = 0, geid[GEID_LEN] = "")
+_veh_create(type, Float:x, Float:y, Float:z, Float:r, colour1, colour2, world = 0, uuid[UUID_LEN] = "")
 {
 	new vehicleid = CreateVehicle(GetVehicleTypeModel(type), x, y, z, r, colour1, colour2, 864000);
 
@@ -1156,7 +1156,7 @@ stock IsVehicleDead(vehicleid)
 // veh_geid
 stock GetVehicleGEID(vehicleid)
 {
-	new geid[GEID_LEN];
+	new uuid[UUID_LEN];
 
 	if(!IsValidVehicle(vehicleid))
 		return geid;

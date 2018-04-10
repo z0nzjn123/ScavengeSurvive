@@ -55,21 +55,18 @@ native WP_Hash(buffer[], len, const str[]); // Southclaws/samp-whirlpool
 
 #if defined BUILD_MINIMAL
 
-#define BTN_MAX							(4096) // SIF/Button
-#define ITM_MAX							(4096) // SIF/Item
-#define CNT_MAX_SLOTS					(100)
+#define MAX_BUTTON						(4096) // SIF/Button
+#define MAX_ITEM						(4096) // SIF/Item
+#define MAX_CONTAINER_SLOTS				(100)
 #define MAX_MODIO_STACK_SIZE			(1024)
 #define MAX_MODIO_SESSION				(2)
 
 #else
 
-#define SIF_USE_DEBUG_LABELS			// SIF/extensions/DebugLabels
-#define DEBUG_LABELS_BUTTON				// SIF/Button
-#define DEBUG_LABELS_ITEM				// SIF/Item
-#define BTN_MAX							(32768) // SIF/Button
-#define ITM_MAX							(32768) // SIF/Item
-#define CNT_MAX_SLOTS					(100)
-#define MAX_MODIO_SESSION				(8) // (2048) // modio
+#define MAX_BUTTON						(32768) // SIF/Button
+#define MAX_ITEM						(32768) // SIF/Item
+#define MAX_CONTAINER_SLOTS				(100)
+#define MAX_MODIO_SESSION				(2048) // modio
 
 #endif
 
@@ -124,157 +121,82 @@ public OnGameModeInit()
 
 #include "sss\core\server\hooks.pwn" // preload library for hooking functions before they are used in external libraries.
 
-#include <crashdetect> // Zeex/samp-plugin-crashdetect
-#include <sscanf2> // maddinat0r/sscanf
-#include <YSI\y_va> // pawn-lang/YSI-Includes
-#include <YSI\y_timers> // pawn-lang/YSI-Includes
-#include <YSI\y_hooks> // pawn-lang/YSI-Includes
+#include <crashdetect>   // Zeex/samp-plugin-crashdetect
+#include <sscanf2>       // maddinat0r/sscanf
+#include <YSI\y_colours> // pawn-lang/YSI-Includes
+#include <YSI\y_va>      // pawn-lang/YSI-Includes
+#include <YSI\y_timers>  // pawn-lang/YSI-Includes
 #include <YSI\y_iterate> // pawn-lang/YSI-Includes
-#include <YSI\y_ini> // pawn-lang/YSI-Includes
-#include <redis> // Southclaws/samp-redis
-#include <streamer> // samp-incognito/samp-streamer-plugin
-#include <formatex> // Southclaws/formatex
-#include <strlib> // oscar-broman/strlib
-#include <geolocation> // Whitetigerswt/SAMP-geoip
-#include <ctime> // Southclaws/samp-ctime
-#include <easyDialog> // Awsomedude/easyDialog
-#include <progress2> // Southclaws/progress2
-#include <filemanager> // Southclaws/SA-MP-FileManager
-#include <mapandreas> // Southclaws/samp-plugin-mapandreas
-#include <logger> // Southclaws/samp-logger
-#include <ini> // Southclaws/samp-ini
-#include <modio> // Southclaws/modio
-#include <chat> // ScavengeSurvive/chat
+#include <YSI\y_ini>     // pawn-lang/YSI-Includes
+#include <streamer>      // samp-incognito/samp-streamer-plugin
+#include <formatex>      // Southclaws/formatex
+#include <strlib>        // oscar-broman/strlib
+#include <easyDialog>    // Awsomedude/easyDialog
+
+#include <ctime>         // Southclaws/samp-ctime
+#include <progress2>     // Southclaws/progress2
+#include <mapandreas>    // Southclaws/samp-plugin-mapandreas
+#include <ini>           // Southclaws/samp-ini
+#include <modio>         // Southclaws/modio
+#include <fsutil>        // Southclaws/fsutil
+
+#include <mathutil> // ScavengeSurvive/mathutil
 #include <settings> // ScavengeSurvive/settings
-#include <weapon-data> // Southclaws/samp-weapon-data
-#include <linegen> // Southclaws/samp-linegen
-#include <zipline> // Southclaws/samp-zipline
-#include <ladders> // Southclaws/samp-ladders
 #include <language> // ScavengeSurvive/language
+#include <chat>     // ScavengeSurvive/chat
+#include <item>     // ScavengeSurvive/item
+
+// must re-initialise y_hooks after the above packages
+#include <YSI\y_hooks> // pawn-lang/YSI-Includes
 
 
-/*==============================================================================
-
-	Definitions
-
-==============================================================================*/
-
-
-// Limits
-#define MAX_MOTD_LEN				(128)
-#define MAX_WEBSITE_NAME			(64)
-#define MAX_RULE					(24)
-#define MAX_RULE_LEN				(128)
-#define MAX_STAFF					(24)
-#define MAX_STAFF_LEN				(24)
-#define MAX_PLAYER_FILE				(MAX_PLAYER_NAME+16)
-#define MAX_ADMIN					(48)
-#define MAX_PASSWORD_LEN			(129)
-#define MAX_GPCI_LEN				(41)
-#define MAX_HOST_LEN				(256)
-
-
-// Directories
-#define DIRECTORY_SCRIPTFILES		"./scriptfiles/"
-#define DIRECTORY_MAIN				"data/"
-
-
-// Files
-#define SETTINGS_FILE				DIRECTORY_MAIN"settings.ini"
-#define REDIS_DOMAIN_ROOT			"ss"
-
-
-// Macros
-#define CMD:%1(%2)					forward cmd_%1(%2);\
-									public cmd_%1(%2)
-
-#define ACMD:%1[%2](%3)				forward acmd_%1_%2(%3);\
-									public acmd_%1_%2(%3)
-
-#define HOLDING(%0)					((newkeys & (%0)) == (%0))
-#define RELEASED(%0)				(((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
-#define PRESSED(%0)					(((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-
-#define IsValidPlayerID(%0)			(0<=%0<MAX_PLAYERS)
+// -
+// Definitions
+// -
 
 
 // Colours
-#define YELLOW						0xFFFF00FF
-#define RED							0xE85454FF
-#define GREEN						0x33AA33FF
-#define BLUE						0x33CCFFFF
-#define ORANGE						0xFFAA00FF
-#define GREY						0xAFAFAFFF
-#define PINK						0xFFC0CBFF
-#define NAVY						0x000080FF
-#define GOLD						0xB8860BFF
-#define LGREEN						0x00FD4DFF
-#define TEAL						0x008080FF
-#define BROWN						0xA52A2AFF
-#define AQUA						0xF0F8FFFF
-#define BLACK						0x000000FF
-#define WHITE						0xFFFFFFFF
-#define CHAT_LOCAL					0xADABD1FF
-#define CHAT_RADIO					0xCFD1ABFF
+#define SS_YELLOW     (0xFFFF00FF)
+#define SS_RED        (0xE85454FF)
+#define SS_GREEN      (0x33AA33FF)
+#define SS_BLUE       (0x33CCFFFF)
+#define SS_ORANGE     (0xFFAA00FF)
+#define SS_GREY       (0xAFAFAFFF)
+#define SS_PINK       (0xFFC0CBFF)
+#define SS_NAVY       (0x000080FF)
+#define SS_GOLD       (0xB8860BFF)
+#define SS_LGREEN     (0x00FD4DFF)
+#define SS_TEAL       (0x008080FF)
+#define SS_BROWN      (0xA52A2AFF)
+#define SS_AQUA       (0xF0F8FFFF)
+#define SS_BLACK      (0x000000FF)
+#define SS_WHITE      (0xFFFFFFFF)
+#define SS_CHAT_LOCAL (0xADABD1FF)
+#define SS_CHAT_RADIO (0xCFD1ABFF)
 
+// Limits
+#define MAX_MOTD_LEN     (128)
+#define MAX_WEBSITE_NAME (64)
+#define MAX_RULE         (24)
+#define MAX_RULE_LEN     (128)
+#define MAX_STAFF        (24)
+#define MAX_STAFF_LEN    (24)
+#define MAX_PLAYER_FILE  (MAX_PLAYER_NAME+16)
+#define MAX_ADMIN        (48)
+#define MAX_PASSWORD_LEN (129)
+#define MAX_GPCI_LEN     (41)
+#define MAX_HOST_LEN     (256)
 
-// Embedding Colours
-#define C_YELLOW					"{FFFF00}"
-#define C_RED						"{E85454}"
-#define C_GREEN						"{33AA33}"
-#define C_BLUE						"{33CCFF}"
-#define C_ORANGE					"{FFAA00}"
-#define C_GREY						"{AFAFAF}"
-#define C_PINK						"{FFC0CB}"
-#define C_NAVY						"{000080}"
-#define C_GOLD						"{B8860B}"
-#define C_LGREEN					"{00FD4D}"
-#define C_TEAL						"{008080}"
-#define C_BROWN						"{A52A2A}"
-#define C_AQUA						"{F0F8FF}"
-#define C_BLACK						"{000000}"
-#define C_WHITE						"{FFFFFF}"
-#define C_SPECIAL					"{0025AA}"
+// Files etc
+#define DIRECTORY_SCRIPTFILES "./scriptfiles/"
+#define DIRECTORY_MAIN        "data/"
+#define SETTINGS_FILE         DIRECTORY_MAIN"settings.ini"
 
-
-// Genders
-#define GENDER_MALE					(0)
-#define GENDER_FEMALE				(1)
-
-
-// Key text
-
-// Game text symbol for adding to inventory
-#if !defined ITEM_GAMETEXT_PUT_AWAY
-	#define ITEM_GAMETEXT_PUT_AWAY "~k~~CONVERSATION_YES~"
-#endif
-
-#define KEYTEXT_RELOAD				"~k~~PED_ANSWER_PHONE~"
-#define KEYTEXT_INVENTORY			"~k~~GROUP_CONTROL_BWD~"
-#define KEYTEXT_ENGINE				"~k~~CONVERSATION_YES~"
-#define KEYTEXT_LIGHTS				"~k~~CONVERSATION_NO~"
-#define KEYTEXT_DOORS				"~k~~TOGGLE_SUBMISSIONS~"
-#define KEYTEXT_RADIO				"R"
-
-
-// Attachment slots
-enum
-{
-	ATTACHSLOT_ITEM,		// 0 - Same as SIF/Item
-	ATTACHSLOT_BAG,			// 1 - Bag on back
-	ATTACHSLOT_HOLSTER,		// 2 - Item holstering
-	ATTACHSLOT_HAT,			// 3 - Head-wear slot
-	ATTACHSLOT_FACE,		// 4 - Face-wear slot
-	ATTACHSLOT_BLOOD,		// 5 - Bleeding particle effect
-	ATTACHSLOT_ARMOUR		// 6 - Armour model slot
-}
-
-
-/*==============================================================================
-
-	Global values
-
-==============================================================================*/
+// Helper Macros
+#define HOLDING(%0) ((newkeys & (%0)) == (%0))
+#define RELEASED(%0) (((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
+#define PRESSED(%0) (((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
+#define IsValidPlayerID(%0) (0<=%0<MAX_PLAYERS)
 
 
 new
@@ -283,22 +205,16 @@ bool:	gServerInitialising = true,
 		gServerInitialiseTick,
 bool:	gServerRestarting = false,
 		gServerMaxUptime,
-		gServerUptime,
-		gGlobalDebugLevel;
+		gServerUptime;
 
-// DATABASES
+// settings.ini variables
 new
-Redis:	gRedis;
-
-// GLOBAL SERVER SETTINGS (Todo: modularise)
-new
-		// player
 		gMessageOfTheDay[MAX_MOTD_LEN],
 		gWebsiteURL[MAX_WEBSITE_NAME],
 		gRuleList[MAX_RULE][MAX_RULE_LEN],
+		gTotalRules,
 		gStaffList[MAX_STAFF][MAX_STAFF_LEN],
-
-		// server
+		gTotalStaff,
 bool:	gPauseMap,
 bool:	gInteriorEntry,
 bool:	gVehicleSurfing,
@@ -309,71 +225,59 @@ Float:	gNameTagDistance,
 		gPingLimit,
 		gCrashOnExit;
 
-// INTERNAL
-new
-		gBigString[MAX_PLAYERS][4096],
-		gTotalRules,
-		gTotalStaff;
 
-new stock
-		GLOBAL_DEBUG = -1;
-
-
-/*==============================================================================
-
-	Gamemode Scripts
-
-==============================================================================*/
+// -
+// Modules
+// -
 
 
 // API Pre
-#tryinclude "sss/extensions/ext_pre.pwn"
+// #tryinclude "sss/extensions/ext_pre.pwn"
 
 // UTILITIES
-#include "sss/utils/math.pwn"
-#include "sss/utils/misc.pwn"
-#include "sss/utils/camera.pwn"
-#include "sss/utils/vehicle.pwn"
-#include "sss/utils/vehicle-data.pwn"
-#include "sss/utils/vehicle-parts.pwn"
-#include "sss/utils/zones.pwn"
-#include "sss/utils/player.pwn"
-#include "sss/utils/object.pwn"
-#include "sss/utils/string.pwn"
-#include "sss/utils/dialog-pages.pwn"
-#include "sss/utils/item.pwn"
-#include "sss/utils/headoffsets.pwn"
+// #include "sss/utils/misc.pwn"
+// #include "sss/utils/camera.pwn"
+// #include "sss/utils/vehicle.pwn"
+// #include "sss/utils/vehicle-data.pwn"
+// #include "sss/utils/vehicle-parts.pwn"
+// #include "sss/utils/zones.pwn"
+// #include "sss/utils/player.pwn"
+// #include "sss/utils/object.pwn"
+// #include "sss/utils/string.pwn"
+// #include "sss/utils/dialog-pages.pwn"
+// #include "sss/utils/item.pwn"
+// #include "sss/utils/headoffsets.pwn"
 
 // SERVER CORE
-#include "sss/core/server/weather.pwn"
-#include "sss/core/server/save-block.pwn"
-#include "sss/core/server/info-message.pwn"
-#include "sss/core/player/language.pwn"
+// #include "sss/core/server/weather.pwn"
+// #include "sss/core/server/save-block.pwn"
+// #include "sss/core/server/info-message.pwn"
+// #include "sss/core/player/language.pwn"
 
 /*
 	PARENT SYSTEMS
 	Modules that declare setup functions and constants used throughout.
 */
-#include "sss/core/player/accounts-io.pwn"
-#include "sss/core/vehicle/vehicle-type.pwn"
-#include "sss/core/vehicle/lock.pwn"
-#include "sss/core/vehicle/core.pwn"
-#include "sss/core/player/core.pwn"
-#include "sss/core/player/save-load.pwn"
-#include "sss/core/admin/core.pwn"
-#include "sss/core/ui/hold-action.pwn"
-#include "sss/core/item/liquid.pwn"
-#include "sss/core/item/liquid-container.pwn"
-#include "sss/core/world/tree.pwn"
-#include "sss/core/world/explosive.pwn"
-#include "sss/core/world/craft-construct.pwn"
-#include "sss/core/world/loot-loader.pwn"
+// #include "sss/core/player/accounts-io.pwn"
+// #include "sss/core/vehicle/vehicle-type.pwn"
+// #include "sss/core/vehicle/lock.pwn"
+// #include "sss/core/vehicle/core.pwn"
+// #include "sss/core/player/core.pwn"
+// #include "sss/core/player/save-load.pwn"
+// #include "sss/core/admin/core.pwn"
+// #include "sss/core/ui/hold-action.pwn"
+// #include "sss/core/item/liquid.pwn"
+// #include "sss/core/item/liquid-container.pwn"
+// #include "sss/core/world/tree.pwn"
+// #include "sss/core/world/explosive.pwn"
+// #include "sss/core/world/craft-construct.pwn"
+// #include "sss/core/world/loot-loader.pwn"
 
 /*
 	MODULE INITIALISATION CALLS
 	Calls module constructors to set up entity types.
 */
-#include "sss/core/server/init.pwn"
+// #include "sss/core/server/init.pwn"
 
 /*
 	CHILD SYSTEMS
@@ -381,168 +285,164 @@ new stock
 */
 
 // VEHICLE
-#include "sss/core/vehicle/player-vehicle.pwn"
-#include "sss/core/vehicle/loot-vehicle.pwn"
-#include "sss/core/vehicle/spawn.pwn"
-#include "sss/core/vehicle/interact.pwn"
-#include "sss/core/vehicle/trunk.pwn"
-#include "sss/core/vehicle/repair.pwn"
-#include "sss/core/vehicle/lock-break.pwn"
-#include "sss/core/vehicle/locksmith.pwn"
-#include "sss/core/vehicle/carmour.pwn"
-#include "sss/core/vehicle/anti-ninja.pwn"
-#include "sss/core/vehicle/bike-collision.pwn"
-#include "sss/core/vehicle/trailer.pwn"
+// #include "sss/core/vehicle/player-vehicle.pwn"
+// #include "sss/core/vehicle/loot-vehicle.pwn"
+// #include "sss/core/vehicle/spawn.pwn"
+// #include "sss/core/vehicle/interact.pwn"
+// #include "sss/core/vehicle/trunk.pwn"
+// #include "sss/core/vehicle/repair.pwn"
+// #include "sss/core/vehicle/lock-break.pwn"
+// #include "sss/core/vehicle/locksmith.pwn"
+// #include "sss/core/vehicle/carmour.pwn"
+// #include "sss/core/vehicle/anti-ninja.pwn"
+// #include "sss/core/vehicle/bike-collision.pwn"
+// #include "sss/core/vehicle/trailer.pwn"
 
 // PLAYER INTERNAL SCRIPTS
-#include "sss/core/player/accounts.pwn"
-// #include "sss/core/player/aliases.pwn"
-// #include "sss/core/player/ipv4-log.pwn"
-// #include "sss/core/player/gpci-log.pwn"
-#include "sss/core/player/brightness.pwn"
-#include "sss/core/player/spawn.pwn"
-#include "sss/core/player/clothes.pwn"
-#include "sss/core/player/death.pwn"
-#include "sss/core/player/tutorial.pwn"
-#include "sss/core/player/welcome-message.pwn"
-#include "sss/core/player/cmd-process.pwn"
-#include "sss/core/player/commands.pwn"
-#include "sss/core/player/alt-tab-check.pwn"
-#include "sss/core/player/disallow-actions.pwn"
-#include "sss/core/player/whitelist.pwn"
-#include "sss/core/player/country.pwn"
-#include "sss/core/player/recipes.pwn"
+// #include "sss/core/player/accounts.pwn"
+// // #include "sss/core/player/aliases.pwn"
+// // #include "sss/core/player/ipv4-log.pwn"
+// // #include "sss/core/player/gpci-log.pwn"
+// #include "sss/core/player/brightness.pwn"
+// #include "sss/core/player/spawn.pwn"
+// #include "sss/core/player/clothes.pwn"
+// #include "sss/core/player/death.pwn"
+// #include "sss/core/player/tutorial.pwn"
+// #include "sss/core/player/welcome-message.pwn"
+// #include "sss/core/player/cmd-process.pwn"
+// #include "sss/core/player/commands.pwn"
+// #include "sss/core/player/alt-tab-check.pwn"
+// #include "sss/core/player/disallow-actions.pwn"
+// #include "sss/core/player/whitelist.pwn"
+// #include "sss/core/player/country.pwn"
+// #include "sss/core/player/recipes.pwn"
 
 // UI
-#include "sss/core/ui/radio.pwn"
-#include "sss/core/ui/tool-tip.pwn"
-#include "sss/core/ui/key-actions.pwn"
-#include "sss/core/ui/watch.pwn"
-#include "sss/core/ui/keypad.pwn"
-#include "sss/core/ui/body-preview.pwn"
-#include "sss/core/ui/status.pwn"
+// #include "sss/core/ui/radio.pwn"
+// #include "sss/core/ui/tool-tip.pwn"
+// #include "sss/core/ui/key-actions.pwn"
+// #include "sss/core/ui/watch.pwn"
+// #include "sss/core/ui/keypad.pwn"
+// #include "sss/core/ui/body-preview.pwn"
+// #include "sss/core/ui/status.pwn"
 
 // WORLD ENTITIES
-#include "sss/core/world/fuel.pwn"
-#include "sss/core/world/barbecue.pwn"
-#include "sss/core/world/defences.pwn"
-#include "sss/core/world/gravestone.pwn"
-#include "sss/core/world/safebox.pwn"
-#include "sss/core/world/tent.pwn"
-#include "sss/core/world/campfire.pwn"
-#include "sss/core/world/emp.pwn"
-#include "sss/core/world/sign.pwn"
-#include "sss/core/world/supply-crate.pwn"
-#include "sss/core/world/weapons-cache.pwn"
-#include "sss/core/world/loot.pwn"
-#include "sss/core/world/workbench.pwn"
-#include "sss/core/world/machine.pwn"
-#include "sss/core/world/scrap-machine.pwn"
-#include "sss/core/world/refine-machine.pwn"
-#include "sss/core/world/tree-loader.pwn"
-// #include "sss/core/world/water-purifier.pwn"
-#include "sss/core/world/plot-pole.pwn"
-#include "sss/core/world/item-tweak.pwn"
-#include "sss/core/world/furniture.pwn"
+// #include "sss/core/world/fuel.pwn"
+// #include "sss/core/world/barbecue.pwn"
+// #include "sss/core/world/defences.pwn"
+// #include "sss/core/world/gravestone.pwn"
+// #include "sss/core/world/safebox.pwn"
+// #include "sss/core/world/tent.pwn"
+// #include "sss/core/world/campfire.pwn"
+// #include "sss/core/world/emp.pwn"
+// #include "sss/core/world/sign.pwn"
+// #include "sss/core/world/supply-crate.pwn"
+// #include "sss/core/world/weapons-cache.pwn"
+// #include "sss/core/world/loot.pwn"
+// #include "sss/core/world/workbench.pwn"
+// #include "sss/core/world/machine.pwn"
+// #include "sss/core/world/scrap-machine.pwn"
+// #include "sss/core/world/refine-machine.pwn"
+// #include "sss/core/world/tree-loader.pwn"
+// // #include "sss/core/world/water-purifier.pwn"
+// #include "sss/core/world/plot-pole.pwn"
+// #include "sss/core/world/item-tweak.pwn"
+// #include "sss/core/world/furniture.pwn"
 
 // ADMINISTRATION TOOLS
-#include "sss/core/admin/report.pwn"
-#include "sss/core/admin/report-io.pwn"
-#include "sss/core/admin/report-cmds.pwn"
-#include "sss/core/admin/hack-detect.pwn"
-#include "sss/core/admin/hack-trap.pwn"
-#include "sss/core/admin/ban.pwn"
-#include "sss/core/admin/ban-io.pwn"
-#include "sss/core/admin/ban-command.pwn"
-#include "sss/core/admin/ban-list.pwn"
-#include "sss/core/admin/spectate.pwn"
-#include "sss/core/admin/level1.pwn"
-#include "sss/core/admin/level2.pwn"
-#include "sss/core/admin/level3.pwn"
-#include "sss/core/admin/level4.pwn"
-#include "sss/core/admin/level5.pwn"
-#include "sss/core/admin/bug-report.pwn"
-// #include "sss/core/admin/detfield.pwn"
-// #include "sss/core/admin/detfield-io.pwn"
-// #include "sss/core/admin/detfield-cmds.pwn"
-// #include "sss/core/admin/detfield-draw.pwn"
-#include "sss/core/admin/rcon.pwn"
-#include "sss/core/admin/freeze.pwn"
-#include "sss/core/admin/name-tags.pwn"
-#include "sss/core/admin/player-list.pwn"
+// #include "sss/core/admin/report.pwn"
+// #include "sss/core/admin/report-io.pwn"
+// #include "sss/core/admin/report-cmds.pwn"
+// #include "sss/core/admin/hack-detect.pwn"
+// #include "sss/core/admin/hack-trap.pwn"
+// #include "sss/core/admin/ban.pwn"
+// #include "sss/core/admin/ban-io.pwn"
+// #include "sss/core/admin/ban-command.pwn"
+// #include "sss/core/admin/ban-list.pwn"
+// #include "sss/core/admin/spectate.pwn"
+// #include "sss/core/admin/level1.pwn"
+// #include "sss/core/admin/level2.pwn"
+// #include "sss/core/admin/level3.pwn"
+// #include "sss/core/admin/level4.pwn"
+// #include "sss/core/admin/level5.pwn"
+// #include "sss/core/admin/bug-report.pwn"
+// // #include "sss/core/admin/detfield.pwn"
+// // #include "sss/core/admin/detfield-io.pwn"
+// // #include "sss/core/admin/detfield-cmds.pwn"
+// // #include "sss/core/admin/detfield-draw.pwn"
+// #include "sss/core/admin/rcon.pwn"
+// #include "sss/core/admin/freeze.pwn"
+// #include "sss/core/admin/name-tags.pwn"
+// #include "sss/core/admin/player-list.pwn"
 
 // ITEMS
-#include "sss/core/item/food.pwn"
-#include "sss/core/item/firework.pwn"
-#include "sss/core/item/shield.pwn"
-#include "sss/core/item/handcuffs.pwn"
-#include "sss/core/item/wheel.pwn"
-#include "sss/core/item/headlight.pwn"
-#include "sss/core/item/pills.pwn"
-#include "sss/core/item/dice.pwn"
-#include "sss/core/item/armour.pwn"
-#include "sss/core/item/injector.pwn"
-#include "sss/core/item/parachute.pwn"
-#include "sss/core/item/molotov.pwn"
-#include "sss/core/item/screwdriver.pwn"
-#include "sss/core/item/torso.pwn"
-#include "sss/core/item/ammotin.pwn"
-#include "sss/core/item/campfire.pwn"
-#include "sss/core/item/herpderp.pwn"
-#include "sss/core/item/stungun.pwn"
-#include "sss/core/item/note.pwn"
-#include "sss/core/item/seedbag.pwn"
-#include "sss/core/item/plantpot.pwn"
-#include "sss/core/item/heartshapedbox.pwn"
-#include "sss/core/item/fishingrod.pwn"
-#include "sss/core/item/chainsaw.pwn"
-#include "sss/core/item/locator.pwn"
-#include "sss/core/item/locker.pwn"
+// #include "sss/core/item/food.pwn"
+// #include "sss/core/item/firework.pwn"
+// #include "sss/core/item/shield.pwn"
+// #include "sss/core/item/handcuffs.pwn"
+// #include "sss/core/item/wheel.pwn"
+// #include "sss/core/item/headlight.pwn"
+// #include "sss/core/item/pills.pwn"
+// #include "sss/core/item/dice.pwn"
+// #include "sss/core/item/armour.pwn"
+// #include "sss/core/item/injector.pwn"
+// #include "sss/core/item/parachute.pwn"
+// #include "sss/core/item/molotov.pwn"
+// #include "sss/core/item/screwdriver.pwn"
+// #include "sss/core/item/torso.pwn"
+// #include "sss/core/item/ammotin.pwn"
+// #include "sss/core/item/campfire.pwn"
+// #include "sss/core/item/herpderp.pwn"
+// #include "sss/core/item/stungun.pwn"
+// #include "sss/core/item/note.pwn"
+// #include "sss/core/item/seedbag.pwn"
+// #include "sss/core/item/plantpot.pwn"
+// #include "sss/core/item/heartshapedbox.pwn"
+// #include "sss/core/item/fishingrod.pwn"
+// #include "sss/core/item/chainsaw.pwn"
+// #include "sss/core/item/locator.pwn"
+// #include "sss/core/item/locker.pwn"
 
 // ITEMS (HATS/MASKS)
-#include "sss/core/item/armyhelm.pwn"
-#include "sss/core/item/cowboyhat.pwn"
-#include "sss/core/item/truckcap.pwn"
-#include "sss/core/item/boaterhat.pwn"
-#include "sss/core/item/bowlerhat.pwn"
-#include "sss/core/item/policecap.pwn"
-#include "sss/core/item/tophat.pwn"
-#include "sss/core/item/bandana.pwn"
-#include "sss/core/item/xmashat.pwn"
-#include "sss/core/item/witcheshat.pwn"
-#include "sss/core/item/policehelm.pwn"
+// #include "sss/core/item/armyhelm.pwn"
+// #include "sss/core/item/cowboyhat.pwn"
+// #include "sss/core/item/truckcap.pwn"
+// #include "sss/core/item/boaterhat.pwn"
+// #include "sss/core/item/bowlerhat.pwn"
+// #include "sss/core/item/policecap.pwn"
+// #include "sss/core/item/tophat.pwn"
+// #include "sss/core/item/bandana.pwn"
+// #include "sss/core/item/xmashat.pwn"
+// #include "sss/core/item/witcheshat.pwn"
+// #include "sss/core/item/policehelm.pwn"
 
-#include "sss/core/item/zorromask.pwn"
-#include "sss/core/item/gasmask.pwn"
-#include "sss/core/item/hockeymask.pwn"
+// #include "sss/core/item/zorromask.pwn"
+// #include "sss/core/item/gasmask.pwn"
+// #include "sss/core/item/hockeymask.pwn"
 
 // POST-CODE
 
-#include "sss/core/server/auto-save.pwn"
-#tryinclude "sss/extensions/ext_post.pwn"
+// #include "sss/core/server/auto-save.pwn"
+// #tryinclude "sss/extensions/ext_post.pwn"
 
 // WORLD
 
-#if defined BUILD_MINIMAL
-#include "sss/world-bs/world.pwn"
-#else
-#include "sss/world/world.pwn"
-#endif
+// #if defined BUILD_MINIMAL
+// #include "sss/world-bs/world.pwn"
+// #else
+// #include "sss/world/world.pwn"
+// #endif
 
-#if !defined GetMapName
-	#error World script MUST have a "GetMapName" function!
-#endif
+// #if !defined GetMapName
+// 	#error World script MUST have a "GetMapName" function!
+// #endif
 
-#if !defined GenerateSpawnPoint
-	#error World script MUST have a "GenerateSpawnPoint" function!
-#endif
+// #if !defined GenerateSpawnPoint
+// 	#error World script MUST have a "GenerateSpawnPoint" function!
+// #endif
 
 
-static
-Text:RestartCount = Text:INVALID_TEXT_DRAW;
-
-main()
-{
+main() {
 	log("================================================================================");
 	log("    Southclaws' Scavenge and Survive");
 	log("        Copyright (C) 2016 Barnaby \"Southclaws\" Keene");
@@ -553,89 +453,34 @@ main()
 
 	gServerInitialising = false;
 	gServerInitialiseTick = GetTickCount();
-	Redis_SendMessage(gRedis, "ss.rediscord.outgoing-global", "Server:The server is online, come and play!");
 }
 
-/*
-	This is called absolutely first before any other call.
-*/
-OnGameModeInit_Setup()
-{
-	log("[OnGameModeInit_Setup] Setting up...");
+static Text:RestartCount = Text:INVALID_TEXT_DRAW;
 
-	new
-		dir:dirhandle = dir_open("./"),
-		item[64],
-		type;
-
-	if(!dirhandle)
-	{
-		fatal("UNKNOWN ERROR: Failed to read server directory");
-	}
-	log("directory scan:");
-	while(dir_list(dirhandle, item, type))
-	{
-		log(item);
-	}
-
-	new buildstring[12];
-
-	file_read("BUILD_NUMBER", buildstring);
-	gBuildNumber = strval(buildstring);
-
-	if(gBuildNumber < 1000)
-	{
-		fatal("build number < 1000",
-			_i("build", gBuildNumber));
-	}
-
-	log("Initialising Scavenge and Survive",
+OnGameModeInit_Setup() {
+	// todo: fsutil ReadFile impl
+	// new buildstring[12];
+	// ReadFile("BUILD_NUMBER", buildstring);
+	// gBuildNumber = strval(buildstring);
+	// if(gBuildNumber < 1000) {
+	// 	fatal("build number < 1000",
+	// 		_i("build", gBuildNumber));
+	// }
+	log("initialising Scavenge and Survive",
 		_i("build", gBuildNumber));
 
 	Streamer_ToggleErrorCallback(true);
 	MapAndreas_Init(MAP_ANDREAS_MODE_FULL);
 	UsePlayerPedAnims();
 
-	if(dir_exists(DIRECTORY_SCRIPTFILES"SSS/"))
-	{
-		fatal("ERROR: ./scriptfiles directory detected using old directory structure, please see release notes for stable release #04");
-	}
-
-	if(!dir_exists(DIRECTORY_SCRIPTFILES))
-	{
-		log("ERROR: Directory '"DIRECTORY_SCRIPTFILES"' not found. Creating directory.");
-		dir_create(DIRECTORY_SCRIPTFILES);
-	}
-
-	if(!dir_exists(DIRECTORY_SCRIPTFILES DIRECTORY_MAIN))
-	{
-		log("ERROR: Directory '"DIRECTORY_SCRIPTFILES DIRECTORY_MAIN"' not found. Creating directory.");
-		dir_create(DIRECTORY_SCRIPTFILES DIRECTORY_MAIN);
-	}
-
-	new
-		redis_host[128],
-		redis_port,
-		redis_pass[128];
-
-	if(!fexist(SETTINGS_FILE))
-	{
-		err("Settings file '"SETTINGS_FILE"' not found. Creating and using default values.");
-
-		fclose(fopen(SETTINGS_FILE, io_write));
-	}
-
-	GetSettingString("server/redis-host", "localhost", redis_host);
-	GetSettingInt("server/redis-port", 6379, redis_port);
-	GetSettingString("server/redis-pass", "", redis_pass);
+	CreateDirIfNotExists(DIRECTORY_SCRIPTFILES);
+	CreateDirIfNotExists(DIRECTORY_SCRIPTFILES DIRECTORY_MAIN);
 
 	GetSettingString(SETTINGS_FILE, "server/motd", "Please update the 'server/motd' string in "SETTINGS_FILE"", gMessageOfTheDay);
 	GetSettingString(SETTINGS_FILE, "server/website", "southclawjk.wordpress.com", gWebsiteURL);
 	GetSettingInt(SETTINGS_FILE, "server/crash-on-exit", true, gCrashOnExit);
-
 	GetSettingStringArray(SETTINGS_FILE, "server/rules", "Please update the 'server/rules' array in '"SETTINGS_FILE"'.", gRuleList, gTotalRules, 128, MAX_RULE, MAX_RULE_LEN);
 	GetSettingStringArray(SETTINGS_FILE, "server/staff", "StaffName", gStaffList, gTotalStaff, 32, MAX_STAFF, MAX_STAFF_LEN);
-
 	GetSettingInt(SETTINGS_FILE, "server/max-uptime", 18000, gServerMaxUptime);
 	GetSettingInt(SETTINGS_FILE, "player/allow-pause-map", 0, gPauseMap);
 	GetSettingInt(SETTINGS_FILE, "player/interior-entry", 0, gInteriorEntry);
@@ -656,11 +501,13 @@ OnGameModeInit_Setup()
 	SetGameModeText("Scavenge Survive by Southclaw");
 
 	// SETTINGS
-	if(!gPauseMap)
-		MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
+	// if(!gPauseMap) {
+	// 	MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
+	// }
 
-	if(!gInteriorEntry)
+	if(!gInteriorEntry) {
 		DisableInteriorEnterExits();
+	}
 
 	SetNameTagDrawDistance(gNameTagDistance);
 
@@ -668,16 +515,8 @@ OnGameModeInit_Setup()
 	ManualVehicleEngineAndLights();
 	AllowInteriorWeapons(true);
 
-	gRedis = Redis_Connect(redis_host, redis_port, redis_pass);
-	if(_:gRedis < 0)
-	{
-		fatal("redis connect failed: %d", _:gRedis);
-	}
-
-	SendRconCommand(sprintf("mapname %s", GetMapName()));
-
-	GetSettingInt("server/global-debug-level", 0, gGlobalDebugLevel);
-	debug_set_level("global", gGlobalDebugLevel);
+	// todo: GetMapName impl
+	// SendRconCommand(sprintf("mapname %s", GetMapName()));
 
 	RestartCount				=TextDrawCreate(430.000000, 10.000000, "Server Restart In:~n~00:00");
 	TextDrawAlignment			(RestartCount, 2);
@@ -689,79 +528,71 @@ OnGameModeInit_Setup()
 	TextDrawSetProportional		(RestartCount, 1);
 }
 
-public OnGameModeExit()
-{
-	if(gCrashOnExit)
-		fatal("[OnGameModeExit] Shutting down...");
-
-	else
-		log("[OnGameModeExit] Shutting down...");
+public OnGameModeExit() {
+	if(gCrashOnExit) {
+		fatal("gamemode exiting with forced crash");
+	} else {
+		log("gamemode exiting");
+	}
 
 	return 1;
 }
 
-public OnScriptExit()
-{
-	log("[OnScriptExit] Shutting down...");
+public OnScriptExit() {
+	log("script exiting");
 	return 0;
 }
 
 forward SetRestart(seconds);
-public SetRestart(seconds)
-{
-	log("Restarting server in: %ds", seconds);
+public SetRestart(seconds) {
+	log("server restart triggered",
+		_i("seconds", seconds));
+
 	gServerUptime = gServerMaxUptime - seconds;
 }
 
-RestartGamemode()
-{
-	log("[RestartGamemode] Initialising gamemode restart...");
-	Redis_SendMessage(gRedis, "ss.rediscord.outgoing-global", "Server:The server is restarting, that means more loot!");
+RestartGamemode() {
+	log("gamemode restarting");
+
 	gServerRestarting = true;
 
-	foreach(new i : Player)
-	{
-		SavePlayerData(i);
-		ResetVariables(i);
-	}
+	// foreach(new i : Player) {
+	// 	SavePlayerData(i);
+	// 	ResetVariables(i);
+	// }
 
 	SendRconCommand("gmx");
 
-	ChatMsgAll(BLUE, " ");
-	ChatMsgAll(ORANGE, "Scavenge and Survive");
-	ChatMsgAll(BLUE, "    Copyright (C) 2016 Barnaby \"Southclaws\" Keene");
-	ChatMsgAll(BLUE, "    This program comes with ABSOLUTELY NO WARRANTY; This is free software,");
-	ChatMsgAll(BLUE, "    and you are welcome to redistribute it under certain conditions.");
-	ChatMsgAll(BLUE, "    Please see <http://www.gnu.org/copyleft/gpl.html> for details.");
-	ChatMsgAll(BLUE, " ");
-	ChatMsgAll(BLUE, " ");
-	ChatMsgAll(BLUE, "-------------------------------------------------------------------------------------------------------------------------");
-	ChatMsgAll(YELLOW, " >  The Server Is Restarting, Please Wait...");
-	ChatMsgAll(BLUE, "-------------------------------------------------------------------------------------------------------------------------");
+	ChatMsgAll(Y_BLUE, " ");
+	ChatMsgAll(Y_ORANGE, "Scavenge and Survive");
+	ChatMsgAll(Y_BLUE, "    Copyright (C) 2016 Barnaby \"Southclaws\" Keene");
+	ChatMsgAll(Y_BLUE, "    This program comes with ABSOLUTELY NO WARRANTY; This is free software,");
+	ChatMsgAll(Y_BLUE, "    and you are welcome to redistribute it under certain conditions.");
+	ChatMsgAll(Y_BLUE, "    Please see <http://www.gnu.org/copyleft/gpl.html> for details.");
+	ChatMsgAll(Y_BLUE, " ");
+	ChatMsgAll(Y_BLUE, " ");
+	ChatMsgAll(Y_BLUE, "-------------------------------------------------------------------------------------------------------------------------");
+	ChatMsgAll(Y_YELLOW, " >  The Server Is Restarting, Please Wait...");
+	ChatMsgAll(Y_BLUE, "-------------------------------------------------------------------------------------------------------------------------");
 }
 
-task RestartUpdate[1000]()
-{
-	if(gServerMaxUptime > 0)
-	{
-		if(gServerUptime >= gServerMaxUptime)
-		{
+task RestartUpdate[1000]() {
+	if(gServerMaxUptime > 0) {
+		if(gServerUptime >= gServerMaxUptime) {
 			RestartGamemode();
 		}
 
-		if(gServerUptime >= gServerMaxUptime - 3600)
-		{
+		if(gServerUptime >= gServerMaxUptime - 3600) {
 			new str[36];
 			format(str, 36, "Server Restarting In:~n~%02d:%02d", (gServerMaxUptime - gServerUptime) / 60, (gServerMaxUptime - gServerUptime) % 60);
 			TextDrawSetString(RestartCount, str);
 
-			foreach(new i : Player)
-			{
-				if(IsPlayerHudOn(i))
-					TextDrawShowForPlayer(i, RestartCount);
-
-				else
-					TextDrawHideForPlayer(i, RestartCount);
+			foreach(new i : Player) {
+				TextDrawShowForPlayer(i, RestartCount);
+				// if(IsPlayerHudOn(i)) {
+				// } else {
+				// 	TextDrawHideForPlayer(i, RestartCount);
+				// }
 			}
 		}
 
@@ -769,17 +600,16 @@ task RestartUpdate[1000]()
 	}
 }
 
-DirectoryCheck(directory[])
-{
-	if(!dir_exists(directory))
-	{
-		err("Directory '%s' not found. Creating directory.", directory);
-		dir_create(directory);
+CreateDirIfNotExists(directory[]) {
+	if(!Exists(directory)) {
+		log("creating default directory",
+			_s("path", directory));
+
+		CreateDir(directory);
 	}
 }
 
-public Streamer_OnPluginError(const error[])
-{
+public Streamer_OnPluginError(const error[]) {
 	new tmp[256];
 	strcat(tmp, error, 256);
 	err(tmp);

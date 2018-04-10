@@ -1,61 +1,47 @@
 {
-	"user": "Southclaws",
-	"repo": "ScavengeSurvive",
-	"entry": "gamemodes/ScavengeSurvive.pwn",
-	"output": "gamemodes/ScavengeSurvive.amx",
-	"dependencies": [
-		"Southclaws/samp-stdlib:0.3.7-R2-2-1",
-		"Zeex/samp-plugin-crashdetect/include",
-		"maddinat0r/sscanf",
-		"Zeex/amx_assembly",
-		"Misiur/YSI-Includes",
-		"Southclaws/samp-redis",
-		"samp-incognito/samp-streamer-plugin",
-		"Southclaws/formatex",
-		"oscar-broman/strlib",
-		"Southclaws/SAMP-geoip",
-		"Southclaws/samp-ctime",
-		"Awsomedude/easyDialog",
-		"Southclaws/progress2",
-		"Southclaws/SA-MP-FileManager",
-		"Southclaws/samp-plugin-mapandreas/include",
-		"Southclaws/samp-ini",
-		"Southclaws/samp-logger",
-		"Southclaws/modio",
-		"Southclaws/SIF",
-		"Southclaws/samp-weapon-data",
-		"Southclaws/samp-zipline",
-		"Southclaws/samp-ladders",
-		"ScavengeSurvive/tick-difference",
-		"ScavengeSurvive/velocity",
-		"ScavengeSurvive/actions",
-		"ScavengeSurvive/settings",
-		"ScavengeSurvive/language",
-		"ScavengeSurvive/chat"
-	],
-	"builds": [
-		{
-			"name": "dev",
-			"version": "3.10.4",
-			"args": [
-				"-;+",
-				"-(+",
-				"-Z+",
-				"-d3"
-			],
-			"constants": {
-				"BUILD_MINIMAL": ""
-			}
-		},
-		{
-			"name": "prod",
-			"version": "3.10.4",
-			"args": [
-				"-;+",
-				"-(+",
-				"-Z+",
-				"-O2"
-			]
-		}
-	]
+  "user": "Southclaws",
+  "repo": "ScavengeSurvive",
+  "entry": "gamemodes/ScavengeSurvive.pwn",
+  "output": "gamemodes/ScavengeSurvive.amx",
+  "dependencies": [
+    "Southclaws/samp-stdlib:0.3.7-R2-2-1",
+    "Southclaws/samp-logger",
+    "Zeex/samp-plugin-crashdetect",
+    "maddinat0r/sscanf",
+    "pawn-lang/YSI-Includes",
+    "samp-incognito/samp-streamer-plugin",
+    "Southclaws/formatex",
+    "oscar-broman/strlib",
+    "Awsomedude/easyDialog",
+
+    "Southclaws/samp-ctime",
+    "Southclaws/progress2",
+    "Southclaws/samp-plugin-mapandreas",
+    "Southclaws/samp-ini",
+    "Southclaws/modio",
+    "Southclaws/samp-fsutil",
+
+    "ScavengeSurvive/mathutil",
+    "ScavengeSurvive/settings",
+    "ScavengeSurvive/language",
+    "ScavengeSurvive/chat",
+    "ScavengeSurvive/item"
+  ],
+  "builds": [
+    {
+      "name": "dev",
+      "args": ["-;+", "-(+", "-Z+", "-d3"],
+      "constants": {
+        "BUILD_MINIMAL": ""
+      }
+    },
+    {
+      "name": "prod",
+      "args": ["-;+", "-(+", "-Z+", "-O2"]
+    },
+    {
+      "name": "pre",
+      "args": ["-;+", "-(+", "-Z+", "-l"]
+    }
+  ]
 }

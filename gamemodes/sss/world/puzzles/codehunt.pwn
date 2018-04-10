@@ -68,6 +68,31 @@ hook OnGameModeInit()
 	SetItemTypeMaxArrayData(item_CodePart, 1);
 }
 
+
+/*
+	Picks <sizeof(output)> numbers from a list ranging from 0 to <max>
+*/
+stock PickFromList(max, count, output[])
+{
+	new
+		idx,
+		picked[256];
+
+	if(max > 256)
+		err("PickFromList function variable 'picked' is too small to match parameter 'max'.");
+
+	while(idx < count)
+	{
+		output[idx] = random(max);
+
+		if(picked[output[idx]] == 0)
+		{
+			picked[output[idx]] = 1;
+			idx++;
+		}
+	}
+}
+
 CreateCodeParts(Float:coords[][], size, keycode)
 {
 	new
