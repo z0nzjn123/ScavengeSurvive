@@ -1,47 +1,63 @@
 {
-  "user": "Southclaws",
-  "repo": "ScavengeSurvive",
-  "entry": "gamemodes/ScavengeSurvive.pwn",
-  "output": "gamemodes/ScavengeSurvive.amx",
-  "dependencies": [
-    "Southclaws/samp-stdlib:0.3.7-R2-2-1",
-    "Southclaws/samp-logger",
-    "Zeex/samp-plugin-crashdetect",
-    "maddinat0r/sscanf",
-    "pawn-lang/YSI-Includes",
-    "samp-incognito/samp-streamer-plugin",
-    "Southclaws/formatex",
-    "oscar-broman/strlib",
-    "Awsomedude/easyDialog",
-
-    "Southclaws/samp-ctime",
-    "Southclaws/progress2",
-    "Southclaws/samp-plugin-mapandreas/include",
-    "Southclaws/samp-ini",
-    "Southclaws/modio",
-    "Southclaws/samp-fsutil",
-
-    "ScavengeSurvive/mathutil",
-    "ScavengeSurvive/settings",
-    "ScavengeSurvive/language",
-    "ScavengeSurvive/chat",
-    "ScavengeSurvive/item"
-  ],
-  "builds": [
-    {
-      "name": "dev",
-      "args": ["-;+", "-(+", "-Z+", "-d3"],
-      "constants": {
-        "BUILD_MINIMAL": ""
-      }
-    },
-    {
-      "name": "prod",
-      "args": ["-;+", "-(+", "-Z+", "-O2"]
-    },
-    {
-      "name": "pre",
-      "args": ["-;+", "-(+", "-Z+", "-l"]
-    }
-  ]
+	"user": "Southclaws",
+	"repo": "ScavengeSurvive",
+	"entry": "gamemodes/ScavengeSurvive.pwn",
+	"output": "gamemodes/ScavengeSurvive.amx",
+	"dependencies": [
+		"Southclaws/samp-stdlib:0.3.7-R2-2-1",
+		"Southclaws/samp-logger",
+		"Zeex/samp-plugin-crashdetect",
+		"maddinat0r/sscanf",
+		"pawn-lang/YSI-Includes",
+		"samp-incognito/samp-streamer-plugin",
+		"Southclaws/formatex",
+		"oscar-broman/strlib",
+		"Awsomedude/easyDialog",
+		"Southclaws/samp-ctime",
+		"Southclaws/progress2",
+		"Southclaws/samp-plugin-mapandreas/include",
+		"Southclaws/samp-ini",
+		"Southclaws/modio",
+		"Southclaws/samp-fsutil",
+		"ScavengeSurvive/mathutil",
+		"ScavengeSurvive/settings",
+		"ScavengeSurvive/language",
+		"ScavengeSurvive/chat",
+		"ScavengeSurvive/item",
+		"ScavengeSurvive/container",
+		"ScavengeSurvive/bag",
+		"ScavengeSurvive/inventory"
+	],
+	"builds": [
+		{
+			"name": "dev",
+			"args": [
+				"-;+",
+				"-(+",
+				"-Z+",
+				"-d3"
+			],
+			"constants": {
+				"BUILD_MINIMAL": ""
+			}
+		},
+		{
+			"name": "prod",
+			"args": [
+				"-;+",
+				"-(+",
+				"-Z+",
+				"-O2"
+			]
+		},
+		{
+			"name": "pre",
+			"args": [
+				"-;+",
+				"-(+",
+				"-Z+",
+				"-l"
+			]
+		}
+	]
 }

@@ -132,7 +132,6 @@ public OnGameModeInit()
 #include <formatex>      // Southclaws/formatex
 #include <strlib>        // oscar-broman/strlib
 #include <easyDialog>    // Awsomedude/easyDialog
-
 #include <ctime>         // Southclaws/samp-ctime
 #include <progress2>     // Southclaws/progress2
 #include <mapandreas>    // Southclaws/samp-plugin-mapandreas
@@ -140,11 +139,14 @@ public OnGameModeInit()
 #include <modio>         // Southclaws/modio
 #include <fsutil>        // Southclaws/fsutil
 
-#include <mathutil> // ScavengeSurvive/mathutil
-#include <settings> // ScavengeSurvive/settings
-#include <language> // ScavengeSurvive/language
-#include <chat>     // ScavengeSurvive/chat
-#include <item>     // ScavengeSurvive/item
+#include <mathutil>  // ScavengeSurvive/mathutil
+#include <settings>  // ScavengeSurvive/settings
+#include <language>  // ScavengeSurvive/language
+#include <chat>      // ScavengeSurvive/chat
+#include <item>      // ScavengeSurvive/item
+#include <container> // ScavengeSurvive/container
+#include <bag>       // ScavengeSurvive/bag
+#include <inventory> // ScavengeSurvive/inventory
 
 // must re-initialise y_hooks after the above packages
 #include <YSI\y_hooks> // pawn-lang/YSI-Includes
@@ -154,25 +156,6 @@ public OnGameModeInit()
 // Definitions
 // -
 
-
-// Colours
-#define SS_YELLOW     (0xFFFF00FF)
-#define SS_RED        (0xE85454FF)
-#define SS_GREEN      (0x33AA33FF)
-#define SS_BLUE       (0x33CCFFFF)
-#define SS_ORANGE     (0xFFAA00FF)
-#define SS_GREY       (0xAFAFAFFF)
-#define SS_PINK       (0xFFC0CBFF)
-#define SS_NAVY       (0x000080FF)
-#define SS_GOLD       (0xB8860BFF)
-#define SS_LGREEN     (0x00FD4DFF)
-#define SS_TEAL       (0x008080FF)
-#define SS_BROWN      (0xA52A2AFF)
-#define SS_AQUA       (0xF0F8FFFF)
-#define SS_BLACK      (0x000000FF)
-#define SS_WHITE      (0xFFFFFFFF)
-#define SS_CHAT_LOCAL (0xADABD1FF)
-#define SS_CHAT_RADIO (0xCFD1ABFF)
 
 // Limits
 #define MAX_MOTD_LEN     (128)
@@ -232,21 +215,21 @@ Float:	gNameTagDistance,
 
 
 // API Pre
-// #tryinclude "sss/extensions/ext_pre.pwn"
+#tryinclude "sss/extensions/ext_pre.pwn"
 
 // UTILITIES
-// #include "sss/utils/misc.pwn"
-// #include "sss/utils/camera.pwn"
-// #include "sss/utils/vehicle.pwn"
-// #include "sss/utils/vehicle-data.pwn"
-// #include "sss/utils/vehicle-parts.pwn"
-// #include "sss/utils/zones.pwn"
-// #include "sss/utils/player.pwn"
-// #include "sss/utils/object.pwn"
-// #include "sss/utils/string.pwn"
-// #include "sss/utils/dialog-pages.pwn"
-// #include "sss/utils/item.pwn"
-// #include "sss/utils/headoffsets.pwn"
+#include "sss/utils/misc.pwn"
+#include "sss/utils/camera.pwn"
+#include "sss/utils/vehicle.pwn"
+#include "sss/utils/vehicle-data.pwn"
+#include "sss/utils/vehicle-parts.pwn"
+#include "sss/utils/zones.pwn"
+#include "sss/utils/player.pwn"
+#include "sss/utils/object.pwn"
+#include "sss/utils/string.pwn"
+#include "sss/utils/dialog-pages.pwn"
+#include "sss/utils/item.pwn"
+#include "sss/utils/headoffsets.pwn"
 
 // SERVER CORE
 // #include "sss/core/server/weather.pwn"
