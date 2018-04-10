@@ -16,7 +16,7 @@
 
     "Southclaws/samp-ctime",
     "Southclaws/progress2",
-    "Southclaws/samp-plugin-mapandreas",
+    "Southclaws/samp-plugin-mapandreas/include",
     "Southclaws/samp-ini",
     "Southclaws/modio",
     "Southclaws/samp-fsutil",
