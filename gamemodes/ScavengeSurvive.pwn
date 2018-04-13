@@ -182,7 +182,7 @@ public OnGameModeInit()
 #define IsValidPlayerID(%0) (0<=%0<MAX_PLAYERS)
 
 
-new
+new stock
 		gBuildNumber,
 bool:	gServerInitialising = true,
 		gServerInitialiseTick,
@@ -219,7 +219,6 @@ Float:	gNameTagDistance,
 
 // UTILITIES
 #include "sss/utils/misc.pwn"
-#include "sss/utils/camera.pwn"
 #include "sss/utils/vehicle.pwn"
 #include "sss/utils/vehicle-data.pwn"
 #include "sss/utils/vehicle-parts.pwn"
@@ -227,12 +226,10 @@ Float:	gNameTagDistance,
 #include "sss/utils/player.pwn"
 #include "sss/utils/object.pwn"
 #include "sss/utils/string.pwn"
-#include "sss/utils/dialog-pages.pwn"
 #include "sss/utils/item.pwn"
 #include "sss/utils/headoffsets.pwn"
 
 // SERVER CORE
-// #include "sss/core/server/weather.pwn"
 // #include "sss/core/server/save-block.pwn"
 // #include "sss/core/server/info-message.pwn"
 // #include "sss/core/player/language.pwn"
@@ -248,7 +245,6 @@ Float:	gNameTagDistance,
 // #include "sss/core/player/core.pwn"
 // #include "sss/core/player/save-load.pwn"
 // #include "sss/core/admin/core.pwn"
-// #include "sss/core/ui/hold-action.pwn"
 // #include "sss/core/item/liquid.pwn"
 // #include "sss/core/item/liquid-container.pwn"
 // #include "sss/core/world/tree.pwn"
@@ -283,31 +279,19 @@ Float:	gNameTagDistance,
 
 // PLAYER INTERNAL SCRIPTS
 // #include "sss/core/player/accounts.pwn"
-// // #include "sss/core/player/aliases.pwn"
-// // #include "sss/core/player/ipv4-log.pwn"
-// // #include "sss/core/player/gpci-log.pwn"
 // #include "sss/core/player/brightness.pwn"
 // #include "sss/core/player/spawn.pwn"
-// #include "sss/core/player/clothes.pwn"
 // #include "sss/core/player/death.pwn"
 // #include "sss/core/player/tutorial.pwn"
 // #include "sss/core/player/welcome-message.pwn"
 // #include "sss/core/player/cmd-process.pwn"
 // #include "sss/core/player/commands.pwn"
-// #include "sss/core/player/alt-tab-check.pwn"
 // #include "sss/core/player/disallow-actions.pwn"
 // #include "sss/core/player/whitelist.pwn"
 // #include "sss/core/player/country.pwn"
-// #include "sss/core/player/recipes.pwn"
-
-// UI
-// #include "sss/core/ui/radio.pwn"
-// #include "sss/core/ui/tool-tip.pwn"
-// #include "sss/core/ui/key-actions.pwn"
-// #include "sss/core/ui/watch.pwn"
-// #include "sss/core/ui/keypad.pwn"
-// #include "sss/core/ui/body-preview.pwn"
-// #include "sss/core/ui/status.pwn"
+// #include "sss/core/player/radio.pwn"
+// #include "sss/core/player/key-actions.pwn"
+// #include "sss/core/player/status.pwn"
 
 // WORLD ENTITIES
 // #include "sss/core/world/fuel.pwn"
