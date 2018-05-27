@@ -25,9 +25,9 @@
 #include <YSI\y_hooks>
 
 
-#define DEFAULT_POS_X				(10000.0)
-#define DEFAULT_POS_Y				(10000.0)
-#define DEFAULT_POS_Z				(1.0)
+#define DEFAULT_POS_X (10000.0)
+#define DEFAULT_POS_Y (10000.0)
+#define DEFAULT_POS_Z (1.0)
 
 
 enum E_PLAYER_DATA
@@ -67,14 +67,21 @@ forward OnPlayerDisconnected(playerid);
 forward OnDeath(playerid, killerid, reason);
 
 
+// -
+// Connect
+// -
+
+
 public OnPlayerConnect(playerid)
 {
-	log("[JOIN] %p joined", playerid);
+	log("player connected",
+		_i("playerid", playerid));
 
 	SetPlayerColor(playerid, 0xB8B8B800);
 
-	if(IsPlayerNPC(playerid))
+	if(IsPlayerNPC(playerid)) {
 		return 1;
+	}
 
 	ResetVariables(playerid);
 
@@ -88,8 +95,6 @@ public OnPlayerConnect(playerid)
 
 	sscanf(ipstring, "p<.>a<d>[4]", ipbyte);
 	ply_Data[playerid][ply_IP] = ((ipbyte[0] << 24) | (ipbyte[1] << 16) | (ipbyte[2] << 8) | ipbyte[3]);
-
-	SetPlayerBrightness(playerid, 255);
 
 	TogglePlayerControllable(playerid, false);
 	Streamer_ToggleIdleUpdate(playerid, true);
@@ -116,24 +121,74 @@ public OnPlayerConnect(playerid)
 	return 1;
 }
 
-public OnPlayerDisconnect(playerid, reason)
+public OnPlayerLoadedAccount(playerid, loadresult)
 {
-	if(gServerRestarting)
+	dbg("player", "player account loaded",
+		_i("playerid", playerid),
+		_i("loadresult", loadresult));
+
+	// LoadAccount aborted, kick player.
+	if(loadresult == ACCOUNT_LOAD_RESULT_ERROR) {
+		// TODO: reintegrate
+		// KickPlayer(playerid, "Account load failed");
+		Kick(playerid);
+		return;
+	}
+
+	// Account does not exist
+	if(loadresult == ACCOUNT_LOAD_RESULT_NO_EXIST) {
+		DisplayRegisterPrompt(playerid);
+	}
+
+	// Account does exist, prompt login
+	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST) {
+		DisplayLoginPrompt(playerid);
+	}
+
+	// Account does exist, auto login
+	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_AL) {
+		Login(playerid);
+	}
+
+	// Account does exist, but not in whitelist
+	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_WL) {
+		// TODO: reintegrate
+		// WhitelistKick(playerid);
+		Kick(playerid);
+	}
+
+	// Account does exists, but is disabled
+	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_DA) {
+		// TODO: reintegrate
+		// KickPlayer(playerid, "Account inactive");
+		Kick(playerid);
+	}
+
+	return;
+}
+
+
+// -
+// Disconnect
+// -
+
+
+public OnPlayerDisconnect(playerid, reason) {
+	if(gServerRestarting) {
 		return 0;
+	}
 
 	Logout(playerid);
 
-	switch(reason)
-	{
-		case 0:
-		{
+	switch(reason) {
+		case 0: {
 			ChatMsgAll(GREY, " >  %p lost connection.", playerid);
-			log(sprintf("[PART] %p (lost connection)", playerid), 0);
-		}
-		case 1:
-		{
+			log("player lost connection",
+				_i("playerid", playerid));
+		} case 1: {
 			ChatMsgAll(GREY, " >  %p left the server.", playerid);
-			log(sprintf("[PART] %p (quit)", playerid), 0);
+			log("player quit",
+				_i("playerid", playerid));
 		}
 	}
 
@@ -142,53 +197,11 @@ public OnPlayerDisconnect(playerid, reason)
 	return 1;
 }
 
-public OnPlayerLoadedAccount(playerid, loadresult)
-{
-	log("[OnPlayerLoadedAccount] %p loadresult: %d", playerid, loadresult);
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_ERROR) // LoadAccount aborted, kick player.
-	{
-		KickPlayer(playerid, "Account load failed");
-		return;
-	}
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_NO_EXIST) // Account does not exist
-	{
-		DisplayRegisterPrompt(playerid);
-	}
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST) // Account does exist, prompt login
-	{
-		DisplayLoginPrompt(playerid);
-	}
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_AL) // Account does exist, auto login
-	{
-		Login(playerid);
-	}
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_WL) // Account does exist, but not in whitelist
-	{
-		WhitelistKick(playerid);
-	}
-
-	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_DA) // Account does exists, but is disabled
-	{
-		KickPlayer(playerid, "Account inactive");
-	}
-
-	return;
-}
-
-hook OnPlayerDisconnected(playerid)
-{
-
-
+hook OnPlayerDisconnected(playerid) {
 	ResetVariables(playerid);
 }
 
-ResetVariables(playerid)
-{
+ResetVariables(playerid) {
 	ply_Data[playerid][ply_Password][0]			= EOS;
 	ply_Data[playerid][ply_IP]					= 0;
 	ply_Data[playerid][ply_Warnings]			= 0;
@@ -210,8 +223,9 @@ ResetVariables(playerid)
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_SAWNOFF_SHOTGUN,	100);
 	SetPlayerSkillLevel(playerid, WEAPONSKILL_MICRO_UZI,		100);
 
-	for(new i; i < 10; i++)
+	for(new i; i < 10; i++) {
 		RemovePlayerAttachedObject(playerid, i);
+	}
 }
 
 ptask PlayerUpdateFast[100](playerid)
@@ -226,7 +240,9 @@ ptask PlayerUpdateFast[100](playerid)
 
 			if(ply_Data[playerid][ply_PingLimitStrikes] == 30)
 			{
-				KickPlayer(playerid, sprintf("Having a ping of: %d limit: %d.", GetPlayerPing(playerid), pinglimit));
+				// TODO: reintegrate
+				// KickPlayer(playerid, sprintf("Having a ping of: %d limit: %d.", GetPlayerPing(playerid), pinglimit));
+				Kick(playerid);
 
 				ply_Data[playerid][ply_PingLimitStrikes] = 0;
 
@@ -239,39 +255,44 @@ ptask PlayerUpdateFast[100](playerid)
 		ply_Data[playerid][ply_PingLimitStrikes] = 0;
 	}
 
-	if(NetStats_MessagesRecvPerSecond(playerid) > 200)
-	{
-		ChatMsgAdmins(3, YELLOW, " >  %p sending %d messages per second.", playerid, NetStats_MessagesRecvPerSecond(playerid));
-		return;
-	}
+	// TODO: update
+	// if(NetStats_MessagesRecvPerSecond(playerid) > 200)
+	// {
+	// 	ChatMsgAdmins(3, YELLOW, " >  %p sending %d messages per second.", playerid, NetStats_MessagesRecvPerSecond(playerid));
+	// 	return;
+	// }
 
-	if(!IsPlayerSpawned(playerid))
-		return;
+	// TODO: reintegrate
+	// if(!IsPlayerSpawned(playerid))
+	// 	return;
 
-	if(IsPlayerInAnyVehicle(playerid))
-	{
-		PlayerVehicleUpdate(playerid);
-	}
-	else
-	{
-		if(!gVehicleSurfing)
-			VehicleSurfingCheck(playerid);
-	}
+	// TODO: reintegrate
+	// if(IsPlayerInAnyVehicle(playerid))
+	// {
+	// 	PlayerVehicleUpdate(playerid);
+	// }
+	// else
+	// {
+	// 	if(!gVehicleSurfing)
+	// 		VehicleSurfingCheck(playerid);
+	// }
 
-	PlayerBagUpdate(playerid);
+	// TODO: reintegrate
+	// PlayerBagUpdate(playerid);
 
-	new
-		hour,
-		minute;
+	// TODO: reintegrate
+	// new
+	// 	hour,
+	// 	minute;
 
-	// Get player's own time data
-	GetTimeForPlayer(playerid, hour, minute);
+	// // Get player's own time data
+	// GetTimeForPlayer(playerid, hour, minute);
 
-	// If it's -1, just use the default instead.
-	if(hour == -1 || minute == -1)
-		gettime(hour, minute);
+	// // If it's -1, just use the default instead.
+	// if(hour == -1 || minute == -1)
+	// 	gettime(hour, minute);
 
-	SetPlayerTime(playerid, hour, minute);
+	// SetPlayerTime(playerid, hour, minute);
 
 	return;
 }

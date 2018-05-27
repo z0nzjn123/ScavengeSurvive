@@ -25,11 +25,33 @@
 #include <YSI\y_hooks>
 
 
+#define FIELD_PLAYER_ID					"_id"
+#define FIELD_PLAYER_NAME				"name"
+#define FIELD_PLAYER_PASS				"pass"
+#define FIELD_PLAYER_IPV4				"ipv4"
+#define FIELD_PLAYER_ALIVE				"alive"
+#define FIELD_PLAYER_REGDATE			"regdate"
+#define FIELD_PLAYER_LASTLOG			"lastlog"
+#define FIELD_PLAYER_SPAWNTIME			"spawntime"
+#define FIELD_PLAYER_TOTALSPAWNS		"spawns"
+#define FIELD_PLAYER_WARNINGS			"warnings"
+#define FIELD_PLAYER_GPCI				"gpci"
+#define FIELD_PLAYER_ARCHIVED			"archived"
+
+#define ACCOUNT_LOAD_RESULT_EXIST		(0) // Account does exist, prompt login
+#define ACCOUNT_LOAD_RESULT_EXIST_AL	(1) // Account does exist, auto login
+#define ACCOUNT_LOAD_RESULT_EXIST_WL	(2) // Account does exist, but not in whitelist
+#define ACCOUNT_LOAD_RESULT_EXIST_DA	(3) // Account does exist, but is disabled
+#define ACCOUNT_LOAD_RESULT_NO_EXIST	(4) // Account does not exist
+#define ACCOUNT_LOAD_RESULT_ERROR		(5) // LoadAccount aborted, kick player.
+
+
 static
-	acc_LoginAttempts[MAX_PLAYERS],
-	acc_IsNewPlayer[MAX_PLAYERS],
-	acc_HasAccount[MAX_PLAYERS],
-	acc_LoggedIn[MAX_PLAYERS];
+	RequestsClient:AccountsClient,
+	LoginAttempts[MAX_PLAYERS],
+	NewPlayer[MAX_PLAYERS],
+	HasAccount[MAX_PLAYERS],
+	LoggedIn[MAX_PLAYERS];
 
 
 forward OnPlayerLoadAccount(playerid);
@@ -37,22 +59,19 @@ forward OnPlayerLoadedAccount(playerid, loadresult);
 forward OnPlayerRegister(playerid);
 forward OnPlayerLogin(playerid);
 
-forward OnLoadAccount(playerid, loadresult);
 
-
-hook OnGameModeInit()
-{
-	//
+hook OnScriptInit() {
+	AccountsClient = RequestsClient("localhost:7788", RequestHeaders(
+		"Authorization", "password" // TODO: load from settings
+	));
 }
 
 hook OnPlayerConnect(playerid)
 {
-
-
-	acc_LoginAttempts[playerid] = 0;
-	acc_IsNewPlayer[playerid] = false;
-	acc_HasAccount[playerid] = false;
-	acc_LoggedIn[playerid] = false;
+	LoginAttempts[playerid] = 0;
+	NewPlayer[playerid] = false;
+	HasAccount[playerid] = false;
+	LoggedIn[playerid] = false;
 }
 
 
@@ -63,14 +82,16 @@ hook OnPlayerConnect(playerid)
 ==============================================================================*/
 
 
+static Map:AccountLoadRequests;
+forward OnAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node);
 LoadAccount(playerid)
 {
-	if(CallLocalFunction("OnPlayerLoadAccount", "d", playerid))
+	if(CallLocalFunction("OnPlayerLoadAccount", "d", playerid)) {
 		return;
+	}
 
 	defer LoadAccountDelay(playerid);
 }
-
 timer LoadAccountDelay[1000](playerid)
 {
 	if(gServerInitialising || GetTickCountDifference(GetTickCount(), gServerInitialiseTick) < 5000)
@@ -81,26 +102,42 @@ timer LoadAccountDelay[1000](playerid)
 
 	if(!IsPlayerConnected(playerid))
 	{
-		log("[LoadAccount] Player %d not connected any more.", playerid);
+		dbg("player", "player not connected any more.",
+			_i("playerid", playerid));
 		return;
 	}
 
-	AccountIO_Load(playerid, "OnLoadAccount");
+	new
+		name[MAX_PLAYER_NAME],
+		url[128];
+
+	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
+	format(url, sizeof(url), "/store/playerGet?name=%s", name);
+
+	new Request:id = RequestJSON(
+		AccountsClient,
+		url,
+		HTTP_METHOD_GET,
+		"OnAccountLoad"
+	);
+	MAP_insert_val_val(AccountLoadRequests, playerid, _:id);
 
 	return;
 }
+public OnAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node) {
+	new playerid = MAP_get_val_val(AccountLoadRequests, _:id);
 
-public OnLoadAccount(playerid, loadresult)
-{
-	if(loadresult == ACCOUNT_LOAD_RESULT_NO_EXIST) // Account does not exist
-		acc_HasAccount[playerid] = false;
+	// TODO: unmarshal response and check success field
+	// if(loadresult == ACCOUNT_LOAD_RESULT_NO_EXIST) {
+	// 	HasAccount[playerid] = false;
+	// } else {
+	// 	HasAccount[playerid] = true;
+	// }
 
-	else
-		acc_HasAccount[playerid] = true;
+	HasAccount[playerid] = true;
+	NewPlayer[playerid] = false;
 
-	acc_IsNewPlayer[playerid] = false;
-
-	CallLocalFunction("OnPlayerLoadedAccount", "dd", playerid, loadresult);
+	CallLocalFunction("OnPlayerLoadedAccount", "dd", playerid, ACCOUNT_LOAD_RESULT_NO_EXIST);
 }
 
 
@@ -114,18 +151,28 @@ public OnLoadAccount(playerid, loadresult)
 DisplayRegisterPrompt(playerid)
 {
 	new str[150];
-	format(str, 150, ls(playerid, "ACCREGIBODY"), playerid);
+	format(str, 150, @L(playerid, "ACCREGIBODY"), playerid);
 
-	log("[DisplayRegisterPrompt] %p is registering", playerid);
+	dbg("player", "player is registering",
+		_i("playerid", playerid));
 
-	Dialog_Show(playerid, RegisterPrompt, DIALOG_STYLE_PASSWORD, ls(playerid, "ACCREGITITL"), str, "Accept", "Leave");
+	Dialog_Open(
+		playerid,
+		"RegisterPrompt",
+		DIALOG_STYLE_PASSWORD,
+		@L(playerid, "ACCREGITITL"),
+		str,
+		"Accept",
+		"Leave"
+	);
 
 	return 1;
 }
-
 Dialog:RegisterPrompt(playerid, response, listitem, inputtext[])
 {
-	log("[RegisterPrompt] %p Response: %d", playerid, response);
+	dbg("player", "player responded to register dialog",
+		_i("playerid", playerid),
+		_i("response", response));
 
 	if(response)
 	{
@@ -140,11 +187,7 @@ Dialog:RegisterPrompt(playerid, response, listitem, inputtext[])
 
 		WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
 
-		if(!CreateAccount(playerid, buffer))
-			ShowWelcomeMessage(playerid, 10);
-
-		else
-			KickPlayer(playerid, "Account creation failed");
+		CreateAccount(playerid, buffer);
 	}
 	else
 	{
@@ -159,30 +202,41 @@ DisplayLoginPrompt(playerid, badpass = 0)
 {
 	new str[128];
 
-	if(badpass)
-		format(str, 128, ls(playerid, "ACCLOGWROPW"), acc_LoginAttempts[playerid]);
+	if(badpass) {
+		format(str, 128, @L(playerid, "ACCLOGWROPW"), LoginAttempts[playerid]);
+	} else {
+		format(str, 128, @L(playerid, "ACCLOGIBODY"), playerid);
+	}
 
-	else
-		format(str, 128, ls(playerid, "ACCLOGIBODY"), playerid);
+	dbg("player", "player logging in",
+		_i("playerid", playerid));
 
-	log("[DisplayLoginPrompt] %p is logging in", playerid);
-
-	Dialog_Show(playerid, LoginPrompt, DIALOG_STYLE_PASSWORD, ls(playerid, "ACCLOGITITL"), str, "Accept", "Leave");
+	Dialog_Open(
+		playerid,
+		"LoginPrompt",
+		DIALOG_STYLE_PASSWORD,
+		@L(playerid, "ACCLOGITITL"),
+		str,
+		"Accept",
+		"Leave"
+	);
 
 	return 1;
 }
 
 Dialog:LoginPrompt(playerid, response, listitem, inputtext[])
 {
-	log("[LoginPrompt] %p Response: %d", playerid, response);
+	dbg("player", "player responded to login dialog",
+		_i("playerid", playerid),
+		_i("response", response));
 
 	if(response)
 	{
 		if(strlen(inputtext) < 4)
 		{
-			acc_LoginAttempts[playerid]++;
+			LoginAttempts[playerid]++;
 
-			if(acc_LoginAttempts[playerid] < 5)
+			if(LoginAttempts[playerid] < 5)
 			{
 				DisplayLoginPrompt(playerid, 1);
 			}
@@ -208,9 +262,9 @@ Dialog:LoginPrompt(playerid, response, listitem, inputtext[])
 		}
 		else
 		{
-			acc_LoginAttempts[playerid]++;
+			LoginAttempts[playerid]++;
 
-			if(acc_LoginAttempts[playerid] < 5)
+			if(LoginAttempts[playerid] < 5)
 			{
 				DisplayLoginPrompt(playerid, 1);
 			}
@@ -240,6 +294,8 @@ Dialog:LoginPrompt(playerid, response, listitem, inputtext[])
 ==============================================================================*/
 
 
+static Map:AccountCreateRequests;
+forward OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node);
 CreateAccount(playerid, pass[])
 {
 	new
@@ -255,56 +311,105 @@ CreateAccount(playerid, pass[])
 	GetPlayerIp(playerid, ipv4, 16);
 	gpci(playerid, hash, MAX_GPCI_LEN);
 
-	ret = AccountIO_Create(name, pass, ipv4, regdate, lastlog, hash);
-	if(ret != 0)
+
+	new Request:id = RequestJSON(
+		AccountsClient,
+		"/store/playerCreate",
+		HTTP_METHOD_POST,
+		"OnAccountCreate",
+		JsonObject(
+			FIELD_PLAYER_PASS, JsonString(pass),
+			FIELD_PLAYER_IPV4, JsonString(ipv4),
+			FIELD_PLAYER_ALIVE, JsonBool(true),
+			FIELD_PLAYER_REGDATE, JsonInt(regdate),
+			FIELD_PLAYER_LASTLOG, JsonInt(lastlog),
+			FIELD_PLAYER_TOTALSPAWNS, JsonInt(0),
+			FIELD_PLAYER_WARNINGS, JsonInt(0),
+			FIELD_PLAYER_GPCI, JsonString(hash),
+			FIELD_PLAYER_ARCHIVED, JsonBool(false)
+		)
+	);
+	if(id == Request:-1) {
+		err("failed to create account for player",
+			_i("playerid", playerid),
+			_s("name", name));
 		return ret;
+	}
 
-	acc_IsNewPlayer[playerid] = true;
-	acc_HasAccount[playerid] = true;
-	SetPlayerToolTips(playerid, true);
-
-	CallLocalFunction("OnPlayerRegister", "d", playerid);
-	Login(playerid);
+	MAP_insert_val_val(AccountCreateRequests, playerid, _:id);
 
 	return 0;
 }
+public OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node) {
+	new playerid = MAP_get_val_val(AccountCreateRequests, _:id);
+	if(!IsPlayerConnected(playerid)) {
+		dbg("player", "ignoring response for non-connected player",
+			_i("playerid", playerid));
+		return;
+	}
+
+	NewPlayer[playerid] = true;
+	HasAccount[playerid] = true;
+
+	// TODO: reintegrate
+	// SetPlayerToolTips(playerid, true);
+
+	// TODO: unmarshal response and use success to branch on:
+	{
+		Login(playerid);
+		// TODO: reintegrate
+		// ShowWelcomeMessage(playerid, 10);
+	}// else {
+	// 	KickPlayer(playerid, "Account creation failed");
+	// }
+
+	CallLocalFunction("OnPlayerRegister", "d", playerid);
+}
+
+
+/*==============================================================================
+
+	Logs the player in, applying loaded data to the character
+
+==============================================================================*/
+
 
 Login(playerid)
 {
 	new
 		name[MAX_PLAYER_NAME],
 		hash[MAX_GPCI_LEN],
-		ipv4[16],
-		adminLevel;
+		ipv4[16];
 
 	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
 	gpci(playerid, hash, MAX_GPCI_LEN);
 	GetPlayerIp(playerid, ipv4, 16);
-	GetAccountAdminLevel(name, adminLevel);
 
-	log("[LOGIN] %p logged in, alive: %d", playerid, IsPlayerAlive(playerid));
+	dbg("player", "player logged in",
+		_i("playerid", playerid),
+		_i("alive", IsPlayerAlive(playerid)));
 
-	SetAccountIP(name, ipv4);
-	SetAccountGPCI(name, hash);
-	SetAccountLastLogin(name, gettime());
-	SetPlayerAdminLevel(playerid, adminLevel);
+	// TODO: update account with IP, GPCI and LastLogin time
+	// SetAccountIP(name, ipv4);
+	// SetAccountGPCI(name, hash);
+	// SetAccountLastLogin(name, gettime());
 
-	if(adminLevel > 0)
-	{
-		new
-			reports = GetUnreadReports();
+	// TODO: reintegrate
+	// SetPlayerAdminLevel(playerid, adminLevel);
+	// if(adminLevel > 0) {
+	// 	new reports = GetUnreadReports();
+	// 	ChatMsg(playerid, BLUE, " >  Your admin level: %d", adminLevel);
+	// 	if(reports > 0) {
+	// 		ChatMsg(playerid, YELLOW, " >  %d unread reports, type "C_BLUE"/reports "C_YELLOW"to view.", reports);
+	// 	}
+	// }
 
-		ChatMsg(playerid, BLUE, " >  Your admin level: %d", adminLevel);
-
-		if(reports > 0)
-			ChatMsg(playerid, YELLOW, " >  %d unread reports, type "C_BLUE"/reports "C_YELLOW"to view.", reports);
-	}
-
-	acc_LoggedIn[playerid] = true;
-	acc_LoginAttempts[playerid] = 0;
+	LoggedIn[playerid] = true;
+	LoginAttempts[playerid] = 0;
 
 	SetPlayerRadioFrequency(playerid, 107.0);
-	SetPlayerBrightness(playerid, 255);
+	// TODO: reintegrate or use kristoisberg/screen-colour-fader
+	// SetPlayerBrightness(playerid, 255);
 
 	CallLocalFunction("OnPlayerLogin", "d", playerid);
 }
@@ -319,9 +424,10 @@ Login(playerid)
 
 Logout(playerid, docombatlogcheck = 1)
 {
-	if(!acc_LoggedIn[playerid])
+	if(!LoggedIn[playerid])
 	{
-		log("[LOGOUT] %p not logged in.", playerid);
+		dbg("player", "player logged out who was not logged in",
+			_i("playerid", playerid));
 		return 0;
 	}
 
@@ -334,31 +440,34 @@ Logout(playerid, docombatlogcheck = 1)
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, r);
 
-	log("[LOGOUT] %p logged out at %.1f, %.1f, %.1f (%.1f) Logged In: %d Alive: %d Knocked Out: %d",
-		playerid, x, y, z, r, acc_LoggedIn[playerid], IsPlayerAlive(playerid), IsPlayerKnockedOut(playerid));
+	log("player logged out",
+		_i("playerid", playerid),
+		_f("x", x),
+		_f("y", y),
+		_f("z", z),
+		_f("r", r),
+		_i("alive", IsPlayerAlive(playerid)));
 
-	if(IsPlayerOnAdminDuty(playerid))
-	{
-		dbg("accounts", 1, "[LOGOUT] ERROR: Player on admin duty, aborting save.");
-		return 0;
-	}
+	// TODO: reintegrate
+	// if(IsPlayerOnAdminDuty(playerid))
+	// {
+	// 	return 0;
+	// }
 
-	if(docombatlogcheck)
-	{
-		if(gServerMaxUptime - gServerUptime > 30)
-		{
-			new
-				lastattacker,
-				lastweapon;
+	// TODO: reintegrate
+	// if(docombatlogcheck) {
+	// 	if(gServerMaxUptime - gServerUptime > 30) {
+	// 		new
+	// 			lastattacker,
+	// 			lastweapon;
 
-			if(IsPlayerCombatLogging(playerid, lastattacker, lastweapon))
-			{
-				log("[LOGOUT] Player '%p' combat logged!", playerid);
-				ChatMsgAll(YELLOW, " >  %p combat logged!", playerid);
-				OnPlayerDeath(playerid, lastattacker, lastweapon);
-			}
-		}
-	}
+	// 		if(IsPlayerCombatLogging(playerid, lastattacker, lastweapon)) {
+	// 			log("[LOGOUT] Player '%p' combat logged!", playerid);
+	// 			ChatMsgAll(YELLOW, " >  %p combat logged!", playerid);
+	// 			OnPlayerDeath(playerid, lastattacker, lastweapon);
+	// 		}
+	// 	}
+	// }
 
 	new
 		itemid,
@@ -367,38 +476,42 @@ Logout(playerid, docombatlogcheck = 1)
 	itemid = GetPlayerItem(playerid);
 	itemtype = GetItemType(itemid);
 
-	if(IsItemTypeSafebox(itemtype))
-	{
-		dbg("accounts", 1, "[LOGOUT] Player is holding a box.");
-		if(!IsContainerEmpty(GetItemExtraData(itemid)))
-		{
-			dbg("accounts", 1, "[LOGOUT] Player is holding an unempty box, dropping in world.");
-			CreateItemInWorld(itemid, x + floatsin(-r, degrees), y + floatcos(-r, degrees), z - FLOOR_OFFSET);
-			itemid = INVALID_ITEM_ID;
-			itemtype = INVALID_ITEM_TYPE;
-		}
-	}
+	// TODO: reintegrate
+	// if(IsItemTypeSafebox(itemtype))
+	// {
+	// 	dbg("accounts", 1, "[LOGOUT] Player is holding a box.");
+	// 	if(!IsContainerEmpty(GetItemExtraData(itemid)))
+	// 	{
+	// 		dbg("accounts", 1, "[LOGOUT] Player is holding an unempty box, dropping in world.");
+	// 		CreateItemInWorld(itemid, x + floatsin(-r, degrees), y + floatcos(-r, degrees), z - FLOOR_OFFSET);
+	// 		itemid = INVALID_ITEM_ID;
+	// 		itemtype = INVALID_ITEM_TYPE;
+	// 	}
+	// }
 
 	if(IsItemTypeBag(itemtype))
 	{
-		dbg("accounts", 1, "[LOGOUT] Player is holding a bag.");
-		if(!IsContainerEmpty(GetItemArrayDataAtCell(itemid, 1)))
-		{
-			if(IsValidItem(GetPlayerBagItem(playerid)))
-			{
-				dbg("accounts", 1, "[LOGOUT] Player is holding an unempty bag and is wearing one, dropping in world.");
-				CreateItemInWorld(itemid, x + floatsin(-r, degrees), y + floatcos(-r, degrees), z - FLOOR_OFFSET);
-				itemid = INVALID_ITEM_ID;
-				itemtype = INVALID_ITEM_TYPE;
-			}
-			else
-			{
-				dbg("accounts", 1, "[LOGOUT] Player is holding an unempty bag but is not wearing one, calling GivePlayerBag.");
-				GivePlayerBag(playerid, itemid);
-				itemid = INVALID_ITEM_ID;
-				itemtype = INVALID_ITEM_TYPE;
-			}
-		}
+		dbg("player", "player holding bag",
+			_i("playerid", playerid));
+
+		// TODO: reintegrate
+		// if(!IsContainerEmpty(GetItemArrayDataAtCell(itemid, 1)))
+		// {
+		// 	if(IsValidItem(GetPlayerBagItem(playerid)))
+		// 	{
+		// 		dbg("accounts", 1, "[LOGOUT] Player is holding an unempty bag and is wearing one, dropping in world.");
+		// 		CreateItemInWorld(itemid, x + floatsin(-r, degrees), y + floatcos(-r, degrees), z - FLOOR_OFFSET);
+		// 		itemid = INVALID_ITEM_ID;
+		// 		itemtype = INVALID_ITEM_TYPE;
+		// 	}
+		// 	else
+		// 	{
+		// 		dbg("accounts", 1, "[LOGOUT] Player is holding an unempty bag but is not wearing one, calling GivePlayerBag.");
+		// 		GivePlayerBag(playerid, itemid);
+		// 		itemid = INVALID_ITEM_ID;
+		// 		itemtype = INVALID_ITEM_TYPE;
+		// 	}
+		// }
 	}
 
 	SavePlayerData(playerid);
@@ -406,40 +519,43 @@ Logout(playerid, docombatlogcheck = 1)
 	if(IsPlayerAlive(playerid))
 	{
 		DestroyItem(itemid);
-		DestroyItem(GetPlayerHolsterItem(playerid));
+		// DestroyItem(GetPlayerHolsterItem(playerid));
 		DestroyPlayerBag(playerid);
-		RemovePlayerHolsterItem(playerid);
-		RemovePlayerWeapon(playerid);
+		// RemovePlayerHolsterItem(playerid);
+		// RemovePlayerWeapon(playerid);
 
-		for(new i; i < INV_MAX_SLOTS; i++)
-			DestroyItem(GetInventorySlotItem(playerid, 0));
+		// TODO: update
+		// for(new i; i < INV_MAX_SLOTS; i++) {
+		// 	DestroyItem(GetInventorySlotItem(playerid, 0));
+		// }
+		// if(IsValidItem(GetPlayerHatItem(playerid))) {
+		// 	RemovePlayerHatItem(playerid);
+		// }
 
-		if(IsValidItem(GetPlayerHatItem(playerid)))
-			RemovePlayerHatItem(playerid);
+		// if(IsValidItem(GetPlayerMaskItem(playerid))) {
+		// 	RemovePlayerMaskItem(playerid);
+		// }
 
-		if(IsValidItem(GetPlayerMaskItem(playerid)))
-			RemovePlayerMaskItem(playerid);
+		// if(IsPlayerInAnyVehicle(playerid))
+		// {
+		// 	new
+		// 		vehicleid = GetPlayerLastVehicle(playerid),
+		// 		Float:health;
 
-		if(IsPlayerInAnyVehicle(playerid))
-		{
-			new
-				vehicleid = GetPlayerLastVehicle(playerid),
-				Float:health;
+		// 	GetVehicleHealth(vehicleid, health);
 
-			GetVehicleHealth(vehicleid, health);
+		// 	if(IsVehicleUpsideDown(vehicleid) || health < 300.0)
+		// 	{
+		// 		DestroyVehicle(vehicleid);
+		// 	}
+		// 	else
+		// 	{
+		// 		if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		// 			SetVehicleExternalLock(vehicleid, E_LOCK_STATE_OPEN);
+		// 	}
 
-			if(IsVehicleUpsideDown(vehicleid) || health < 300.0)
-			{
-				DestroyVehicle(vehicleid);
-			}
-			else
-			{
-				if(GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
-					SetVehicleExternalLock(vehicleid, E_LOCK_STATE_OPEN);
-			}
-
-			UpdatePlayerVehicle(playerid, vehicleid);
-		}
+		// 	UpdatePlayerVehicle(playerid, vehicleid);
+		// }
 	}
 
 	return 1;
@@ -455,19 +571,20 @@ Logout(playerid, docombatlogcheck = 1)
 
 SavePlayerData(playerid)
 {
-	dbg("accounts", 1, "[SavePlayerData] Saving '%p'", playerid);
+	dbg("player", "saving player data",
+		_i("playerid", playerid));
 
-	if(!acc_LoggedIn[playerid])
+	if(!LoggedIn[playerid])
 	{
-		dbg("accounts", 1, "[SavePlayerData] ERROR: Player isn't logged in");
+		dbg("player", "player is not logged in",
+			_i("playerid", playerid));
 		return 0;
 	}
 
-	if(IsPlayerOnAdminDuty(playerid))
-	{
-		dbg("accounts", 1, "[SavePlayerData] ERROR: On admin duty");
-		return 0;
-	}
+	// if(IsPlayerOnAdminDuty(playerid))
+	// {
+	// 	return 0;
+	// }
 
 	new
 		Float:x,
@@ -478,43 +595,44 @@ SavePlayerData(playerid)
 	GetPlayerPos(playerid, x, y, z);
 	GetPlayerFacingAngle(playerid, r);
 
-	if(IsAtConnectionPos(x, y, z))
-	{
-		dbg("accounts", 1, "[SavePlayerData] ERROR: At connection pos");
-		return 0;
-	}
+	// TODO: reintegrate
+	// if(IsAtConnectionPos(x, y, z))
+	// {
+	// 	dbg("accounts", 1, "[SavePlayerData] ERROR: At connection pos");
+	// 	return 0;
+	// }
+	// SaveBlockAreaCheck(x, y, z);
 
-	SaveBlockAreaCheck(x, y, z);
-
-	if(IsPlayerInAnyVehicle(playerid))
+	if(IsPlayerInAnyVehicle(playerid)) {
 		x += 1.5;
-
-	if(IsPlayerAlive(playerid) && !IsPlayerInTutorial(playerid))
-	{
-		dbg("accounts", 2, "[SavePlayerData] Player is alive");
-		if(IsAtDefaultPos(x, y, z))
-		{
-			dbg("accounts", 2, "[SavePlayerData] ERROR: Player at default position");
-			return 0;
-		}
-
-		if(GetPlayerState(playerid) == PLAYER_STATE_SPECTATING)
-		{
-			dbg("accounts", 2, "[SavePlayerData] Player is spectating");
-			if(!gServerRestarting)
-			{
-				dbg("accounts", 2, "[SavePlayerData] Server is not restarting, aborting save");
-				return 0;
-			}
-		}
-
-		dbg("accounts", 2, "[SavePlayerData] Saving character data");
-		SavePlayerChar(playerid);
 	}
-	else
-	{
-		dbg("accounts", 2, "[SavePlayerData] Player is dead");
-	}
+
+	// if(IsPlayerAlive(playerid) && !IsPlayerInTutorial(playerid))
+	// {
+	// 	dbg("accounts", 2, "[SavePlayerData] Player is alive");
+	// 	if(IsAtDefaultPos(x, y, z))
+	// 	{
+	// 		dbg("accounts", 2, "[SavePlayerData] ERROR: Player at default position");
+	// 		return 0;
+	// 	}
+
+	// 	if(GetPlayerState(playerid) == PLAYER_STATE_SPECTATING)
+	// 	{
+	// 		dbg("accounts", 2, "[SavePlayerData] Player is spectating");
+	// 		if(!gServerRestarting)
+	// 		{
+	// 			dbg("accounts", 2, "[SavePlayerData] Server is not restarting, aborting save");
+	// 			return 0;
+	// 		}
+	// 	}
+
+	// 	dbg("accounts", 2, "[SavePlayerData] Saving character data");
+	// 	SavePlayerChar(playerid);
+	// }
+	// else
+	// {
+	// 	dbg("accounts", 2, "[SavePlayerData] Player is dead");
+	// }
 
 	return 1;
 }
@@ -527,310 +645,29 @@ SavePlayerData(playerid)
 ==============================================================================*/
 
 
-stock GetAccountData(name[], pass[], ipv4[], &alive, &regdate, &lastlog, &spawntime, &totalspawns, &warnings, hash[], &active, &banned, &admin, &whitelist, &reported)
-{
-	return AccountIO_Get(name, pass, ipv4, alive, regdate, lastlog, spawntime, totalspawns, warnings, hash, active, banned, admin, whitelist, reported);
+// NewPlayer
+stock bool:IsNewPlayer(playerid) {
+	if(!IsPlayerConnected(playerid)) {
+		return false;
+	}
+
+	return NewPlayer[playerid];
 }
 
-// FIELD_PLAYER_NAME
-stock AccountExists(name[])
-{
-	return AccountIO_Exists(name);
+// HasAccount
+stock bool:_IsPlayerRegistered(playerid) {
+	if(!IsPlayerConnected(playerid)) {
+		return false;
+	}
+
+	return HasAccount[playerid];
 }
 
-// FIELD_PLAYER_PASS
-stock GetAccountPassword(name[], password[MAX_PASSWORD_LEN])
-{
-	return AccountIO_GetField(name, FIELD_PLAYER_PASS, password, MAX_PASSWORD_LEN);
-}
-
-stock SetAccountPassword(name[], password[MAX_PASSWORD_LEN])
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_PASS, password);
-}
-
-// FIELD_PLAYER_IPV4
-stock GetAccountIP(name[], ipv4[16])
-{
-	return AccountIO_GetField(name, FIELD_PLAYER_IPV4, ipv4, 16);
-}
-
-stock SetAccountIP(name[], ipv4[16])
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_IPV4, ipv4);
-}
-
-// FIELD_PLAYER_ALIVE
-stock GetAccountAliveState(name[], &alivestate)
-{
-	new
-		str_alivestate[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_ALIVE, str_alivestate, 12);
-	alivestate = strval(str_alivestate);
-
-	return ret;
-}
-
-stock SetAccountAliveState(name[], alivestate)
-{
-	new ret;
-
-	if(alivestate)
-		ret = AccountIO_SetField(name, FIELD_PLAYER_ALIVE, "1");
-	else
-		ret = AccountIO_SetField(name, FIELD_PLAYER_ALIVE, "0");
-
-	return ret;
-}
-
-// FIELD_PLAYER_REGDATE
-stock GetAccountRegistrationDate(name[], &timestamp)
-{
-	new
-		str_timestamp[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_REGDATE, str_timestamp, 12);
-	timestamp = strval(str_timestamp);
-
-	return ret;
-}
-
-stock SetAccountRegistrationDate(name[], timestamp)
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_REGDATE, sprintf("%d", timestamp));
-}
-
-// FIELD_PLAYER_LASTLOG
-stock GetAccountLastLogin(name[], &timestamp)
-{
-	new
-		str_timestamp[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_LASTLOG, str_timestamp, 12);
-	timestamp = strval(str_timestamp);
-
-	return ret;
-}
-
-stock SetAccountLastLogin(name[], timestamp)
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_LASTLOG, sprintf("%d", timestamp));
-}
-
-// FIELD_PLAYER_SPAWNTIME
-stock GetAccountLastSpawnTimestamp(name[], &timestamp)
-{
-	new
-		str_timestamp[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_SPAWNTIME, str_timestamp, 12);
-	timestamp = strval(str_timestamp);
-
-	return ret;
-}
-
-stock SetAccountLastSpawnTimestamp(name[], timestamp)
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_SPAWNTIME, sprintf("%d", timestamp));
-}
-
-// FIELD_PLAYER_TOTALSPAWNS
-stock GetAccountTotalSpawns(name[], &spawns)
-{
-	new
-		str_spawns[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_TOTALSPAWNS, str_spawns, 12);
-	spawns = strval(str_spawns);
-
-	return ret;
-}
-
-stock SetAccountTotalSpawns(name[], spawns)
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_TOTALSPAWNS, sprintf("%d", spawns));
-}
-
-// FIELD_PLAYER_WARNINGS
-stock GetAccountWarnings(name[], &warnings)
-{
-	new
-		str_warnings[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_WARNINGS, str_warnings, 12);
-	warnings = strval(str_spawns);
-
-	return ret;
-}
-
-stock SetAccountWarnings(name[], warnings)
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_WARNINGS, sprintf("%d", warnings));
-}
-
-// FIELD_PLAYER_GPCI
-stock GetAccountGPCI(name[], hash[MAX_GPCI_LEN])
-{
-	return AccountIO_GetField(name, FIELD_PLAYER_GPCI, hash, MAX_GPCI_LEN);
-}
-
-stock SetAccountGPCI(name[], hash[MAX_GPCI_LEN])
-{
-	return AccountIO_SetField(name, FIELD_PLAYER_GPCI, hash);
-}
-
-// FIELD_PLAYER_ACTIVE
-stock GetAccountActiveState(name[], &activestate)
-{
-	new
-		str_activestate[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_ACTIVE, str_activestate, 12);
-	activestate = strval(str_activestate);
-
-	return ret;
-}
-
-stock SetAccountActiveState(name[], activestate)
-{
-	new ret;
-
-	if(activestate)
-		ret = AccountIO_SetField(name, FIELD_PLAYER_ACTIVE, "1");
-	else
-		ret = AccountIO_SetField(name, FIELD_PLAYER_ACTIVE, "0");
-
-	return ret;
-}
-
-// FIELD_PLAYER_BANNED
-stock GetAccountBannedState(name[], &bannedstate)
-{
-	new
-		str_bannedstate[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_BANNED, str_bannedstate);
-	bannedstate = strval(str_bannedstate);
-
-	return ret;
-}
-
-stock SetAccountBannedState(name[], bannedstate)
-{
-	new ret;
-
-	if(bannedstate)
-		ret = AccountIO_SetField(name, FIELD_PLAYER_BANNED, "1");
-	else
-		ret = AccountIO_SetField(name, FIELD_PLAYER_BANNED, "0");
-
-	return ret;
-}
-
-// FIELD_PLAYER_ADMIN
-stock GetAccountAdminLevel(name[], &level)
-{
-	new
-		str_level[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_ADMIN, str_level);
-	level = strval(str_level);
-
-	return ret;
-}
-
-stock SetAccountAdminLevel(name[], level)
-{
-	new ret = AccountIO_UpdateAdminList();
-	if(ret)
-		err("AccountIO_UpdateAdminList returned %d", ret);
-
-	return AccountIO_SetField(name, FIELD_PLAYER_ADMIN, sprintf("%d", level));
-}
-
-// FIELD_PLAYER_WHITELIST
-stock GetAccountWhitelisted(name[], &whitelisted)
-{
-	new
-		str_whitelisted[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_WHITELIST, str_whitelisted);
-	whitelisted = strval(str_whitelisted);
-
-	return ret;
-}
-
-stock SetAccountWhitelisted(name[], whitelisted)
-{
-	new ret;
-
-	if(whitelisted)
-		ret = AccountIO_SetField(name, FIELD_PLAYER_WHITELIST, "1");
-	else
-		ret = AccountIO_SetField(name, FIELD_PLAYER_WHITELIST, "0");
-
-	return ret;
-}
-
-// FIELD_PLAYER_REPORTED
-stock GetAccountReported(name[], &reported)
-{
-	new
-		str_reported[12],
-		ret;
-
-	ret = AccountIO_GetField(name, FIELD_PLAYER_REPORTED, str_reported);
-	reported = strval(str_reported);
-
-	return ret;
-}
-
-stock SetAccountReported(name[], reported)
-{
-	new ret;
-
-	if(reported)
-		ret = AccountIO_SetField(name, FIELD_PLAYER_WHITELIST, "1");
-	else
-		ret = AccountIO_SetField(name, FIELD_PLAYER_WHITELIST, "0");
-
-	return ret;
-}
-
-// acc_IsNewPlayer
-stock IsNewPlayer(playerid)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	return acc_IsNewPlayer[playerid];
-}
-
-// acc_HasAccount
-stock IsPlayerRegistered(playerid)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	return acc_HasAccount[playerid];
-}
-
-// acc_LoggedIn
-stock IsPlayerLoggedIn(playerid)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	return acc_LoggedIn[playerid];
+// LoggedIn
+stock bool:IsPlayerLoggedIn(playerid) {
+	if(!IsPlayerConnected(playerid)) {
+		return false;
+	}
+
+	return LoggedIn[playerid];
 }

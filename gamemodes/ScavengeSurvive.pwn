@@ -215,10 +215,11 @@ Float:	gNameTagDistance,
 // -
 
 
-// API Pre
+// Pre-hook API
 #tryinclude "sss/extensions/ext_pre.pwn"
 
-// UTILITIES
+// Utilities
+#include "sss/utils/colours.pwn"
 #include "sss/utils/misc.pwn"
 #include "sss/utils/vehicle.pwn"
 #include "sss/utils/vehicle-data.pwn"
@@ -230,18 +231,22 @@ Float:	gNameTagDistance,
 #include "sss/utils/item.pwn"
 #include "sss/utils/headoffsets.pwn"
 
-// SERVER CORE
+// Server
 // #include "sss/core/server/save-block.pwn"
 // #include "sss/core/server/info-message.pwn"
 // #include "sss/core/server/loot.pwn"
 // #include "sss/core/server/init.pwn"
 
-/*
-	PARENT SYSTEMS
-	Modules that declare setup functions and constants used throughout.
-*/
-// #include "sss/core/player/language.pwn"
-// #include "sss/core/player/accounts-io.pwn"
+// Player
+#include "sss/core/player/accounts.pwn"
+#include "sss/core/player/core.pwn"
+
+
+// -
+// Libraries that have not been migrated yet
+// -
+
+
 // #include "sss/core/vehicle/vehicle-type.pwn"
 // #include "sss/core/vehicle/lock.pwn"
 // #include "sss/core/vehicle/core.pwn"
@@ -270,7 +275,6 @@ Float:	gNameTagDistance,
 // #include "sss/core/vehicle/trailer.pwn"
 
 // PLAYER INTERNAL SCRIPTS
-// #include "sss/core/player/accounts.pwn"
 // #include "sss/core/player/brightness.pwn"
 // #include "sss/core/player/spawn.pwn"
 // #include "sss/core/player/death.pwn"

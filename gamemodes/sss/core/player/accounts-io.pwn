@@ -25,42 +25,16 @@
 #include <YSI\y_hooks>
 
 
-#define REDIS_DOMAIN_ACCOUNTS			"account"
-#define FIELD_PLAYER_NAME				"name"
-#define FIELD_PLAYER_PASS				"pass"
-#define FIELD_PLAYER_IPV4				"ipv4"
-#define FIELD_PLAYER_ALIVE				"alive"
-#define FIELD_PLAYER_REGDATE			"regdate"
-#define FIELD_PLAYER_LASTLOG			"lastlog"
-#define FIELD_PLAYER_SPAWNTIME			"spawntime"
-#define FIELD_PLAYER_TOTALSPAWNS		"spawns"
-#define FIELD_PLAYER_WARNINGS			"warnings"
-#define FIELD_PLAYER_GPCI				"gpci"
-#define FIELD_PLAYER_ACTIVE				"active"
-#define FIELD_PLAYER_BANNED				"banned"
-#define FIELD_PLAYER_ADMIN				"admin"
-#define FIELD_PLAYER_WHITELIST			"whitelisted"
-#define FIELD_PLAYER_REPORTED			"reported"
 
-#define ACCOUNT_LOAD_RESULT_EXIST		(0) // Account does exist, prompt login
-#define ACCOUNT_LOAD_RESULT_EXIST_AL	(1) // Account does exist, auto login
-#define ACCOUNT_LOAD_RESULT_EXIST_WL	(2) // Account does exist, but not in whitelist
-#define ACCOUNT_LOAD_RESULT_EXIST_DA	(3) // Account does exist, but is disabled
-#define ACCOUNT_LOAD_RESULT_NO_EXIST	(4) // Account does not exist
-#define ACCOUNT_LOAD_RESULT_ERROR		(5) // LoadAccount aborted, kick player.
 
 
 forward OnAccountResponse(data[]);
 forward OnAccountCacheUpdate(name[]);
 
 
-hook OnScriptInit()
-{
-	Redis_BindMessage(gRedis, REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".response", "OnAccountResponse");
-}
 
 
-stock AccountIO_Create(name[], pass[], ipv4[], regdate, lastlog, hash[])
+stock AccountIO_Create(name[], pass[], ipv4[], regdate, lastlog, hash[], callback[])
 {
 	if(isnull(name))
 	{
@@ -68,28 +42,7 @@ stock AccountIO_Create(name[], pass[], ipv4[], regdate, lastlog, hash[])
 		return 1;
 	}
 
-	new
-		key[MAX_PLAYER_NAME + 32],
-		ret = 0;
-
-	format(key, sizeof(key), REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".%s", name);
-
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_PASS, pass);
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_IPV4, ipv4);
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_ALIVE, "1");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_REGDATE, sprintf("%d", regdate));
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_LASTLOG, sprintf("%d", lastlog));
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_TOTALSPAWNS, "0");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_WARNINGS, "0");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_GPCI, hash);
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_ACTIVE, "1");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_BANNED, "0");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_ADMIN, "0");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_WHITELIST, "0");
-	ret += Redis_SetHashValue(gRedis, key, FIELD_PLAYER_REPORTED, "0");
-	Redis_SendMessage(gRedis, REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".request", sprintf("AccountIO_Create %s", name));
-
-	return ret;
+	return 0;
 }
 
 stock AccountIO_Load(playerid, callback[])
@@ -105,37 +58,6 @@ stock AccountIO_Load(playerid, callback[])
 		err("callback is null");
 		return 1;
 	}
-
-	new
-		name[MAX_PLAYER_NAME],
-		key[MAX_PLAYER_NAME + 32];
-
-	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
-	format(key, sizeof(key), REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".%s", name);
-
-	if(!Redis_Exists(gRedis, key))
-	{
-		CallLocalFunction(callback, "dd", playerid, ACCOUNT_LOAD_RESULT_NO_EXIST);
-		return 2;
-	}
-
-	new
-		ret,
-		passhash[MAX_PASSWORD_LEN],
-		alive_str[2],
-		regdate_str[12],
-		lastlog_str[12],
-		spawntime_str[12],
-		spawns_str[12],
-		warnings_str[12],
-		active_str[12],
-		gpci_str[MAX_GPCI_LEN],
-		bool:alive,
-		regdate,
-		lastlog,
-		spawntime,
-		spawns,
-		warnings;
 
 	ret += Redis_GetHashValue(gRedis, key, FIELD_PLAYER_PASS, passhash);
 	ret += Redis_GetHashValue(gRedis, key, FIELD_PLAYER_ALIVE, alive_str);
@@ -185,6 +107,7 @@ stock AccountIO_Load(playerid, callback[])
 	log("[LoadAccount] %p (account exists, prompting login) Alive: %d Last login: %T", playerid, alive, lastlog);
 
 	CallLocalFunction(callback, "dd", playerid, ACCOUNT_LOAD_RESULT_EXIST);
+
 	return 0;
 }
 
@@ -235,96 +158,4 @@ stock AccountIO_Get(name[], pass[], ipv4[], &alive, &regdate, &lastlog, &spawnti
 	reported = strval(str_reported);
 
 	return ret;
-}
-
-stock AccountIO_Exists(name[])
-{
-	if(isnull(name))
-	{
-		err("name is null");
-		return 1;
-	}
-
-	new key[MAX_PLAYER_NAME + 32];
-
-	format(key, sizeof(key), REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".%s", name);
-
-	return Redis_Exists(gRedis, key);
-}
-
-stock AccountIO_GetField(name[], field[], out[], len = sizeof(out))
-{
-	if(isnull(name))
-	{
-		err("name is null");
-		return 1;
-	}
-
-	if(isnull(field))
-	{
-		err("field is null");
-		return 1;
-	}
-
-	new key[MAX_PLAYER_NAME + 32];
-
-	format(key, sizeof(key), REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".%s", name);
-
-	return Redis_GetHashValue(gRedis, key, field, out, len);
-}
-
-stock AccountIO_SetField(name[], field[], val[])
-{
-	if(isnull(name))
-	{
-		err("name is null");
-		return 1;
-	}
-
-	if(isnull(field))
-	{
-		err("field is null");
-		return 1;
-	}
-
-	if(isnull(val))
-	{
-		err("val is null");
-		return 1;
-	}
-
-	new
-		key[MAX_PLAYER_NAME + 32],
-		ret;
-
-	format(key, sizeof(key), REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".%s", name);
-
-	ret = Redis_SetHashValue(gRedis, key, field, val);
-	if(ret)
-		return ret;
-
-	return Redis_SendMessage(gRedis, REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".request", sprintf("AccountIO_Update %s", name));
-}
-
-stock AccountIO_UpdateAdminList()
-{
-	return Redis_SendMessage(gRedis, REDIS_DOMAIN_ROOT"."REDIS_DOMAIN_ACCOUNTS".request", "AccountIO_UpdateAdminList");
-}
-
-stock AccountIO_GetAdminList(list[], len = sizeof(list))
-{
-	return Redis_GetString(gRedis, REDIS_DOMAIN_ROOT".admin.list", list, len);
-}
-
-stock AdminIO_GetAdminTotal()
-{
-	new
-		str_total[12],
-		ret;
-
-	ret = Redis_GetString(gRedis, REDIS_DOMAIN_ROOT".admin.total", str_total);
-	if(ret)
-		err("Redis_GetStr failed on admin.total, return: %d", ret);
-
-	return strval(str_total);
 }
