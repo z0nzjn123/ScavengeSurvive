@@ -138,6 +138,7 @@ public OnGameModeInit()
 #include <ini>           // Southclaws/samp-ini
 #include <modio>         // Southclaws/modio
 #include <fsutil>        // Southclaws/fsutil
+#include <requests>      // Southclaws/pawn-requests
 
 #include <mathutil>  // ScavengeSurvive/mathutil
 #include <settings>  // ScavengeSurvive/settings
@@ -232,12 +233,14 @@ Float:	gNameTagDistance,
 // SERVER CORE
 // #include "sss/core/server/save-block.pwn"
 // #include "sss/core/server/info-message.pwn"
-// #include "sss/core/player/language.pwn"
+// #include "sss/core/server/loot.pwn"
+// #include "sss/core/server/init.pwn"
 
 /*
 	PARENT SYSTEMS
 	Modules that declare setup functions and constants used throughout.
 */
+// #include "sss/core/player/language.pwn"
 // #include "sss/core/player/accounts-io.pwn"
 // #include "sss/core/vehicle/vehicle-type.pwn"
 // #include "sss/core/vehicle/lock.pwn"
@@ -251,17 +254,6 @@ Float:	gNameTagDistance,
 // #include "sss/core/world/explosive.pwn"
 // #include "sss/core/world/craft-construct.pwn"
 // #include "sss/core/world/loot-loader.pwn"
-
-/*
-	MODULE INITIALISATION CALLS
-	Calls module constructors to set up entity types.
-*/
-// #include "sss/core/server/init.pwn"
-
-/*
-	CHILD SYSTEMS
-	Modules that do not declare anything globally accessible besides interfaces.
-*/
 
 // VEHICLE
 // #include "sss/core/vehicle/player-vehicle.pwn"
@@ -292,29 +284,6 @@ Float:	gNameTagDistance,
 // #include "sss/core/player/radio.pwn"
 // #include "sss/core/player/key-actions.pwn"
 // #include "sss/core/player/status.pwn"
-
-// WORLD ENTITIES
-// #include "sss/core/world/fuel.pwn"
-// #include "sss/core/world/barbecue.pwn"
-// #include "sss/core/world/defences.pwn"
-// #include "sss/core/world/gravestone.pwn"
-// #include "sss/core/world/safebox.pwn"
-// #include "sss/core/world/tent.pwn"
-// #include "sss/core/world/campfire.pwn"
-// #include "sss/core/world/emp.pwn"
-// #include "sss/core/world/sign.pwn"
-// #include "sss/core/world/supply-crate.pwn"
-// #include "sss/core/world/weapons-cache.pwn"
-// #include "sss/core/world/loot.pwn"
-// #include "sss/core/world/workbench.pwn"
-// #include "sss/core/world/machine.pwn"
-// #include "sss/core/world/scrap-machine.pwn"
-// #include "sss/core/world/refine-machine.pwn"
-// #include "sss/core/world/tree-loader.pwn"
-// // #include "sss/core/world/water-purifier.pwn"
-// #include "sss/core/world/plot-pole.pwn"
-// #include "sss/core/world/item-tweak.pwn"
-// #include "sss/core/world/furniture.pwn"
 
 // ADMINISTRATION TOOLS
 // #include "sss/core/admin/report.pwn"

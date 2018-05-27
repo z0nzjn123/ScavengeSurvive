@@ -7,14 +7,14 @@
 		"rcon"
 	],
 	"plugins": [
-		"filemanager",
-		"MapAndreas",
-		"Whirlpool",
-		"crashdetect",
-		"ctime",
-		"sscanf",
-		"streamer",
-		"redis"
+		"Zeex/samp-plugin-crashdetect",
+		"maddinat0r/sscanf",
+		"samp-incognito/samp-streamer-plugin",
+		"Southclaws/samp-ctime",
+		"Southclaws/samp-plugin-mapandreas",
+		"Southclaws/pawn-requests",
+		"Southclaws/samp-fsutil",
+		"BigETI/pawn-memory"
 	],
 	"port": 7777,
 	"hostname": "SS",
