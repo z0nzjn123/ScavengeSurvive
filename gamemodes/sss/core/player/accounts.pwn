@@ -47,7 +47,6 @@
 
 
 static
-	RequestsClient:AccountsClient,
 	LoginAttempts[MAX_PLAYERS],
 	NewPlayer[MAX_PLAYERS],
 	HasAccount[MAX_PLAYERS],
@@ -59,12 +58,6 @@ forward OnPlayerLoadedAccount(playerid, loadresult);
 forward OnPlayerRegister(playerid);
 forward OnPlayerLogin(playerid);
 
-
-hook OnScriptInit() {
-	AccountsClient = RequestsClient("localhost:7788", RequestHeaders(
-		"Authorization", "password" // TODO: load from settings
-	));
-}
 
 hook OnPlayerConnect(playerid)
 {
@@ -115,7 +108,7 @@ timer LoadAccountDelay[1000](playerid)
 	format(url, sizeof(url), "/store/playerGet?name=%s", name);
 
 	new Request:id = RequestJSON(
-		AccountsClient,
+		Store,
 		url,
 		HTTP_METHOD_GET,
 		"OnAccountLoad"
@@ -313,7 +306,7 @@ CreateAccount(playerid, pass[])
 
 
 	new Request:id = RequestJSON(
-		AccountsClient,
+		Store,
 		"/store/playerCreate",
 		HTTP_METHOD_POST,
 		"OnAccountCreate",

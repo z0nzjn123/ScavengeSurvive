@@ -22,60 +22,56 @@
 ==============================================================================*/
 
 
+#include <YSI\y_hooks>
 
-LoadAllLanguages() {
+
+hook OnScriptInit() {
 	new
-		dir:dirhandle,
-		directory_with_root[256],
-		item[64],
-		type,
-		next_path[256],
-		default_entries,
+		Directory:dir,
+		directory_with_root[256] = DIRECTORY_SCRIPTFILES,
+		ENTRY_TYPE:type,
+		entry[64],
+		name[256],
 		entries,
 		languages;
 
 	strcat(directory_with_root, DIRECTORY_LANGUAGES);
 
-	dirhandle = dir_open(directory_with_root);
-
-	if(!dirhandle) {
+	dir = OpenDir(directory_with_root);
+	if(dir == Directory:-1) {
 		err("failed to read directory", _s("directory", directory_with_root));
 		return 0;
 	}
 
 	// Force load English first since that's the default language.
-	default_entries = InitLanguageFromFile(DEFAULT_LANGUAGE, DEFAULT_LANGUAGE);
-	log("Default language (English) has %d entries.", default_entries);
+	InitLanguageFromFile(DEFAULT_LANGUAGE);
+	log("loaded default language",
+		_s("language", DEFAULT_LANGUAGE));
 
-	if(default_entries == 0) {
-		err("No default entries loaded! Please add the 'English' langfile to '%s'.", directory_with_root);
-		return 0;
-	}
-
-	while(dir_list(dirhandle, item, type)) {
-		if(type == FM_FILE) {
-			if(!strcmp(item, DEFAULT_LANGUAGE))
+	while(DirNext(dir, type, entry)) {
+		if(type == E_REGULAR) {
+			if(!strcmp(entry, DEFAULT_LANGUAGE)) {
 				continue;
+			}
 
-			next_path[0] = EOS;
-			format(next_path, sizeof(next_path), "%s%s", DIRECTORY_LANGUAGES, item);
+			name[0] = EOS;
+			format(name, sizeof(name), "%s%s", DIRECTORY_LANGUAGES, entry);
 
-			entries = InitLanguageFromFile(next_path, item);
+			InitLanguageFromFile(entry);
 
 			if(entries > 0) {
 				log("successfully loaded language pack",
-					_s("item", item),
-					_i("entries", entries),
-					_i("missing", default_entries - entries));
+					_s("entry", entry),
+					_i("entries", entries));
 				languages++;
 			} else {
 				err("failed to load language pack: no entries loaded",
-					_s("item", item));
+					_s("entry", entry));
 			}
 		}
 	}
 
-	dir_close(dirhandle);
+	CloseDir(dir);
 
 	log("Loaded languages", _i("languages", languages));
 

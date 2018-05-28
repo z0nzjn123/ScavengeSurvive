@@ -137,7 +137,7 @@ public OnGameModeInit()
 #include <mapandreas>    // Southclaws/samp-plugin-mapandreas
 #include <ini>           // Southclaws/samp-ini
 #include <modio>         // Southclaws/modio
-#include <fsutil>        // Southclaws/fsutil
+#include <fsutil>        // Southclaws/pawn-fsutil
 #include <requests>      // Southclaws/pawn-requests
 
 #include <mathutil>  // ScavengeSurvive/mathutil
@@ -191,6 +191,10 @@ bool:	gServerRestarting = false,
 		gServerMaxUptime,
 		gServerUptime;
 
+new
+		RequestsClient:Store,
+		Request:StorePingRequest;
+
 // settings.ini variables
 new
 		gMessageOfTheDay[MAX_MOTD_LEN],
@@ -236,6 +240,7 @@ Float:	gNameTagDistance,
 // #include "sss/core/server/info-message.pwn"
 // #include "sss/core/server/loot.pwn"
 // #include "sss/core/server/init.pwn"
+#include "sss/core/server/language.pwn"
 
 // Player
 #include "sss/core/player/accounts.pwn"
@@ -416,6 +421,11 @@ OnGameModeInit_Setup() {
 	CreateDirIfNotExists(DIRECTORY_SCRIPTFILES);
 	CreateDirIfNotExists(DIRECTORY_SCRIPTFILES DIRECTORY_MAIN);
 
+	new
+		storeEndpoint[128],
+		storeKey[128];
+	GetSettingString(SETTINGS_FILE, "server/store/endpoint", "http://localhost:7788", storeEndpoint);
+	GetSettingString(SETTINGS_FILE, "server/store/key", "secret_key", storeKey);
 	GetSettingString(SETTINGS_FILE, "server/motd", "Please update the 'server/motd' string in "SETTINGS_FILE"", gMessageOfTheDay);
 	GetSettingString(SETTINGS_FILE, "server/website", "southclawjk.wordpress.com", gWebsiteURL);
 	GetSettingInt(SETTINGS_FILE, "server/crash-on-exit", true, gCrashOnExit);
@@ -439,6 +449,15 @@ OnGameModeInit_Setup() {
 	// they are the sole creator of the mode and this makes me sad and very
 	// hesitant to release my work completely free of charge.
 	SetGameModeText("Scavenge Survive by Southclaw");
+
+	Store = RequestsClient(storeEndpoint, RequestHeaders("Authorization", storeKey));
+	StorePingRequest = RequestJSON(
+		Store,
+		"/",
+		HTTP_METHOD_GET,
+		"OnStoreInit"
+	);
+
 
 	// SETTINGS
 	// if(!gPauseMap) {
@@ -466,6 +485,41 @@ OnGameModeInit_Setup() {
 	TextDrawColor				(RestartCount, -1);
 	TextDrawSetOutline			(RestartCount, 1);
 	TextDrawSetProportional		(RestartCount, 1);
+}
+
+public OnRequestFailure(Request:id, errorCode, errorMessage[], len) {
+	if(id == StorePingRequest) {
+		fatal("store endpoint indexing failed",
+			_i("errorCode", errorCode),
+			_s("errorMessage", errorMessage));
+		return;
+	}
+
+	return;
+}
+
+forward OnStoreInit(Request:id, E_HTTP_STATUS:status, Node:node);
+public OnStoreInit(Request:id, E_HTTP_STATUS:status, Node:node) {
+	if(status != HTTP_STATUS_OK) {
+		fatal("failed to connect to store",
+			_i("status", _:status));
+	}
+
+	new
+		bool:success,
+		message[128];
+
+	JsonGetBool(node, "success", success);
+	JsonGetString(node, "message", message);
+
+	if(!success) {
+		fatal("store response was not successful",
+			_s("message", message));
+	}
+
+	log("store endpoint confirmed", _s("message", message));
+
+	return;
 }
 
 public OnGameModeExit() {

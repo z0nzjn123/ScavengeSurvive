@@ -324,14 +324,16 @@ public OnPlayerClickTextDraw(playerid, Text:clickedid)
 {
 	if(clickedid == Text:65535)
 	{
-		if(IsPlayerDead(playerid))
-		{
-			SelectTextDraw(playerid, 0xFFFFFF88);
-		}
-		else
-		{
-			ShowWatch(playerid);
-		}
+		// TODO: reintegrate
+		// if(IsPlayerDead(playerid))
+		// {
+		// 	SelectTextDraw(playerid, 0xFFFFFF88);
+		// }
+		// else
+		// {
+		// 	// TODO: reintegrate
+		// 	// ShowWatch(playerid);
+		// }
 	}
 
 	return 1;
@@ -342,11 +344,12 @@ public OnPlayerSpawn(playerid)
 	if(IsPlayerNPC(playerid))
 		return 1;
 
-	if(IsPlayerOnAdminDuty(playerid))
-	{
-		SetPlayerPos(playerid, 0.0, 0.0, 3.0);
-		return 1;
-	}
+	// TODO: reintegrate
+	// if(IsPlayerOnAdminDuty(playerid))
+	// {
+	// 	SetPlayerPos(playerid, 0.0, 0.0, 3.0);
+	// 	return 1;
+	// }
 
 	ply_Data[playerid][ply_SpawnTick] = GetTickCount();
 
@@ -366,16 +369,17 @@ public OnPlayerUpdate(playerid)
 {
 	if(IsPlayerInAnyVehicle(playerid))
 	{
-		static
-			str[8],
-			Float:vx,
-			Float:vy,
-			Float:vz;
+		// TODO: reintegrate
+		// static
+		// 	str[8],
+		// 	Float:vx,
+		// 	Float:vy,
+		// 	Float:vz;
 
-		GetVehicleVelocity(GetPlayerLastVehicle(playerid), vx, vy, vz);
-		ply_Data[playerid][ply_Velocity] = floatsqroot( (vx*vx)+(vy*vy)+(vz*vz) ) * 150.0;
-		format(str, 32, "%.0fkm/h", ply_Data[playerid][ply_Velocity]);
-		SetPlayerVehicleSpeedUI(playerid, str);
+		// GetVehicleVelocity(GetPlayerLastVehicle(playerid), vx, vy, vz);
+		// ply_Data[playerid][ply_Velocity] = floatsqroot( (vx*vx)+(vy*vy)+(vz*vz) ) * 150.0;
+		// format(str, 32, "%.0fkm/h", ply_Data[playerid][ply_Velocity]);
+		// SetPlayerVehicleSpeedUI(playerid, str);
 	}
 	else
 	{
@@ -390,8 +394,9 @@ public OnPlayerUpdate(playerid)
 
 	if(ply_Data[playerid][ply_Alive])
 	{
-		if(IsPlayerOnAdminDuty(playerid))
-			ply_Data[playerid][ply_HitPoints] = 250.0;
+		// TODO: reintegrate
+		// if(IsPlayerOnAdminDuty(playerid))
+		// 	ply_Data[playerid][ply_HitPoints] = 250.0;
 
 		SetPlayerHealth(playerid, ply_Data[playerid][ply_HitPoints]);
 		SetPlayerArmour(playerid, ply_Data[playerid][ply_ArmourPoints]);
@@ -406,44 +411,39 @@ public OnPlayerUpdate(playerid)
 
 hook OnPlayerStateChange(playerid, newstate, oldstate)
 {
-
-
 	if(newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER)
 	{
 		ShowPlayerDialog(playerid, -1, DIALOG_STYLE_MSGBOX, " ", " ", " ", " ");
-		HidePlayerGear(playerid);
+		// TODO: reintegrate
+		// HidePlayerGear(playerid);
 	}
 
 	return 1;
 }
 
-hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
-{
+hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger) {
+	// TODO: reintegrate
+	// if(IsPlayerKnockedOut(playerid))
+	// 	return 0;
 
-
-	if(IsPlayerKnockedOut(playerid))
-		return 0;
-
-	if(GetPlayerSurfingVehicleID(playerid) == vehicleid)
+	if(GetPlayerSurfingVehicleID(playerid) == vehicleid) {
 		CancelPlayerMovement(playerid);
+	}
 
-	if(ispassenger)
-	{
+	if(ispassenger) {
 		new driverid = -1;
 
-		foreach(new i : Player)
-		{
-			if(IsPlayerInVehicle(i, vehicleid))
-			{
-				if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
-				{
+		foreach(new i : Player) {
+			if(IsPlayerInVehicle(i, vehicleid)) {
+				if(GetPlayerState(i) == PLAYER_STATE_DRIVER) {
 					driverid = i;
 				}
 			}
 		}
 
-		if(driverid == -1)
+		if(driverid == -1) {
 			CancelPlayerMovement(playerid);
+		}
 	}
 
 	return 1;
@@ -451,26 +451,28 @@ hook OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(IsPlayerKnockedOut(playerid))
-		return 0;
+	// TODO: reintegrate
+	// if(IsPlayerKnockedOut(playerid))
+	// 	return 0;
 
 	if(!IsPlayerInAnyVehicle(playerid))
 	{
-		new weaponid = GetItemTypeWeaponBaseWeapon(GetItemType(GetPlayerItem(playerid)));
+		// TODO: reintegrate
+		// new weaponid = GetItemTypeWeaponBaseWeapon(GetItemType(GetPlayerItem(playerid)));
 
-		if(weaponid == 34 || weaponid == 35 || weaponid == 43)
-		{
-			if(newkeys & 128)
-			{
-				TogglePlayerHatItemVisibility(playerid, false);
-				TogglePlayerMaskItemVisibility(playerid, false);
-			}
-			if(oldkeys & 128)
-			{
-				TogglePlayerHatItemVisibility(playerid, true);
-				TogglePlayerMaskItemVisibility(playerid, true);
-			}
-		}
+		// if(weaponid == 34 || weaponid == 35 || weaponid == 43)
+		// {
+		// 	if(newkeys & 128)
+		// 	{
+		// 		TogglePlayerHatItemVisibility(playerid, false);
+		// 		TogglePlayerMaskItemVisibility(playerid, false);
+		// 	}
+		// 	if(oldkeys & 128)
+		// 	{
+		// 		TogglePlayerHatItemVisibility(playerid, true);
+		// 		TogglePlayerMaskItemVisibility(playerid, true);
+		// 	}
+		// }
 	}
 
 	return 1;

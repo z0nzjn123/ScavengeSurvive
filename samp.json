@@ -3,7 +3,6 @@
 		"ScavengeSurvive"
 	],
 	"filterscripts": [
-		"object-loader",
 		"rcon"
 	],
 	"plugins": [
@@ -13,8 +12,9 @@
 		"Southclaws/samp-ctime",
 		"Southclaws/samp-plugin-mapandreas",
 		"Southclaws/pawn-requests",
-		"Southclaws/samp-fsutil",
-		"BigETI/pawn-memory"
+		"Southclaws/pawn-fsutil",
+		"BigETI/pawn-memory",
+		"Southclaws/samp-whirlpool"
 	],
 	"port": 7777,
 	"hostname": "SS",
