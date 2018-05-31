@@ -1,64 +1,61 @@
 {
-	"user": "Southclaws",
-	"repo": "ScavengeSurvive",
-	"entry": "gamemodes/ScavengeSurvive.pwn",
+    "user": "Southclaws",
+    "repo": "ScavengeSurvive",
+    "entry": "gamemodes/ScavengeSurvive.pwn",
 	"output": "gamemodes/ScavengeSurvive.amx",
-	"dependencies": [
-		"Southclaws/samp-stdlib:0.3.7-R2-2-1",
-		"Southclaws/samp-logger",
-		"Zeex/samp-plugin-crashdetect",
-		"maddinat0r/sscanf",
-		"pawn-lang/YSI-Includes",
-		"samp-incognito/samp-streamer-plugin",
-		"Southclaws/formatex",
-		"oscar-broman/strlib",
-		"Awsomedude/easyDialog",
-		"Southclaws/samp-ctime",
-		"Southclaws/progress2",
-		"Southclaws/samp-plugin-mapandreas",
-		"Southclaws/samp-ini",
-		"Southclaws/modio",
-		"Southclaws/pawn-requests",
-		"Southclaws/pawn-fsutil",
-		"ScavengeSurvive/mathutil",
-		"ScavengeSurvive/settings",
-		"ScavengeSurvive/language",
-		"ScavengeSurvive/chat",
-		"ScavengeSurvive/item",
-		"ScavengeSurvive/container",
-		"ScavengeSurvive/bag",
-		"ScavengeSurvive/inventory"
-	],
-	"builds": [
-		{
-			"name": "dev",
-			"args": [
-				"-;+",
-				"-(+",
-				"-Z+",
-				"-d3"
-			],
-			"constants": {
-				"BUILD_MINIMAL": ""
-			}
-		},
-		{
-			"name": "prod",
-			"args": [
-				"-;+",
-				"-(+",
-				"-Z+",
-				"-O2"
-			]
-		},
-		{
-			"name": "pre",
-			"args": [
-				"-;+",
-				"-(+",
-				"-Z+",
-				"-l"
-			]
-		}
-	]
+	"local": true,
+    "dependencies": [
+        "Southclaws/samp-stdlib:0.3.7-R2-2-1",
+        "Southclaws/samp-logger",
+        "maddinat0r/sscanf",
+        "pawn-lang/YSI-Includes",
+        "samp-incognito/samp-streamer-plugin",
+        "Southclaws/formatex",
+        "oscar-broman/strlib",
+        "Awsomedude/easyDialog",
+        "Southclaws/samp-ctime",
+        "Southclaws/progress2",
+        "Southclaws/samp-plugin-mapandreas",
+        "Southclaws/samp-ini",
+        "Southclaws/modio",
+        "Southclaws/pawn-requests",
+        "Southclaws/pawn-fsutil:1.0.3",
+        "Southclaws/samp-whirlpool",
+        "ScavengeSurvive/mathutil",
+        "ScavengeSurvive/settings",
+        "ScavengeSurvive/language:2.2.0",
+        "ScavengeSurvive/chat",
+        "ScavengeSurvive/item",
+        "ScavengeSurvive/container",
+        "ScavengeSurvive/bag",
+        "ScavengeSurvive/inventory"
+    ],
+    "builds": [
+        {
+            "name": "dev",
+            "args": ["-;+", "-(+", "-Z+", "-d3"],
+            "constants": {
+                "BUILD_MINIMAL": ""
+            }
+        },
+        {
+            "name": "prod",
+            "args": ["-;+", "-(+", "-Z+", "-O2"]
+        },
+        {
+            "name": "pre",
+            "args": ["-;+", "-(+", "-Z+", "-l"]
+        }
+    ],
+    "runtimes": [
+        {
+            "name": "dev",
+            "filterscripts": ["rcon"],
+            "port": 7777,
+            "hostname": "Scavenge and Survive [DEV]",
+            "maxplayers": 32,
+            "rcon": false,
+            "rcon_password": "test"
+        }
+    ]
 }

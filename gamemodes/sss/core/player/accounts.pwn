@@ -178,7 +178,7 @@ Dialog:RegisterPrompt(playerid, response, listitem, inputtext[])
 
 		new buffer[MAX_PASSWORD_LEN];
 
-		WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
+		// WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
 
 		CreateAccount(playerid, buffer);
 	}
@@ -246,7 +246,7 @@ Dialog:LoginPrompt(playerid, response, listitem, inputtext[])
 			inputhash[MAX_PASSWORD_LEN],
 			storedhash[MAX_PASSWORD_LEN];
 
-		WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
+		// WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
 		GetPlayerPassHash(playerid, storedhash);
 
 		if(!strcmp(inputhash, storedhash))
@@ -296,6 +296,8 @@ CreateAccount(playerid, pass[])
 		ipv4[16],
 		regdate,
 		lastlog,
+		regdateString,
+		lastlogString,
 		hash[MAX_GPCI_LEN],
 		ret;
 
@@ -303,7 +305,6 @@ CreateAccount(playerid, pass[])
 	regdate = lastlog = gettime();
 	GetPlayerIp(playerid, ipv4, 16);
 	gpci(playerid, hash, MAX_GPCI_LEN);
-
 
 	new Request:id = RequestJSON(
 		Store,
@@ -314,8 +315,8 @@ CreateAccount(playerid, pass[])
 			FIELD_PLAYER_PASS, JsonString(pass),
 			FIELD_PLAYER_IPV4, JsonString(ipv4),
 			FIELD_PLAYER_ALIVE, JsonBool(true),
-			FIELD_PLAYER_REGDATE, JsonInt(regdate),
-			FIELD_PLAYER_LASTLOG, JsonInt(lastlog),
+			FIELD_PLAYER_REGDATE, JsonString(regdateString),
+			FIELD_PLAYER_LASTLOG, JsonString(lastlogString),
 			FIELD_PLAYER_TOTALSPAWNS, JsonInt(0),
 			FIELD_PLAYER_WARNINGS, JsonInt(0),
 			FIELD_PLAYER_GPCI, JsonString(hash),
@@ -347,14 +348,26 @@ public OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node) {
 	// TODO: reintegrate
 	// SetPlayerToolTips(playerid, true);
 
-	// TODO: unmarshal response and use success to branch on:
-	{
+	new
+		bool:success,
+		message[256],
+		ret;
+	ret = ParseStatus(node, success, message);
+	if(ret) {
+		err("failed to parse status");
+		return;
+	}
+
+	if(success) {
 		Login(playerid);
 		// TODO: reintegrate
 		// ShowWelcomeMessage(playerid, 10);
-	}// else {
-	// 	KickPlayer(playerid, "Account creation failed");
-	// }
+	} else {
+		// KickPlayer(playerid, "Account creation failed");
+		Kick(playerid);
+		err("failed to create account",
+			_s("message", message));
+	}
 
 	CallLocalFunction("OnPlayerRegister", "d", playerid);
 }

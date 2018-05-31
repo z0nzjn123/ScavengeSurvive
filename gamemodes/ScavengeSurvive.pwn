@@ -234,6 +234,7 @@ Float:	gNameTagDistance,
 #include "sss/utils/string.pwn"
 #include "sss/utils/item.pwn"
 #include "sss/utils/headoffsets.pwn"
+#include "sss/utils/status.pwn"
 
 // Server
 // #include "sss/core/server/save-block.pwn"
