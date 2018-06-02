@@ -33,10 +33,11 @@
 enum E_PLAYER_DATA
 {
 			// Database Account Data
+			ply_ID[MAX_ID_LEN],
 			ply_Password[MAX_PASSWORD_LEN],
 			ply_IP,
-			ply_RegisterTimestamp,
-			ply_LastLogin,
+Timestamp:	ply_RegisterTimestamp,
+Timestamp:	ply_LastLogin,
 			ply_TotalSpawns,
 			ply_Warnings,
 
@@ -116,12 +117,12 @@ public OnPlayerConnect(playerid)
 
 	ply_Data[playerid][ply_ShowHUD] = true;
 
-	LoadAccount(playerid); // OnPlayerLoadedAccount
+	LoadAccount(playerid); // OnPlayerAccountLoaded
 
 	return 1;
 }
 
-public OnPlayerLoadedAccount(playerid, loadresult)
+public OnPlayerAccountLoaded(playerid, loadresult)
 {
 	dbg("player", "player account loaded",
 		_i("playerid", playerid),
@@ -483,6 +484,30 @@ KillPlayer(playerid, killerid, deathreason)
 	CallLocalFunction("OnDeath", "ddd", playerid, killerid, deathreason);
 }
 
+// ply_ID
+stock GetPlayerID(playerid, id[MAX_ID_LEN])
+{
+	if(!IsValidPlayerID(playerid))
+		return 0;
+
+	string[0] = EOS;
+	strcat(id, ply_Data[playerid][ply_ID]);
+
+	return 1;
+
+}
+
+stock SetPlayerID(playerid, id[MAX_ID_LEN])
+{
+	if(!IsPlayerConnected(playerid))
+		return 0;
+
+	ply_Data[playerid][ply_ID] = id;
+
+	return 1;
+}
+
+
 // ply_Password
 stock GetPlayerPassHash(playerid, string[MAX_PASSWORD_LEN])
 {
@@ -515,7 +540,7 @@ stock GetPlayerIpAsInt(playerid)
 }
 
 // ply_RegisterTimestamp
-stock GetPlayerRegTimestamp(playerid)
+stock Timestamp:GetPlayerRegTimestamp(playerid)
 {
 	if(!IsValidPlayerID(playerid))
 		return 0;
@@ -523,7 +548,7 @@ stock GetPlayerRegTimestamp(playerid)
 	return ply_Data[playerid][ply_RegisterTimestamp];
 }
 
-stock SetPlayerRegTimestamp(playerid, timestamp)
+stock SetPlayerRegTimestamp(playerid, Timestamp:timestamp)
 {
 	if(!IsPlayerConnected(playerid))
 		return 0;
@@ -534,7 +559,7 @@ stock SetPlayerRegTimestamp(playerid, timestamp)
 }
 
 // ply_LastLogin
-stock GetPlayerLastLogin(playerid)
+stock Timestamp:GetPlayerLastLogin(playerid)
 {
 	if(!IsValidPlayerID(playerid))
 		return 0;
@@ -542,7 +567,7 @@ stock GetPlayerLastLogin(playerid)
 	return ply_Data[playerid][ply_LastLogin];
 }
 
-stock SetPlayerLastLogin(playerid, timestamp)
+stock SetPlayerLastLogin(playerid, Timestamp:timestamp)
 {
 	if(!IsPlayerConnected(playerid))
 		return 0;

@@ -133,6 +133,7 @@ public OnGameModeInit()
 #include <strlib>        // oscar-broman/strlib
 #include <easyDialog>    // Awsomedude/easyDialog
 #include <ctime>         // Southclaws/samp-ctime
+#include <chrono>        // Southclaws/pawn-chrono
 #include <progress2>     // Southclaws/progress2
 #include <mapandreas>    // Southclaws/samp-plugin-mapandreas
 #include <ini>           // Southclaws/samp-ini

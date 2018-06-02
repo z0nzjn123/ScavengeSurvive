@@ -32,10 +32,10 @@ ParseStatus(Node:node, &bool:success, message[], len = sizeof message) {
     }
 
     ret = JsonGetString(node, "message", message, len);
-    if(ret) {
-        err("failed to access key 'success' in status node");
-        return ret;
-    }
+    // if(ret) {
+    //     err("failed to access key 'message' in status node");
+    //     return ret;
+    // }
 
     return 0;
 }

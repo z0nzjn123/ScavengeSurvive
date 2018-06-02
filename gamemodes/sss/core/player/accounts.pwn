@@ -45,6 +45,8 @@
 #define ACCOUNT_LOAD_RESULT_NO_EXIST	(4) // Account does not exist
 #define ACCOUNT_LOAD_RESULT_ERROR		(5) // LoadAccount aborted, kick player.
 
+#define MAX_ID_LEN (25)
+
 
 static
 	LoginAttempts[MAX_PLAYERS],
@@ -54,7 +56,7 @@ static
 
 
 forward OnPlayerLoadAccount(playerid);
-forward OnPlayerLoadedAccount(playerid, loadresult);
+forward OnPlayerAccountLoaded(playerid, loadresult);
 forward OnPlayerRegister(playerid);
 forward OnPlayerLogin(playerid);
 
@@ -77,24 +79,20 @@ hook OnPlayerConnect(playerid)
 
 static Map:AccountLoadRequests;
 forward OnAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node);
-LoadAccount(playerid)
-{
+LoadAccount(playerid) {
 	if(CallLocalFunction("OnPlayerLoadAccount", "d", playerid)) {
 		return;
 	}
 
 	defer LoadAccountDelay(playerid);
 }
-timer LoadAccountDelay[1000](playerid)
-{
-	if(gServerInitialising || GetTickCountDifference(GetTickCount(), gServerInitialiseTick) < 5000)
-	{
+timer LoadAccountDelay[1000](playerid) {
+	if(gServerInitialising || GetTickCountDifference(GetTickCount(), gServerInitialiseTick) < 5000) {
 		defer LoadAccountDelay(playerid);
 		return;
 	}
 
-	if(!IsPlayerConnected(playerid))
-	{
+	if(!IsPlayerConnected(playerid)) {
 		dbg("player", "player not connected any more.",
 			_i("playerid", playerid));
 		return;
@@ -120,17 +118,71 @@ timer LoadAccountDelay[1000](playerid)
 public OnAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node) {
 	new playerid = MAP_get_val_val(AccountLoadRequests, _:id);
 
-	// TODO: unmarshal response and check success field
-	// if(loadresult == ACCOUNT_LOAD_RESULT_NO_EXIST) {
-	// 	HasAccount[playerid] = false;
-	// } else {
-	// 	HasAccount[playerid] = true;
-	// }
+	new
+		bool:success,
+		message[256],
+		ret,
+		result;
+	ret = ParseStatus(node, success, message);
+	if(ret) {
+		err("failed to parse status");
+		result = ACCOUNT_LOAD_RESULT_ERROR;
+	} else {
+		if(success) {
+			HasAccount[playerid] = false;
+			NewPlayer[playerid] = false;
+			result = ACCOUNT_LOAD_RESULT_NO_EXIST;
+		} else {
+			ret = SetPlayerDataFromJSON(playerid, node);
+			if(ret) {
+				result = ACCOUNT_LOAD_RESULT_ERROR;
+			} else {
+				HasAccount[playerid] = true;
+				result = ACCOUNT_LOAD_RESULT_EXIST;
+			}
+		}
+	}
 
-	HasAccount[playerid] = true;
-	NewPlayer[playerid] = false;
+	CallLocalFunction("OnPlayerAccountLoaded", "dd", playerid, result);
+}
+SetPlayerDataFromJSON(playerid, Node:node) {
+	new bool:archived;
+	JsonGetBool(node, FIELD_PLAYER_ARCHIVED, archived);
+	if(archived) {
+		return 1;
+	}
 
-	CallLocalFunction("OnPlayerLoadedAccount", "dd", playerid, ACCOUNT_LOAD_RESULT_NO_EXIST);
+	new
+		id[MAX_ID_LEN],
+		passHash[MAX_PASSWORD_LEN],
+		bool:aliveState,
+		regDateString[22],
+		logDateString[22],
+		Timestamp:regTimestamp,
+		Timestamp:logTimestamp,
+		totalSpawns,
+		warnings;
+
+	JsonGetString(node, FIELD_PLAYER_ID, id);
+	JsonGetString(node, FIELD_PLAYER_PASS, passHash);
+	JsonGetBool(node, FIELD_PLAYER_ALIVE, aliveState);
+	JsonGetString(node, FIELD_PLAYER_REGDATE, regDateString);
+	JsonGetString(node, FIELD_PLAYER_LASTLOG, logDateString);
+	JsonGetInt(node, FIELD_PLAYER_TOTALSPAWNS, totalSpawns);
+	JsonGetInt(node, FIELD_PLAYER_WARNINGS, warnings);
+
+	TimeParse(regDateString, ISO6801_FULL_UTC, regTimestamp);
+	TimeParse(logDateString, ISO6801_FULL_UTC, logTimestamp);
+
+	SetPlayerID(playerid, id);
+	SetPlayerPassHash(playerid, passHash);
+	SetPlayerAliveState(playerid, aliveState);
+	SetPlayerRegTimestamp(playerid, regTimestamp);
+	SetPlayerLastLogin(playerid, logTimestamp);
+	SetPlayerTotalSpawns(playerid, totalSpawns);
+	SetPlayerWarnings(playerid, warnings);
+
+	return 0;
 }
 
 
@@ -178,7 +230,7 @@ Dialog:RegisterPrompt(playerid, response, listitem, inputtext[])
 
 		new buffer[MAX_PASSWORD_LEN];
 
-		// WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
+		WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
 
 		CreateAccount(playerid, buffer);
 	}
@@ -246,7 +298,7 @@ Dialog:LoginPrompt(playerid, response, listitem, inputtext[])
 			inputhash[MAX_PASSWORD_LEN],
 			storedhash[MAX_PASSWORD_LEN];
 
-		// WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
+		WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
 		GetPlayerPassHash(playerid, storedhash);
 
 		if(!strcmp(inputhash, storedhash))
@@ -294,17 +346,15 @@ CreateAccount(playerid, pass[])
 	new
 		name[MAX_PLAYER_NAME],
 		ipv4[16],
-		regdate,
-		lastlog,
-		regdateString,
-		lastlogString,
+		nowString[21],
 		hash[MAX_GPCI_LEN],
 		ret;
 
 	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
-	regdate = lastlog = gettime();
 	GetPlayerIp(playerid, ipv4, 16);
 	gpci(playerid, hash, MAX_GPCI_LEN);
+
+	TimeFormat(Now(), ISO6801_FULL_UTC, nowString);
 
 	new Request:id = RequestJSON(
 		Store,
@@ -312,11 +362,12 @@ CreateAccount(playerid, pass[])
 		HTTP_METHOD_POST,
 		"OnAccountCreate",
 		JsonObject(
+			FIELD_PLAYER_NAME, JsonString(name),
 			FIELD_PLAYER_PASS, JsonString(pass),
 			FIELD_PLAYER_IPV4, JsonString(ipv4),
 			FIELD_PLAYER_ALIVE, JsonBool(true),
-			FIELD_PLAYER_REGDATE, JsonString(regdateString),
-			FIELD_PLAYER_LASTLOG, JsonString(lastlogString),
+			FIELD_PLAYER_REGDATE, JsonString(nowString),
+			FIELD_PLAYER_LASTLOG, JsonString(nowString),
 			FIELD_PLAYER_TOTALSPAWNS, JsonInt(0),
 			FIELD_PLAYER_WARNINGS, JsonInt(0),
 			FIELD_PLAYER_GPCI, JsonString(hash),
