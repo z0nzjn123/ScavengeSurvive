@@ -25,10 +25,8 @@
 #include <YSI\y_hooks>
 
 
-Logout(playerid, docombatlogcheck = 1)
-{
-	if(!LoggedIn[playerid])
-	{
+Logout(playerid, docombatlogcheck = 1) {
+	if(!IsPlayerLoggedIn(playerid)) {
 		dbg("player", "player logged out who was not logged in",
 			_i("playerid", playerid));
 		return 0;
@@ -165,13 +163,11 @@ Logout(playerid, docombatlogcheck = 1)
 }
 
 
-SavePlayerData(playerid)
-{
+SavePlayerData(playerid) {
 	dbg("player", "saving player data",
 		_i("playerid", playerid));
 
-	if(!LoggedIn[playerid])
-	{
+	if(!IsPlayerLoggedIn(playerid)) {
 		dbg("player", "player is not logged in",
 			_i("playerid", playerid));
 		return 0;

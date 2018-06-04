@@ -1,7 +1,7 @@
 {
     "user": "Southclaws",
     "repo": "ScavengeSurvive",
-    "entry": "gamemodes/ScavengeSurvive.pwn",
+    "entry": "template/ScavengeSurvive.pwn",
     "output": "gamemodes/ScavengeSurvive.amx",
     "local": true,
     "dependencies": [
@@ -43,8 +43,8 @@
                     "gomplate.exe",
                     "-d=project.json",
                     "--input-dir=gamemodes/",
-                    "--output-dir=processed/",
-                    "--exclude=\"gamemodes/sss/extensions/.git/**\""
+                    "--output-dir=template/",
+                    "--exclude=gamemodes/sss/extensions/.git/**"
                 ]
             ]
         },

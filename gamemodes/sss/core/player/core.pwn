@@ -835,12 +835,12 @@ stock GetPlayerSpawnTick(playerid)
 }
 
 // LoggedIn
-bool:IsPlayerLoggedIn(playerid) {
+IsPlayerLoggedIn(playerid) {
 	if(!IsPlayerConnected(playerid)) {
 		return false;
 	}
 
-	return ply_LoggedIn[playerid];
+	return LoggedIn[playerid];
 }
 
 // NewPlayer
