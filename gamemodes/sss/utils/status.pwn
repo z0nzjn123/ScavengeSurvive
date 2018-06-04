@@ -22,13 +22,20 @@
 ==============================================================================*/
 
 
-ParseStatus(Node:node, &bool:success, message[], len = sizeof message) {
+// ParseStatus extracts success and message from SSC success responses:
+//
+// {
+//     "result": {...},
+//     "success": false,
+//     "message": "error message"
+// }
+//
+Error:ParseStatus(Node:node, &bool:success, message[], len = sizeof message) {
     new ret;
 
     ret = JsonGetBool(node, "success", success);
     if(ret) {
-        err("failed to access key 'success' in status node");
-        return ret;
+        return Error("failed to access key 'success' in status node");
     }
 
     ret = JsonGetString(node, "message", message, len);
@@ -37,5 +44,5 @@ ParseStatus(Node:node, &bool:success, message[], len = sizeof message) {
     //     return ret;
     // }
 
-    return 0;
+    return NoError;
 }

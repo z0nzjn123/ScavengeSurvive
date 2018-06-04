@@ -34,6 +34,7 @@
 #define MAX_PLAYERS	(32)
 
 #include <logger>
+#include <errors>
 
 native IsValidVehicle(vehicleid); // undefined native
 native gpci(playerid, serial[], len); // undefined native
@@ -181,7 +182,6 @@ public OnGameModeInit()
 #define HOLDING(%0) ((newkeys & (%0)) == (%0))
 #define RELEASED(%0) (((newkeys & (%0)) != (%0)) && ((oldkeys & (%0)) == (%0)))
 #define PRESSED(%0) (((newkeys & (%0)) == (%0)) && ((oldkeys & (%0)) != (%0)))
-#define IsValidPlayerID(%0) (0<=%0<MAX_PLAYERS)
 
 
 new stock

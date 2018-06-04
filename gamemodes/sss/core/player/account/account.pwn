@@ -101,12 +101,13 @@ public onAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node) {
 	new
 		bool:success,
 		message[256],
-		ret,
+		Error:ret,
 		result;
 	ret = ParseStatus(node, success, message);
 	if(ret) {
 		err("failed to parse status");
 		result = ACCOUNT_LOAD_RESULT_ERROR;
+		Handled(ret);
 	} else {
 		if(success) {
 			result = ACCOUNT_LOAD_RESULT_NO_EXIST;
@@ -123,11 +124,11 @@ public onAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node) {
 
 	CallLocalFunction("OnPlayerAccountLoaded", "dd", playerid, result);
 }
-SetPlayerDataFromJSON(playerid, Node:node) {
+Error:SetPlayerDataFromJSON(playerid, Node:node) {
 	new bool:archived;
 	JsonGetBool(node, FIELD_PLAYER_ARCHIVED, archived);
 	if(archived) {
-		return 1;
+		return 0;
 	}
 
 	new
