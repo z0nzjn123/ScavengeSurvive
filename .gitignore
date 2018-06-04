@@ -50,3 +50,5 @@ scriptfiles/data/
 scriptfiles/carmour/
 scriptfiles/.gitignore
 scriptfiles/.git/
+
+template/

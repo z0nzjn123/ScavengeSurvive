@@ -37,7 +37,16 @@
             "args": ["-;+", "-(+", "-Z+", "-d3"],
             "constants": {
                 "BUILD_MINIMAL": ""
-            }
+            },
+            "plugins": [
+                [
+                    "gomplate.exe",
+                    "-d=project.json",
+                    "--input-dir=gamemodes/",
+                    "--output-dir=processed/",
+                    "--exclude=\"gamemodes/sss/extensions/.git/**\""
+                ]
+            ]
         },
         {
             "name": "prod",

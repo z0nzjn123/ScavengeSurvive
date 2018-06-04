@@ -185,7 +185,7 @@ public OnGameModeInit()
 
 
 new stock
-		gBuildNumber = {{ .buildNumber }},
+		gBuildNumber = {{ file.Read "./BUILD_NUMBER" }},
 bool:	gServerInitialising = true,
 		gServerInitialiseTick,
 bool:	gServerRestarting = false,
