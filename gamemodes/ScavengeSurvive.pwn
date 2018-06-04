@@ -185,7 +185,7 @@ public OnGameModeInit()
 
 
 new stock
-		gBuildNumber,
+		gBuildNumber = {{ .buildNumber }},
 bool:	gServerInitialising = true,
 		gServerInitialiseTick,
 bool:	gServerRestarting = false,
@@ -245,7 +245,10 @@ Float:	gNameTagDistance,
 #include "sss/core/server/language.pwn"
 
 // Player
-#include "sss/core/player/accounts.pwn"
+#include "sss/core/player/account/account.pwn"
+#include "sss/core/player/account/register.pwn"
+#include "sss/core/player/account/login.pwn"
+#include "sss/core/player/account/logout.pwn"
 #include "sss/core/player/core.pwn"
 
 
