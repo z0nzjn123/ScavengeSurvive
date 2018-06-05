@@ -65,51 +65,49 @@ Dialog:LoginPrompt(playerid, response, listitem, inputtext[]) {
 		_i("playerid", playerid),
 		_i("response", response));
 
-	if(response) {
-		if(strlen(inputtext) < 4) {
-			LoginAttempts[playerid]++;
-
-			if(LoginAttempts[playerid] < 5) {
-				DisplayLoginPrompt(playerid, 1);
-			}
-			else {
-				ChatMsgAll(GREY, " >  %p left the server without logging in.", playerid);
-				Kick(playerid);
-			}
-
-			return 1;
-		}
-
-		new
-			inputhash[MAX_PASSWORD_LEN],
-			storedhash[MAX_PASSWORD_LEN];
-
-		WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
-		GetPlayerPassHash(playerid, storedhash);
-
-		if(!strcmp(inputhash, storedhash)) {
-			Login(playerid);
-		}
-		else {
-			LoginAttempts[playerid]++;
-
-			if(LoginAttempts[playerid] < 5) {
-				DisplayLoginPrompt(playerid, 1);
-			}
-			else {
-				ChatMsgAll(GREY, " >  %p left the server without logging in.", playerid);
-				Kick(playerid);
-			}
-
-			return 1;
-		}
-	}
-	else {
+	if(!response) {
 		ChatMsgAll(GREY, " >  %p left the server without logging in.", playerid);
 		Kick(playerid);
 	}
 
-	return 0;
+	if(strlen(inputtext) < 4) {
+		LoginAttempts[playerid]++;
+
+		if(LoginAttempts[playerid] < 5) {
+			DisplayLoginPrompt(playerid, 1);
+		} else {
+			ChatMsgAll(GREY, " >  %p left the server without logging in.", playerid);
+			Kick(playerid);
+		}
+
+		return;
+	}
+
+	new
+		inputhash[MAX_PASSWORD_LEN],
+		storedhash[MAX_PASSWORD_LEN];
+
+	WP_Hash(inputhash, MAX_PASSWORD_LEN, inputtext);
+	GetPlayerPassHash(playerid, storedhash);
+
+	if(!strcmp(inputhash, storedhash)) {
+		Login(playerid);
+	}
+	else {
+		LoginAttempts[playerid]++;
+
+		if(LoginAttempts[playerid] < 5) {
+			DisplayLoginPrompt(playerid, 1);
+		}
+		else {
+			ChatMsgAll(GREY, " >  %p left the server without logging in.", playerid);
+			Kick(playerid);
+		}
+
+		return;
+	}
+
+	return;
 }
 
 Login(playerid)
@@ -124,8 +122,7 @@ Login(playerid)
 	GetPlayerIp(playerid, ipv4, 16);
 
 	dbg("player", "player logged in",
-		_i("playerid", playerid),
-		_i("alive", IsPlayerAlive(playerid)));
+		_i("playerid", playerid)));
 
 	// TODO: update account with IP, GPCI and LastLogin time
 	// SetAccountIP(name, ipv4);
@@ -150,4 +147,3 @@ Login(playerid)
 
 	CallLocalFunction("OnPlayerLogin", "d", playerid);
 }
-

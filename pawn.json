@@ -6,6 +6,7 @@
 	"dependencies": [
 		"Southclaws/samp-stdlib:0.3.7-R2-2-1",
 		"Southclaws/samp-logger",
+		"Southclaws/pawn-errors:^1.1.0",
 		"maddinat0r/sscanf",
 		"pawn-lang/YSI-Includes",
 		"samp-incognito/samp-streamer-plugin:1.9.3",
@@ -28,8 +29,7 @@
 		"ScavengeSurvive/item",
 		"ScavengeSurvive/container",
 		"ScavengeSurvive/bag",
-		"ScavengeSurvive/inventory",
-		"Southclaws/pawn-errors"
+		"ScavengeSurvive/inventory"
 	],
 	"local": true,
 	"builds": [

@@ -66,8 +66,7 @@ static
 
 static
 				admin_Level[MAX_PLAYERS],
-				admin_OnDuty[MAX_PLAYERS],
-				admin_PlayerKicked[MAX_PLAYERS];
+				admin_OnDuty[MAX_PLAYERS];
 
 
 hook OnScriptInit()
@@ -95,6 +94,16 @@ hook OnPlayerDisconnected(playerid)
 	admin_PlayerKicked[playerid] = 0;
 }
 
+hook OnPlayerTimedOut(playerid) {
+	ChatMsgAdmins(1, GREY, " >  %P"C_GREY" timed out, reason: "C_BLUE"%s", playerid, reason);
+	return Y_HOOKS_CONTINUE_RETURN_0;
+}
+
+hook OnPlayerKicked(playerid) {
+	ChatMsgAdmins(1, GREY, " >  %P"C_GREY" kicked, reason: "C_BLUE"%s", playerid, reason);
+	return Y_HOOKS_CONTINUE_RETURN_0;
+}
+
 
 /*==============================================================================
 
@@ -102,55 +111,6 @@ hook OnPlayerDisconnected(playerid)
 
 ==============================================================================*/
 
-
-TimeoutPlayer(playerid, reason[])
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	if(admin_PlayerKicked[playerid])
-		return 0;
-
-	new ip[16];
-
-	GetPlayerIp(playerid, ip, sizeof(ip));
-
-	BlockIpAddress(ip, 11500);
-	admin_PlayerKicked[playerid] = true;
-
-	log("[PART] %p (timeout: %s)", playerid, reason);
-
-	ChatMsgAdmins(1, GREY, " >  %P"C_GREY" timed out, reason: "C_BLUE"%s", playerid, reason);
-
-	return 1;
-}
-
-KickPlayer(playerid, reason[], bool:tellplayer = true)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	if(admin_PlayerKicked[playerid])
-		return 0;
-
-	defer KickPlayerDelay(playerid);
-	admin_PlayerKicked[playerid] = true;
-
-	log("[PART] %p (kick: %s)", playerid, reason);
-
-	ChatMsgAdmins(1, GREY, " >  %P"C_GREY" kicked, reason: "C_BLUE"%s", playerid, reason);
-
-	if(tellplayer)
-		ChatMsgLang(playerid, GREY, "KICKMESSAGE", reason);
-
-	return 1;
-}
-
-timer KickPlayerDelay[1000](playerid)
-{
-	Kick(playerid);
-	admin_PlayerKicked[playerid] = false;
-}
 
 stock ChatMsgAdmins(level, colour, fmat[], {Float,_}:...) {
 	new buffer[244];

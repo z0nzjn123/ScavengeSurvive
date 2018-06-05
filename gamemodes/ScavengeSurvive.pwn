@@ -236,6 +236,8 @@ Float:	gNameTagDistance,
 #include "sss/utils/item.pwn"
 #include "sss/utils/headoffsets.pwn"
 #include "sss/utils/status.pwn"
+#include "sss/utils/error-dialog.pwn"
+#include "sss/utils/kick-delay.pwn"
 
 // Server
 // #include "sss/core/server/save-block.pwn"
@@ -250,6 +252,7 @@ Float:	gNameTagDistance,
 #include "sss/core/player/account/login.pwn"
 #include "sss/core/player/account/exit.pwn"
 #include "sss/core/player/core.pwn"
+#include "sss/core/player/welcome-message.pwn"
 
 
 // -

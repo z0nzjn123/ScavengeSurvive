@@ -110,8 +110,6 @@ hook OnGameModeInit()
 
 hook OnPlayerConnect(playerid)
 {
-
-
 	spawn_State[playerid] = false;
 
 //	defer LoadClassUI(playerid);

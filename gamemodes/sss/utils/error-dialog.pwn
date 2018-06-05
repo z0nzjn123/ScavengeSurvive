@@ -22,32 +22,25 @@
 ==============================================================================*/
 
 
-// ParseStatus extracts success and message from SSC success responses:
-//
-// {
-//     "result": {...},
-//     "success": false,
-//     "message": "error message"
-// }
-//
-Error:ParseStatus(Node:node, &bool:success, &Node:result, message[], len = sizeof message) {
-	new ret;
+static errors[2048];
 
-	ret = JsonGetBool(node, "success", success);
-	if(ret) {
-		return Error(1, "failed to access key 'success' in status node");
+stock ShowErrorDialog(playerid) {
+	if(GetErrorCount() == 0) {
+		return;
 	}
 
-	ret = JsonGetString(node, "message", message, len);
-	// if(ret) {
-	//     err("failed to access key 'message' in status node");
-	//     return ret;
-	// }
+	GetErrors(errors);
+	Dialog_Open(
+		playerid,
+		"",
+		DIALOG_STYLE_MSGBOX,
+		"Errors",
+		errors,
+		"Close",
+		""
+	);
 
-	ret = JsonGetObject(node, "result", result);
-	if(ret) {
-		result = Node:-1;
-	}
+	err(errors);
 
-	return NoError();
+	return;
 }

@@ -32,8 +32,8 @@ forward OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node);
 forward OnPlayerRegister(playerid);
 
 
-DisplayRegisterPrompt(playerid)
-{
+forward Error:CreateAccount(playerid, pass[]);
+DisplayRegisterPrompt(playerid) {
 	new str[150];
 	format(str, 150, @L(playerid, "ACCREGIBODY"), playerid);
 
@@ -52,45 +52,38 @@ DisplayRegisterPrompt(playerid)
 
 	return 1;
 }
-Dialog:RegisterPrompt(playerid, response, listitem, inputtext[])
-{
+Dialog:RegisterPrompt(playerid, response, listitem, inputtext[]) {
 	dbg("player", "player responded to register dialog",
 		_i("playerid", playerid),
 		_i("response", response));
 
-	if(response)
-	{
-		if(!(4 <= strlen(inputtext) <= 32))
-		{
+	if(response) {
+		if(!(4 <= strlen(inputtext) <= 32)) {
 			ChatMsgLang(playerid, YELLOW, "PASSWORDREQ");
 			DisplayRegisterPrompt(playerid);
 			return 0;
 		}
 
 		new buffer[MAX_PASSWORD_LEN];
-
 		WP_Hash(buffer, MAX_PASSWORD_LEN, inputtext);
-
-		CreateAccount(playerid, buffer);
-	}
-	else
-	{
+		new Error:e = CreateAccount(playerid, buffer);
+		if(IsError(e)) {
+			ShowErrorDialog(playerid);
+			Handled();
+		}
+	} else {
 		ChatMsgAll(GREY, " >  %p left the server without registering.", playerid);
 		Kick(playerid);
 	}
 
 	return 0;
 }
-
-
-CreateAccount(playerid, pass[])
-{
+Error:CreateAccount(playerid, pass[]) {
 	new
 		name[MAX_PLAYER_NAME],
 		ipv4[16],
 		nowString[21],
-		hash[MAX_GPCI_LEN],
-		ret;
+		hash[MAX_GPCI_LEN];
 
 	GetPlayerName(playerid, name, MAX_PLAYER_NAME);
 	GetPlayerIp(playerid, ipv4, 16);
@@ -117,15 +110,12 @@ CreateAccount(playerid, pass[])
 		)
 	);
 	if(id == Request:-1) {
-		err("failed to create account for player",
-			_i("playerid", playerid),
-			_s("name", name));
-		return ret;
+		return Error(1, "failed to send create account request");
 	}
 
 	MAP_insert_val_val(AccountCreateRequests, playerid, _:id);
 
-	return 0;
+	return NoError();
 }
 public OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node) {
 	new playerid = MAP_get_val_val(AccountCreateRequests, _:id);
@@ -135,29 +125,32 @@ public OnAccountCreate(Request:id, E_HTTP_STATUS:status, Node:node) {
 		return;
 	}
 
-	// TODO: reintegrate
-	// SetPlayerToolTips(playerid, true);
-
 	new
 		bool:success,
+		Node:result,
 		message[256],
-		ret;
-	ret = ParseStatus(node, success, message);
-	if(ret) {
-		err("failed to parse status");
+		Error:e;
+	e = ParseStatus(node, success, result, message);
+	if(IsError(e)) {
+		err("failed to parse status",
+			_i("playerid", playerid));
+		ShowErrorDialog(playerid);
 		return;
 	}
 
-	if(success) {
-		Login(playerid);
-		// TODO: reintegrate
-		// ShowWelcomeMessage(playerid, 10);
-	} else {
-		// KickPlayer(playerid, "Account creation failed");
-		Kick(playerid);
+	if(!success) {
 		err("failed to create account",
-			_s("message", message));
+			_s("message", message),
+			_i("playerid", playerid));
+		KickPlayer(playerid, "Account creation failed");
+		return;
 	}
 
+	Login(playerid);
+
+	// TODO: reintegrate/move to events
+	// SetPlayerToolTips(playerid, true);
+
+	ShowWelcomeMessage(playerid, 10);
 	CallLocalFunction("OnPlayerRegister", "d", playerid);
 }

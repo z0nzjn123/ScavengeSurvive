@@ -94,41 +94,48 @@ timer LoadAccountDelay[1000](playerid) {
 
 	return;
 }
+
+forward Error:SetPlayerDataFromJSON(playerid, Node:node);
 forward onAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node);
 public onAccountLoad(Request:id, E_HTTP_STATUS:status, Node:node) {
 	new playerid = MAP_get_val_val(AccountLoadRequests, _:id);
 
 	new
 		bool:success,
+		Node:result,
 		message[256],
-		Error:ret,
-		result;
-	ret = ParseStatus(node, success, message);
-	if(ret) {
+		Error:e,
+		loadResult;
+	e = ParseStatus(node, success, result, message);
+	if(IsError(e)) {
 		err("failed to parse status");
-		result = ACCOUNT_LOAD_RESULT_ERROR;
-		Handled(ret);
+		loadResult = ACCOUNT_LOAD_RESULT_ERROR;
+		Handled();
 	} else {
 		if(success) {
-			result = ACCOUNT_LOAD_RESULT_NO_EXIST;
-		} else {
-			ret = SetPlayerDataFromJSON(playerid, node);
-			if(ret) {
-				result = ACCOUNT_LOAD_RESULT_ERROR;
+			e = SetPlayerDataFromJSON(playerid, result);
+
+			if(IsError(e)) {
+				loadResult = ACCOUNT_LOAD_RESULT_ERROR;
+				ShowErrorDialog(playerid);
+				Handled();
 			} else {
 				HasAccount[playerid] = true;
-				result = ACCOUNT_LOAD_RESULT_EXIST;
+				loadResult = ACCOUNT_LOAD_RESULT_EXIST;
 			}
+		} else {
+			loadResult = ACCOUNT_LOAD_RESULT_NO_EXIST;
 		}
 	}
 
-	CallLocalFunction("OnPlayerAccountLoaded", "dd", playerid, result);
+	CallLocalFunction("OnPlayerAccountLoaded", "dd", playerid, loadResult);
 }
+
 Error:SetPlayerDataFromJSON(playerid, Node:node) {
 	new bool:archived;
 	JsonGetBool(node, FIELD_PLAYER_ARCHIVED, archived);
 	if(archived) {
-		return 0;
+		return NoError(1);
 	}
 
 	new
@@ -142,13 +149,27 @@ Error:SetPlayerDataFromJSON(playerid, Node:node) {
 		totalSpawns,
 		warnings;
 
-	JsonGetString(node, FIELD_PLAYER_ID, id);
-	JsonGetString(node, FIELD_PLAYER_PASS, passHash);
-	JsonGetBool(node, FIELD_PLAYER_ALIVE, aliveState);
-	JsonGetString(node, FIELD_PLAYER_REGDATE, regDateString);
-	JsonGetString(node, FIELD_PLAYER_LASTLOG, logDateString);
-	JsonGetInt(node, FIELD_PLAYER_TOTALSPAWNS, totalSpawns);
-	JsonGetInt(node, FIELD_PLAYER_WARNINGS, warnings);
+	if(JsonGetString(node, FIELD_PLAYER_ID, id)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_ID);
+	}
+	if(JsonGetString(node, FIELD_PLAYER_PASS, passHash)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_PASS);
+	}
+	if(JsonGetBool(node, FIELD_PLAYER_ALIVE, aliveState)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_ALIVE);
+	}
+	if(JsonGetString(node, FIELD_PLAYER_REGDATE, regDateString)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_REGDATE);
+	}
+	if(JsonGetString(node, FIELD_PLAYER_LASTLOG, logDateString)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_LASTLOG);
+	}
+	if(JsonGetInt(node, FIELD_PLAYER_TOTALSPAWNS, totalSpawns)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_TOTALSPAWNS);
+	}
+	if(JsonGetInt(node, FIELD_PLAYER_WARNINGS, warnings)) {
+		return Error(2, "failed to get field " FIELD_PLAYER_WARNINGS);
+	}
 
 	TimeParse(regDateString, ISO6801_FULL_UTC, regTimestamp);
 	TimeParse(logDateString, ISO6801_FULL_UTC, logTimestamp);
@@ -161,5 +182,5 @@ Error:SetPlayerDataFromJSON(playerid, Node:node) {
 	SetPlayerTotalSpawns(playerid, totalSpawns);
 	SetPlayerWarnings(playerid, warnings);
 
-	return 0;
+	return NoError();
 }

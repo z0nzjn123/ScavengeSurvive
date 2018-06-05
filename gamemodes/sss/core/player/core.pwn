@@ -71,6 +71,11 @@ forward OnPlayerDisconnected(playerid);
 forward OnDeath(playerid, killerid, reason);
 
 
+hook OnScriptInit() {
+	logger_debug("player", true);
+}
+
+
 // -
 // Connect
 // -
@@ -133,9 +138,7 @@ public OnPlayerAccountLoaded(playerid, loadresult)
 
 	// LoadAccount aborted, kick player.
 	if(loadresult == ACCOUNT_LOAD_RESULT_ERROR) {
-		// TODO: reintegrate
-		// KickPlayer(playerid, "Account load failed");
-		Kick(playerid);
+		KickPlayer(playerid, "Account load failed");
 		return;
 	}
 
@@ -165,9 +168,7 @@ public OnPlayerAccountLoaded(playerid, loadresult)
 
 	// Account does exists, but is disabled
 	if(loadresult == ACCOUNT_LOAD_RESULT_EXIST_DA) {
-		// TODO: reintegrate
-		// KickPlayer(playerid, "Account inactive");
-		Kick(playerid);
+		KickPlayer(playerid, "Account inactive");
 	}
 
 	return;
@@ -254,12 +255,8 @@ ptask PlayerUpdateFast[100](playerid)
 
 			if(PlayerData[playerid][ply_PingLimitStrikes] == 30)
 			{
-				// TODO: reintegrate
-				// KickPlayer(playerid, sprintf("Having a ping of: %d limit: %d.", GetPlayerPing(playerid), pinglimit));
-				Kick(playerid);
-
+				KickPlayer(playerid, sprintf("Having a ping of: %d limit: %d.", GetPlayerPing(playerid), pinglimit));
 				PlayerData[playerid][ply_PingLimitStrikes] = 0;
-
 				return;
 			}
 		}
