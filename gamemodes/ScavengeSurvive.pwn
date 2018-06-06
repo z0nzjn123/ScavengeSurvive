@@ -190,7 +190,8 @@ bool:	gServerInitialising = true,
 		gServerInitialiseTick,
 bool:	gServerRestarting = false,
 		gServerMaxUptime,
-		gServerUptime;
+		gServerUptime,
+		MiniMapOverlay;
 
 new
 		RequestsClient:Store,
@@ -251,8 +252,9 @@ Float:	gNameTagDistance,
 #include "sss/core/player/account/register.pwn"
 #include "sss/core/player/account/login.pwn"
 #include "sss/core/player/account/exit.pwn"
+#include "sss/core/player/account/welcome.pwn"
 #include "sss/core/player/core.pwn"
-#include "sss/core/player/welcome-message.pwn"
+#include "sss/core/player/spawn.pwn"
 
 
 // -
@@ -468,9 +470,9 @@ OnGameModeInit_Setup() {
 
 
 	// SETTINGS
-	// if(!gPauseMap) {
-	// 	MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
-	// }
+	if(!gPauseMap) {
+		MiniMapOverlay = GangZoneCreate(-6000, -6000, 6000, 6000);
+	}
 
 	if(!gInteriorEntry) {
 		DisableInteriorEnterExits();

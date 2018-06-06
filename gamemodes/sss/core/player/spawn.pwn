@@ -74,37 +74,47 @@ hook OnGameModeInit()
 
 		bagtype[ITM_MAX_NAME];
 
-	GetSettingString("spawn/bagtype", "Satchel", bagtype);
+	GetSettingString(SETTINGS_FILE, "spawn/bagtype", "Satchel", bagtype);
 	spawn_BagType = GetItemTypeFromUniqueName(bagtype, true);
 
 	if(!IsValidItemType(spawn_BagType))
-		err("spawn/bagtype item name '%s' results in invalid item type %d", bagtype, _:spawn_BagType);
+	{
+		err("spawn/bagtype invalid item type",
+			_s("bagtype", bagtype),
+			_i("itemtype", _:spawn_BagType));
+	}
 
 
-	GetSettingFloat("spawn/new-blood", 90.0, spawn_NewBlood);
-	GetSettingFloat("spawn/new-food", 80.0, spawn_NewFood);
-	GetSettingFloat("spawn/new-bleed", 0.0001, spawn_NewBleed);
-	GetSettingStringArray("spawn/new-items", "Knife", 16, newitems, newitems_total, 32);
+	GetSettingFloat(SETTINGS_FILE, "spawn/new-blood", 90.0, spawn_NewBlood);
+	GetSettingFloat(SETTINGS_FILE, "spawn/new-food", 80.0, spawn_NewFood);
+	GetSettingFloat(SETTINGS_FILE, "spawn/new-bleed", 0.0001, spawn_NewBleed);
+	GetSettingStringArray(SETTINGS_FILE, "spawn/new-items", "Knife", newitems, newitems_total);
 
 	for(new i; i < 16; i++)
 	{
 		spawn_NewItems[i][e_itmobj_type] = GetItemTypeFromUniqueName(newitems[i], true);
 
 		if(newitems[i][0] != EOS && !IsValidItemType(spawn_NewItems[i][e_itmobj_type]))
-			err("item '%s' from spawn/new-items/%d is invalid type %d.", newitems[i], i, _:spawn_NewItems[i][e_itmobj_type]);
+			err("spawn/new-items invalid",
+				_s("name", newitems[i]),
+				_i("index", i),
+				_i("itemtype", _:spawn_NewItems[i][e_itmobj_type]));
 	}
 
-	GetSettingFloat("spawn/res-blood", 100.0, spawn_ResBlood);
-	GetSettingFloat("spawn/res-food", 40.0, spawn_ResFood);
-	GetSettingFloat("spawn/res-bleed", 0.0, spawn_ResBleed);
-	GetSettingStringArray("spawn/res-items", "AntiSepBandage", 16, resitems, resitems_total, 32);
+	GetSettingFloat(SETTINGS_FILE, "spawn/res-blood", 100.0, spawn_ResBlood);
+	GetSettingFloat(SETTINGS_FILE, "spawn/res-food", 40.0, spawn_ResFood);
+	GetSettingFloat(SETTINGS_FILE, "spawn/res-bleed", 0.0, spawn_ResBleed);
+	GetSettingStringArray(SETTINGS_FILE, "spawn/res-items", "AntiSepBandage", resitems, resitems_total);
 
 	for(new i; i < 16; i++)
 	{
 		spawn_ResItems[i][e_itmobj_type] = GetItemTypeFromUniqueName(resitems[i], true);
 
 		if(resitems[i][0] != EOS && !IsValidItemType(spawn_ResItems[i][e_itmobj_type]))
-			err("item '%s' from spawn/res-items/%d is invalid type %d.", resitems[i], i, _:spawn_ResItems[i][e_itmobj_type]);
+			err("spawn/res-items invalid",
+				_s("name", newitems[i]),
+				_i("index", i),
+				_i("itemtype", _:spawn_ResItems[i][e_itmobj_type]));
 	}
 }
 
@@ -151,21 +161,20 @@ hook OnPlayerLogin(playerid)
 	if(IsPlayerAlive(playerid))
 	{
 		new ret = PlayerSpawnExistingCharacter(playerid);
-
-		if(!ret)
+		if(ret)
 		{
-			SetPlayerBrightness(playerid, 255);
+			err("failed to spawn existing character");
 			return 1;
 		}
-		else
-		{
-			err("PlayerSpawnExistingCharacter returned %d", ret);
-		}
+		// TODO: reintegrate
+		// SetPlayerBrightness(playerid, 255);
+		return 1;
 	}
 	else
 	{
 		PlayerCreateNewCharacter(playerid);
-		SetPlayerBrightness(playerid, 255);
+		// TODO: reintegrate
+		// SetPlayerBrightness(playerid, 255);
 	}
 
 	return 0;
@@ -179,17 +188,17 @@ PrepareForSpawn(playerid)
 	SetAllWeaponSkills(playerid, 500);
 
 	GangZoneShowForPlayer(playerid, MiniMapOverlay, 0x000000FF);
-	ShowWatch(playerid);
+	// ShowWatch(playerid);
 	CancelSelectTextDraw(playerid);
 }
 
-PlayerSpawnExistingCharacter(playerid)
+Error:PlayerSpawnExistingCharacter(playerid)
 {
 	if(IsPlayerSpawned(playerid))
-		return 1;
+		return Error(1);
 
 	if(!LoadPlayerChar(playerid))
-		return 2;
+		return Error(2);
 
 	new
 		Float:x,
@@ -236,7 +245,7 @@ PlayerSpawnExistingCharacter(playerid)
 
 	CallLocalFunction("OnPlayerSpawnChar", "d", playerid);
 
-	return 0;
+	return NoError();
 }
 
 // todo: fix hitting ESC when choosing gender
