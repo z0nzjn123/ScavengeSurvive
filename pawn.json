@@ -29,7 +29,9 @@
 		"ScavengeSurvive/item",
 		"ScavengeSurvive/container",
 		"ScavengeSurvive/bag",
-		"ScavengeSurvive/inventory"
+		"ScavengeSurvive/inventory",
+		"ScavengeSurvive/energy",
+		"ScavengeSurvive/itemtype-clothes"
 	],
 	"local": true,
 	"builds": [

@@ -44,10 +44,7 @@ Timestamp:	ply_LastLogin,
 bool:		ply_Alive,
 Float:		ply_HitPoints,
 Float:		ply_ArmourPoints,
-Float:		ply_FoodPoints,
 			ply_Clothes,
-			ply_Gender,
-Float:		ply_Velocity,
 			ply_CreationTimestamp,
 
 			// Internal Data
@@ -224,10 +221,7 @@ ResetVariables(playerid) {
 	PlayerData[playerid][ply_Alive]				= false;
 	PlayerData[playerid][ply_HitPoints]			= 100.0;
 	PlayerData[playerid][ply_ArmourPoints]		= 0.0;
-	PlayerData[playerid][ply_FoodPoints]			= 80.0;
 	PlayerData[playerid][ply_Clothes]				= 0;
-	PlayerData[playerid][ply_Gender]				= 0;
-	PlayerData[playerid][ply_Velocity]			= 0.0;
 
 	PlayerData[playerid][ply_PingLimitStrikes]	= 0;
 	PlayerData[playerid][ply_stance]				= 0;
@@ -378,31 +372,6 @@ public OnPlayerSpawn(playerid)
 
 public OnPlayerUpdate(playerid)
 {
-	if(IsPlayerInAnyVehicle(playerid))
-	{
-		// TODO: reintegrate
-		// static
-		// 	str[8],
-		// 	Float:vx,
-		// 	Float:vy,
-		// 	Float:vz;
-
-		// GetVehicleVelocity(GetPlayerLastVehicle(playerid), vx, vy, vz);
-		// PlayerData[playerid][ply_Velocity] = floatsqroot( (vx*vx)+(vy*vy)+(vz*vz) ) * 150.0;
-		// format(str, 32, "%.0fkm/h", PlayerData[playerid][ply_Velocity]);
-		// SetPlayerVehicleSpeedUI(playerid, str);
-	}
-	else
-	{
-		static
-			Float:vx,
-			Float:vy,
-			Float:vz;
-
-		GetPlayerVelocity(playerid, vx, vy, vz);
-		PlayerData[playerid][ply_Velocity] = floatsqroot( (vx*vx)+(vy*vy)+(vz*vz) ) * 150.0;
-	}
-
 	if(PlayerData[playerid][ply_Alive])
 	{
 		// TODO: reintegrate
@@ -706,26 +675,6 @@ stock SetPlayerAP(playerid, Float:amount)
 	return 1;
 }
 
-// ply_FoodPoints
-forward Float:GetPlayerFP(playerid);
-stock Float:GetPlayerFP(playerid)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0.0;
-
-	return PlayerData[playerid][ply_FoodPoints];
-}
-
-stock SetPlayerFP(playerid, Float:food)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	PlayerData[playerid][ply_FoodPoints] = food;
-
-	return 1;
-}
-
 // ply_Clothes
 stock GetPlayerClothesID(playerid)
 {
@@ -741,25 +690,6 @@ stock SetPlayerClothesID(playerid, id)
 		return 0;
 
 	PlayerData[playerid][ply_Clothes] = id;
-
-	return 1;
-}
-
-// ply_Gender
-stock GetPlayerGender(playerid)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	return PlayerData[playerid][ply_Gender];
-}
-
-stock SetPlayerGender(playerid, gender)
-{
-	if(!IsPlayerConnected(playerid))
-		return 0;
-
-	PlayerData[playerid][ply_Gender] = gender;
 
 	return 1;
 }
@@ -841,7 +771,7 @@ IsPlayerLoggedIn(playerid) {
 }
 
 // NewPlayer
-stock bool:IsNewPlayer(playerid) {
+stock IsNewPlayer(playerid) {
 	if(!IsPlayerConnected(playerid)) {
 		return false;
 	}

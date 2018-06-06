@@ -150,6 +150,8 @@ public OnGameModeInit()
 #include <container> // ScavengeSurvive/container
 #include <bag>       // ScavengeSurvive/bag
 #include <inventory> // ScavengeSurvive/inventory
+#include <energy>    // ScavengeSurvive/energy
+#include <clothes>   // ScavengeSurvive/itemtype-clothes
 
 // must re-initialise y_hooks after the above packages
 #include <YSI\y_hooks> // pawn-lang/YSI-Includes
@@ -239,6 +241,7 @@ Float:	gNameTagDistance,
 #include "sss/utils/status.pwn"
 #include "sss/utils/error-dialog.pwn"
 #include "sss/utils/kick-delay.pwn"
+#include "sss/utils/freeze.pwn"
 
 // Server
 // #include "sss/core/server/save-block.pwn"
@@ -255,7 +258,7 @@ Float:	gNameTagDistance,
 #include "sss/core/player/account/welcome.pwn"
 #include "sss/core/player/core.pwn"
 #include "sss/core/player/spawn.pwn"
-
+#include "sss/core/player/save-load.pwn"
 
 // -
 // Libraries that have not been migrated yet

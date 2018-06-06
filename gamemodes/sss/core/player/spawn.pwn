@@ -156,30 +156,6 @@ hook OnPlayerConnect(playerid)
 	PlayerTextDrawSetSelectable		(playerid, ClassButtonFemale[playerid], true);
 }
 
-hook OnPlayerLogin(playerid)
-{
-	if(IsPlayerAlive(playerid))
-	{
-		new ret = PlayerSpawnExistingCharacter(playerid);
-		if(ret)
-		{
-			err("failed to spawn existing character");
-			return 1;
-		}
-		// TODO: reintegrate
-		// SetPlayerBrightness(playerid, 255);
-		return 1;
-	}
-	else
-	{
-		PlayerCreateNewCharacter(playerid);
-		// TODO: reintegrate
-		// SetPlayerBrightness(playerid, 255);
-	}
-
-	return 0;
-}
-
 PrepareForSpawn(playerid)
 {
 	SetPlayerSpawnedState(playerid, true);
@@ -213,8 +189,6 @@ Error:PlayerSpawnExistingCharacter(playerid)
 	SetPlayerPos(playerid, x, y, z);
 	SetPlayerFacingAngle(playerid, r);
 
-	SetPlayerGender(playerid, GetClothesGender(GetPlayerClothes(playerid)));
-
 	if(GetPlayerWarnings(playerid) > 0)
 	{
 		if(GetPlayerWarnings(playerid) >= 5)	
@@ -223,7 +197,8 @@ Error:PlayerSpawnExistingCharacter(playerid)
 		ChatMsgLang(playerid, YELLOW, "WARNCOUNTER", GetPlayerWarnings(playerid));
 	}
 
-	SetPlayerClothes(playerid, GetPlayerClothesID(playerid));
+	// TODO: reintegrate
+	// SetPlayerClothes(playerid, GetPlayerClothesID(playerid));
 	FreezePlayer(playerid, gLoginFreezeTime * 1000);
 
 	PrepareForSpawn(playerid);
@@ -241,7 +216,12 @@ Error:PlayerSpawnExistingCharacter(playerid)
 		ApplyAnimation(playerid, "ROB_BANK", "SHP_HandsUp_Scr", 4.0, 0, 1, 1, 1, 0);
 	}
 
-	log("[SPAWN] %p spawned existing character at %.1f, %.1f, %.1f (%.1f)", playerid, x, y, z, r);
+	log("player spawned existing character",
+		_i("playerid", playerid),
+		_f("x", x),
+		_f("y", y),
+		_f("z", z),
+		_f("r", r));
 
 	CallLocalFunction("OnPlayerSpawnChar", "d", playerid);
 
@@ -251,8 +231,6 @@ Error:PlayerSpawnExistingCharacter(playerid)
 // todo: fix hitting ESC when choosing gender
 PlayerCreateNewCharacter(playerid)
 {
-	log("[NEWCHAR] %p creating new character", playerid);
-
 	SetPlayerPos(playerid, DEFAULT_POS_X + 5, DEFAULT_POS_Y, DEFAULT_POS_Z);
 	SetPlayerFacingAngle(playerid, 0.0);
 	SetPlayerVirtualWorld(playerid, 0);
@@ -262,19 +240,49 @@ PlayerCreateNewCharacter(playerid)
 	SetPlayerCameraPos(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z - 1.0);
 	Streamer_UpdateEx(playerid, DEFAULT_POS_X, DEFAULT_POS_Y, DEFAULT_POS_Z);
 
-	SetPlayerBrightness(playerid, 255);
+	// TODO: reintegrate
+	// SetPlayerBrightness(playerid, 255);
 	TogglePlayerControllable(playerid, false);
 
 	if(IsPlayerLoggedIn(playerid))
 	{
-		PlayerTextDrawSetString(playerid, ClassButtonMale[playerid], sprintf("~n~%s~n~~n~", ls(playerid, "GENDER_M")));
-		PlayerTextDrawSetString(playerid, ClassButtonFemale[playerid], sprintf("~n~%s~n~~n~", ls(playerid, "GENDER_F")));
+		PlayerTextDrawSetString(playerid, ClassButtonMale[playerid], sprintf("~n~%s~n~~n~", @L(playerid, "GENDER_M")));
+		PlayerTextDrawSetString(playerid, ClassButtonFemale[playerid], sprintf("~n~%s~n~~n~", @L(playerid, "GENDER_F")));
 		PlayerTextDrawShow(playerid, ClassButtonMale[playerid]);
 		PlayerTextDrawShow(playerid, ClassButtonFemale[playerid]);
 		SelectTextDraw(playerid, 0xFFFFFF88);
 	}
 
+	log("player created new character",
+		_i("playerid", playerid));
+
 	CallLocalFunction("OnPlayerCreateChar", "d", playerid);
+}
+
+
+hook OnPlayerLogin(playerid)
+{
+	if(IsPlayerAlive(playerid))
+	{
+		new Error:e = PlayerSpawnExistingCharacter(playerid);
+		if(IsError(e)) {
+			err("failed to spawn existing character");
+			ShowErrorDialog(playerid);
+			Handled();
+			return 1;
+		}
+		// TODO: reintegrate
+		// SetPlayerBrightness(playerid, 255);
+		return 1;
+	}
+	else
+	{
+		PlayerCreateNewCharacter(playerid);
+		// TODO: reintegrate
+		// SetPlayerBrightness(playerid, 255);
+	}
+
+	return 0;
 }
 
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid)

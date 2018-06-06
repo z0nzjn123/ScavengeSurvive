@@ -122,7 +122,7 @@ Login(playerid)
 	GetPlayerIp(playerid, ipv4, 16);
 
 	dbg("player", "player logged in",
-		_i("playerid", playerid)));
+		_i("playerid", playerid));
 
 	// TODO: update account with IP, GPCI and LastLogin time
 	// SetAccountIP(name, ipv4);

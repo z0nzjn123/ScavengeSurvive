@@ -75,13 +75,11 @@ forward OnPlayerLoad(playerid, filename[]);
 
 hook OnGameModeInit()
 {
-	DirectoryCheck(DIRECTORY_SCRIPTFILES DIRECTORY_PLAYER);
+	CreateDirIfNotExists(DIRECTORY_SCRIPTFILES DIRECTORY_PLAYER);
 }
 
 hook OnPlayerConnect(playerid)
 {
-
-
 	saveload_Loaded[playerid] = false;
 }
 
@@ -281,7 +279,13 @@ LoadPlayerChar(playerid)
 		return length;
 	}
 
-	dbg("gamemodes/sss/core/player/save-load.pwn", 2, "[LOAD:%p] CHR %.1f, %.1f, %.1f, %d, %d", playerid, data[PLY_CELL_HEALTH], data[PLY_CELL_ARMOUR], data[PLY_CELL_FOOD], data[PLY_CELL_SKIN], data[PLY_CELL_HAT]);
+	dbg("player", "load",
+		_i("playerid", playerid),
+		_f("health", data[PLY_CELL_HEALTH]),
+		_f("armour", data[PLY_CELL_ARMOUR]),
+		_f("food", data[PLY_CELL_FOOD]),
+		_i("skin", data[PLY_CELL_SKIN])
+	);
 
 /*
 	Character
@@ -292,15 +296,17 @@ LoadPlayerChar(playerid)
 
 	SetPlayerHP(playerid, Float:data[PLY_CELL_HEALTH]);
 	SetPlayerAP(playerid, Float:data[PLY_CELL_ARMOUR]);
-	SetPlayerFP(playerid, Float:data[PLY_CELL_FOOD]);
+	SetPlayerEnergy(playerid, Float:data[PLY_CELL_FOOD]);
 	SetPlayerClothesID(playerid, data[PLY_CELL_SKIN]);
-	SetPlayerClothes(playerid, data[PLY_CELL_SKIN]);
+	SetPlayerClothes(playerid, ClothesType:data[PLY_CELL_SKIN]);
 
-	if(IsValidItemType(ItemType:data[PLY_CELL_HAT]))
-		SetPlayerHatItem(playerid, CreateItem(ItemType:data[PLY_CELL_HAT]));
+	// TODO: reintegrate
+	// if(IsValidItemType(ItemType:data[PLY_CELL_HAT]))
+	// 	SetPlayerHatItem(playerid, CreateItem(ItemType:data[PLY_CELL_HAT]));
 
-	if(GetPlayerAP(playerid) > 0.0)
-		CreatePlayerArmour(playerid);
+	// TODO: reintegrate
+	// if(GetPlayerAP(playerid) > 0.0)
+	// 	CreatePlayerArmour(playerid);
 
 /*
 	Legacy code for old held/holstered item format. Depreciated because it only
@@ -312,23 +318,23 @@ LoadPlayerChar(playerid)
 	{
 		itemid = CreateItem(ItemType:data[PLY_CELL_HELD]);
 
-		if(!IsItemTypeExtraDataDependent(ItemType:data[PLY_CELL_HELD]))
-			SetItemExtraData(itemid, data[PLY_CELL_HELDEX]);
+		// TODO: reintegrate
+		// if(!IsItemTypeExtraDataDependent(ItemType:data[PLY_CELL_HELD]))
+		// 	SetItemExtraData(itemid, data[PLY_CELL_HELDEX]);
 
 		if(0 < data[PLY_CELL_HELD] < WEAPON_PARACHUTE)
 		{
-			new ItemType:ammotype[1];
-
+			// TODO: reintegrate
+			// new ItemType:ammotype[1];
 			// Get the first ammo item type for this weapon's calibre.
-			GetAmmoItemTypesOfCalibre(GetItemTypeWeaponCalibre(ItemType:data[PLY_CELL_HELD]), ammotype, 1);
-
-			if(IsValidItemType(ammotype[0]))
-			{
-				SetItemWeaponItemAmmoItem(itemid, ammotype[0]);
-				SetItemWeaponItemMagAmmo(itemid, 0);
-				SetItemWeaponItemReserve(itemid, 0);
-				AddAmmoToWeapon(itemid, data[PLY_CELL_HELDEX]);
-			}
+			// GetAmmoItemTypesOfCalibre(GetItemTypeWeaponCalibre(ItemType:data[PLY_CELL_HELD]), ammotype, 1);
+			// if(IsValidItemType(ammotype[0]))
+			// {
+			// 	SetItemWeaponItemAmmoItem(itemid, ammotype[0]);
+			// 	SetItemWeaponItemMagAmmo(itemid, 0);
+			// 	SetItemWeaponItemReserve(itemid, 0);
+			// 	AddAmmoToWeapon(itemid, data[PLY_CELL_HELDEX]);
+			// }
 		}
 
 		GiveWorldItemToPlayer(playerid, itemid);
