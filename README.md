@@ -7,6 +7,13 @@
 [![Waffle.io](https://img.shields.io/waffle/label/Southclaws/ScavengeSurvive/in%20progress.svg)](https://waffle.io/Southclaws/ScavengeSurvive)
 [![Donate](https://img.shields.io/badge/donate-paypal-3b7bbf.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=P7H2FNNWLMFW4)
 
+## Announcement
+
+This project is now unmaintained and, frankly, the state it's in is pretty bad. That's my fault, I attempted such a large refactor during 2016 which dragged on two years to a point where the codebase is nowhere near usable. If you're interested in actually using this gamemode, I can only advise to build a new one using components released [here](https://github.com/ScavengeSurvive).
+
+To all of those who stuck with the project since the [early alpha of 2012/2013](https://www.youtube.com/watch?v=1YiqgtVW2i0), those were some of the best gaming experience I've ever had and I made some great friends in the community. Thank you. Good luck out there survivors!
+
+---
 
 ## Overview
 
